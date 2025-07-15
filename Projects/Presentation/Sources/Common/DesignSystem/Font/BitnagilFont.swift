@@ -16,6 +16,21 @@ struct BitnagilFont {
         self.weight = weight
     }
 
+    init(fontSize: CGFloat,
+         lineHeight: CGFloat,
+         letterSpacing: CGFloat = 0,
+         underline: Bool = false,
+         weight: FontWeight
+    ) {
+        let attributes = FontAttributes(
+            fontSize: fontSize,
+            lineHeight: lineHeight,
+            letterSpacing: letterSpacing,
+            underline: underline)
+        self.style = .custom(fontAttribute: attributes)
+        self.weight = weight
+    }
+
     var font: UIFont {
         guard let font = UIFont(name: weight.fontName, size: style.fontAttributes.fontSize) else {
             return UIFont.systemFont(ofSize: style.fontAttributes.fontSize)
