@@ -7,9 +7,7 @@
 
 import Domain
 
-typealias LoginResponseDTO = BaseResponseDTO<LoginResponse>
-
-struct LoginResponse: Decodable {
+struct LoginResponseDTO: Decodable {
     let accessToken: String
     let refreshToken: String
     let userState: String
@@ -21,7 +19,7 @@ struct LoginResponse: Decodable {
     }
 }
 
-extension LoginResponse {
+extension LoginResponseDTO {
     func toUserEntity() -> UserEntity {
         return UserEntity(
             accessToken: accessToken,

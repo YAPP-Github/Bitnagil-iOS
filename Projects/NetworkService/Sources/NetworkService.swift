@@ -17,27 +17,31 @@ public final class NetworkService: NetworkServiceProtocol {
         self.networkProvider = networkProvider
     }
 
-    public func request<T: Decodable>(endpoint: Endpoint, type: T.Type) async throws -> T {
+    public func request<T: Decodable>(endpoint: Endpoint, type: T.Type) async throws -> T? {
         let request = try endpoint.makeURLRequest()
         let (data, response) = try await networkProvider.data(for: request)
 
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw NetworkError.invalidResponse
-        }
+        guard let httpResponse = response as? HTTPURLResponse
+        else { throw NetworkError.invalidResponse }
 
         guard 200..<300 ~= httpResponse.statusCode else {
             BitnagilLogger.log(logType: .error, message: "응답 코드: \(httpResponse.statusCode)")
             throw NetworkError.invalidStatusCode(statusCode: httpResponse.statusCode)
         }
 
-        guard !data.isEmpty else {
-            throw NetworkError.emptyData
-        }
+        guard !data.isEmpty
+        else { throw NetworkError.emptyData }
 
-        guard let responseDTO = try? decoder.decode(T.self, from: data) else {
+        do {
+            let baseResponse = try decoder.decode(BaseResponse<T>.self, from: data)
+            BitnagilLogger.log(logType: .info, message: "Server Message: \(baseResponse.message)")
+
+            guard let responseDTO = baseResponse.data
+            else { return nil }
+            
+            return responseDTO
+        } catch {
             throw NetworkError.decodingError
         }
-
-        return responseDTO
     }
 }

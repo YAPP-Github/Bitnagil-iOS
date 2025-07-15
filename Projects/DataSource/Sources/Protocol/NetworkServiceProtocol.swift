@@ -15,5 +15,5 @@ public protocol NetworkServiceProtocol {
     ///   - endpoint: 요청을 보낼 API Endpoint 정보
     ///   - type: 디코딩할 Response DTO 타입
     /// - Returns: 응답 데이터를 디코딩한 객체
-    func request<T: Decodable>(endpoint: Endpoint, type: T.Type) async throws -> T
+    func request<T: Decodable>(endpoint: Endpoint, type: T.Type) async throws -> T?
 }
