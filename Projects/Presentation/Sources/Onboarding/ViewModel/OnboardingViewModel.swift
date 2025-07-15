@@ -27,6 +27,7 @@ final class OnboardingViewModel: ViewModel {
         let onboardingResultPublisher: AnyPublisher<[String], Never>
         let recommendedRoutinePublisher: AnyPublisher<Set<RecommendedRoutine>, Never>
         let selectedRoutinePublisher: AnyPublisher<Set<RecommendedRoutine>, Never>
+        let registerRoutineResultPublisher: AnyPublisher<Bool, Never>
         let nextButtonPublisher: AnyPublisher<Bool, Never>
     }
 
@@ -38,6 +39,7 @@ final class OnboardingViewModel: ViewModel {
     private let onboardingResultSubject = CurrentValueSubject<[String], Never>([])
     private let recommendedRoutineSubject = CurrentValueSubject<Set<RecommendedRoutine>, Never>([])
     private let selectedRoutineSubject = CurrentValueSubject<Set<RecommendedRoutine>, Never>([])
+    private let registerRoutineResultSubject = PassthroughSubject<Bool, Never>()
     private let nextButtonSubject = PassthroughSubject<Bool, Never>()
 
     private let onboardingUseCase: OnboardingUseCaseProtocol
@@ -51,6 +53,7 @@ final class OnboardingViewModel: ViewModel {
             onboardingResultPublisher: onboardingResultSubject.eraseToAnyPublisher(),
             recommendedRoutinePublisher: recommendedRoutineSubject.eraseToAnyPublisher(),
             selectedRoutinePublisher: selectedRoutineSubject.eraseToAnyPublisher(),
+            registerRoutineResultPublisher: registerRoutineResultSubject.eraseToAnyPublisher(),
             nextButtonPublisher: nextButtonSubject.eraseToAnyPublisher()
         )
     }
@@ -225,6 +228,16 @@ final class OnboardingViewModel: ViewModel {
 
     // 추천 루틴을 등록합니다.
     private func registerRecommendedRoutine() {
-        // TODO: 서버 API 만들어진 후 UseCase와 연동하는 작업이 필요합니다.
+        let selectedRoutinesId = selectedRoutineSubject.value.map({ $0.id })
+
+        Task {
+            do {
+                try await onboardingUseCase.registerRecommendedRoutines(selectedRoutines: selectedRoutinesId)
+                registerRoutineResultSubject.send(true)
+            } catch {
+                BitnagilLogger.log(logType: .error, message: "\(error.localizedDescription)")
+                registerRoutineResultSubject.send(false)
+            }
+        }
     }
 }

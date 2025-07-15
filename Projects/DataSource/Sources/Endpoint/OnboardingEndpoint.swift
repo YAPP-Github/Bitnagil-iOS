@@ -9,6 +9,7 @@ import Foundation
 
 enum OnboardingEndpoint {
     case registerOnboarding(accessToken: String, choices: [String: String])
+    case registerRecommendedRoutine(accessToken: String, selectedRoutines: [Int])
 }
 
 extension OnboardingEndpoint: Endpoint {
@@ -19,6 +20,7 @@ extension OnboardingEndpoint: Endpoint {
     var path: String {
         switch self {
         case .registerOnboarding: baseURL
+        case .registerRecommendedRoutine: baseURL + "/routines"
         }
     }
     
@@ -35,6 +37,8 @@ extension OnboardingEndpoint: Endpoint {
         switch self {
         case .registerOnboarding(let accessToken, _):
             headers["Authorization"] = "Bearer \(accessToken)"
+        case .registerRecommendedRoutine(let accessToken, _):
+            headers["Authorization"] = "Bearer \(accessToken)"
         }
 
         return headers
@@ -48,6 +52,8 @@ extension OnboardingEndpoint: Endpoint {
         switch self {
         case .registerOnboarding(_, let choices):
             return choices
+        case .registerRecommendedRoutine(_, let selectedRoutines):
+            return ["recommendedRoutineIds": selectedRoutines]
         }
     }
 }

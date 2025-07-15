@@ -20,6 +20,10 @@ public final class OnboardingUseCase: OnboardingUseCaseProtocol {
         return recommendedRoutines
     }
 
+    public func registerRecommendedRoutines(selectedRoutines: [Int]) async throws {
+        try await onboardingRepository.registerRecommendedRoutines(selectedRoutines: selectedRoutines)
+    }
+
     private func convertToDictionary(onboardingChoices: [OnboardingChoiceType]) -> [String: String] {
         guard
             let timeSlot = onboardingChoices.filter({ $0.onboardingType == .time }).first,
@@ -34,8 +38,5 @@ public final class OnboardingUseCase: OnboardingUseCaseProtocol {
             result[choice.onboardingType.key] = choice.value
         }
         return result
-    }
-
-    private func convertTo() {
     }
 }

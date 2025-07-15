@@ -27,6 +27,12 @@ final class OnboardingRepository: OnboardingRepositoryProtocol {
         return recommendedRoutineEntity
     }
 
+    func registerRecommendedRoutines(selectedRoutines: [Int]) async throws {
+        let accessToken = try loadToken(tokenType: .accessToken)
+        let endpoint = OnboardingEndpoint.registerRecommendedRoutine(accessToken: accessToken, selectedRoutines: selectedRoutines)
+        _ = try await networkService.request(endpoint: endpoint, type: EmptyResponseDTO.self)
+    }
+
     private func loadToken(tokenType: TokenType) throws -> String {
         guard let token = keychainStorage.load(forKey: tokenType.rawValue) else {
             throw AuthError.tokenLoadFailed
