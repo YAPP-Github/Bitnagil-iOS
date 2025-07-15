@@ -36,7 +36,7 @@ final class OnboardingView: BaseViewController<OnboardingViewModel> {
     private let nextButton = PrimaryButton(buttonState: .disabled, buttonTitle: "다음")
     private var cancellables: Set<AnyCancellable>
 
-    public init(viewModel: OnboardingViewModel, onboarding: OnboardingType) {
+    init(viewModel: OnboardingViewModel, onboarding: OnboardingType) {
         self.onboarding = onboarding
         cancellables = []
         super.init(viewModel: viewModel)
@@ -46,11 +46,11 @@ final class OnboardingView: BaseViewController<OnboardingViewModel> {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         let stepCount = OnboardingType.allCases.count + 1
@@ -59,7 +59,7 @@ final class OnboardingView: BaseViewController<OnboardingViewModel> {
         self.viewModel.action(input: .fetchOnboardingChoice(onboarding: onboarding))
     }
 
-    public override func configureAttribute() {
+    override func configureAttribute() {
         mainLabel.do {
             $0.attributedText = BitnagilFont(style: .title2, weight: .bold).attributedString(text: onboarding.mainTitle)
             $0.textColor = BitnagilColor.navy500
@@ -101,7 +101,7 @@ final class OnboardingView: BaseViewController<OnboardingViewModel> {
         }, for: .touchUpInside)
     }
 
-    public override func configureLayout() {
+    override func configureLayout() {
         let safeArea = view.safeAreaLayoutGuide
         view.backgroundColor = BitnagilColor.gray99
 
@@ -142,7 +142,7 @@ final class OnboardingView: BaseViewController<OnboardingViewModel> {
         }
     }
 
-    public override func bind() {
+    override func bind() {
         viewModel.output.timeOnboardingChoicePublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] timeChoice in

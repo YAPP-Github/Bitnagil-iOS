@@ -8,8 +8,8 @@
 import Foundation
 import UIKit
 
-public class BaseViewController<T: ViewModel>: UIViewController {
-    public let viewModel: T
+class BaseViewController<T: ViewModel>: UIViewController {
+    let viewModel: T
 
     init(viewModel: T) {
         self.viewModel = viewModel
@@ -20,7 +20,7 @@ public class BaseViewController<T: ViewModel>: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
         configureAttribute()

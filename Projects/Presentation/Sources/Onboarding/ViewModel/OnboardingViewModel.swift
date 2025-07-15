@@ -8,7 +8,7 @@
 import Combine
 
 final class OnboardingViewModel: ViewModel {
-    public enum Input {
+    enum Input {
         case selectOnboardingChoice(selectedChoice: OnboardingChoiceType)
         case fetchOnboardingChoice(onboarding: OnboardingType)
         case makeOnboardingResult
@@ -17,7 +17,7 @@ final class OnboardingViewModel: ViewModel {
         case registerRecommendedRoutine
     }
 
-    public struct Output {
+    struct Output {
         let timeOnboardingChoicePublisher: AnyPublisher<OnboardingChoiceType?, Never>
         let frequencyOnboardingChoicePublisher: AnyPublisher<OnboardingChoiceType?, Never>
         let feelingOnboardingChoicePublisher: AnyPublisher<Set<OnboardingChoiceType>, Never>
@@ -38,7 +38,7 @@ final class OnboardingViewModel: ViewModel {
     private let selectedRoutineSubject = CurrentValueSubject<Set<RecommendedRoutine>, Never>([])
     private let nextButtonSubject = PassthroughSubject<Bool, Never>()
 
-    public init() {
+    init() {
         self.output = Output(
             timeOnboardingChoicePublisher: timeOnboardingChoiceSubject.eraseToAnyPublisher(),
             frequencyOnboardingChoicePublisher: frequencyOnboardingChoiceSubject.eraseToAnyPublisher(),
@@ -51,7 +51,7 @@ final class OnboardingViewModel: ViewModel {
         )
     }
 
-    public func action(input: Input) {
+    func action(input: Input) {
         switch input {
         case .selectOnboardingChoice(let selectedChoice):
             selectChoice(choice: selectedChoice)

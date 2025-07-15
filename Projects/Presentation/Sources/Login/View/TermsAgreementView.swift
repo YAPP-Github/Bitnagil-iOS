@@ -13,7 +13,7 @@ import SnapKit
 import Then
 import SafariServices
 
-public final class TermsAgreementView: BaseViewController<LoginViewModel> {
+final class TermsAgreementView: BaseViewController<LoginViewModel> {
 
     private enum Layout {
         static let horizontalMargin: CGFloat = 20
@@ -32,7 +32,7 @@ public final class TermsAgreementView: BaseViewController<LoginViewModel> {
     private let startButton = PrimaryButton(buttonState: .disabled, buttonTitle: "시작하기")
     private var cancellables: Set<AnyCancellable>
 
-    public override init(viewModel: LoginViewModel) {
+    override init(viewModel: LoginViewModel) {
         cancellables = []
         super.init(viewModel: viewModel)
     }
@@ -41,11 +41,11 @@ public final class TermsAgreementView: BaseViewController<LoginViewModel> {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         configureNavigationBar(navigationStyle: .withBackButton(title: "약관 동의"))
     }

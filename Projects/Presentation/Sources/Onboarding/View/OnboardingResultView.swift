@@ -36,7 +36,7 @@ final class OnboardingResultView: BaseViewController<OnboardingViewModel> {
     private let graphicView = UIView()
     private var cancellables: Set<AnyCancellable>
 
-    public override init(viewModel: OnboardingViewModel) {
+    override init(viewModel: OnboardingViewModel) {
         cancellables = []
         super.init(viewModel: viewModel)
     }
@@ -45,12 +45,12 @@ final class OnboardingResultView: BaseViewController<OnboardingViewModel> {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         viewModel.action(input: .makeOnboardingResult)
     }
 
-    public override func viewDidAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         UIView.animate(withDuration: 0.5, delay: 3, options: .curveEaseInOut, animations: {
@@ -62,14 +62,14 @@ final class OnboardingResultView: BaseViewController<OnboardingViewModel> {
         })
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         let stepCount = OnboardingType.allCases.count + 1
         configureNavigationBar(navigationStyle: .withPrograssBar(step: stepCount, stepCount: stepCount))
     }
 
-    public override func configureAttribute() {
+    override func configureAttribute() {
         mainLabel.do {
             let text = "이제 당신에게\n꼭 맞는 루틴을 제안해드릴게요."
             $0.attributedText = BitnagilFont(style: .title2, weight: .bold).attributedString(text: text)
@@ -99,7 +99,7 @@ final class OnboardingResultView: BaseViewController<OnboardingViewModel> {
         }
     }
 
-    public override func configureLayout() {
+    override func configureLayout() {
         let safeArea = view.safeAreaLayoutGuide
         view.backgroundColor = BitnagilColor.gray99
 
@@ -145,7 +145,7 @@ final class OnboardingResultView: BaseViewController<OnboardingViewModel> {
         }
     }
 
-    public override func bind() {
+    override func bind() {
         viewModel.output.onboardingResultPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] onboardingResults in

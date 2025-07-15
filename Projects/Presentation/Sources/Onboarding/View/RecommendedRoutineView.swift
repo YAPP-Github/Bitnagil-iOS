@@ -35,7 +35,7 @@ final class RecommendedRoutineView: BaseViewController<OnboardingViewModel> {
     private let registerButton = PrimaryButton(buttonState: .disabled, buttonTitle: "등록하기")
     private var cancellables: Set<AnyCancellable>
 
-    public override init(viewModel: OnboardingViewModel) {
+    override init(viewModel: OnboardingViewModel) {
         cancellables = []
         super.init(viewModel: viewModel)
     }
@@ -44,19 +44,19 @@ final class RecommendedRoutineView: BaseViewController<OnboardingViewModel> {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         viewModel.action(input: .fetchRecommendedRoutine)
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         let stepCount = OnboardingType.allCases.count + 1
         configureNavigationBar(navigationStyle: .withPrograssBarWithCustomBackButton(step: stepCount, stepCount: stepCount))
     }
 
-    public override func configureAttribute() {
+    override func configureAttribute() {
         mainLabel.do {
             let text = "당신만의 추천 루틴이\n생성되었어요!"
             $0.attributedText = BitnagilFont(style: .title2, weight: .bold).attributedString(text: text)
@@ -83,7 +83,7 @@ final class RecommendedRoutineView: BaseViewController<OnboardingViewModel> {
         }, for: .touchUpInside)
     }
 
-    public override func configureLayout() {
+    override func configureLayout() {
         let safeArea = view.safeAreaLayoutGuide
         view.backgroundColor = BitnagilColor.gray99
 
@@ -120,7 +120,7 @@ final class RecommendedRoutineView: BaseViewController<OnboardingViewModel> {
         }
     }
 
-    public override func bind() {
+    override func bind() {
         viewModel.output.recommendedRoutinePublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] recommendedRoutines in

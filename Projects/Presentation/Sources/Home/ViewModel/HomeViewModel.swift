@@ -8,16 +8,16 @@
 import Combine
 import Domain
 
-public final class HomeViewModel: ViewModel {
-    public enum Input { }
+final class HomeViewModel: ViewModel {
+    enum Input { }
 
-    public struct Output { }
+    struct Output { }
 
     private(set) var output: Output
 
-    public init() {
+    init() {
         self.output = Output()
     }
 
-    public func action(input: Input) { }
+    func action(input: Input) { }
 }

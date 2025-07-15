@@ -12,12 +12,12 @@ import SnapKit
 import Then
 import Shared
 
-public final class HomeViewController: BaseViewController<HomeViewModel> {
+final class HomeViewController: BaseViewController<HomeViewModel> {
     private var cancellables: Set<AnyCancellable>
 
     private let label = UILabel()
 
-    public override init(viewModel: HomeViewModel) {
+    override init(viewModel: HomeViewModel) {
         cancellables = []
         super.init(viewModel: viewModel)
     }
@@ -26,7 +26,7 @@ public final class HomeViewController: BaseViewController<HomeViewModel> {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
     }
 
