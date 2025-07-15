@@ -18,9 +18,8 @@ public struct DomainDependencyAssembler: DependencyAssemblerProtocol {
     public func assemble() {
         preAssembler.assemble()
 
-        guard let authRepository = DIContainer.shared.resolve(type: AuthRepositoryProtocol.self) else {
-            return
-        }
+        guard let authRepository = DIContainer.shared.resolve(type: AuthRepositoryProtocol.self)
+        else { return }
 
         DIContainer.shared.register(type: LoginUseCaseProtocol.self) { _ in
             return LoginUseCase(authRepository: authRepository)

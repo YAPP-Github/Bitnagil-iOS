@@ -33,5 +33,9 @@ public struct DataSourceDependencyAssembler: DependencyAssemblerProtocol {
                 keychainStorage: keychainStorage,
                 userDefaultsStorage: userDefaultsStorage)
         }
+
+        DIContainer.shared.register(type: OnboardingRepositoryProtocol.self) { _ in
+            return OnboardingRepository(networkService: networkService, keychainStorage: keychainStorage)
+        }
     }
 }
