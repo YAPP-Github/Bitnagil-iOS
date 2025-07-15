@@ -7,6 +7,7 @@
 
 import UIKit
 import Combine
+import Domain
 
 final class OnboardingResultView: BaseViewController<OnboardingViewModel> {
 
@@ -57,7 +58,7 @@ final class OnboardingResultView: BaseViewController<OnboardingViewModel> {
             self.view.alpha = 0.0
         }, completion: { [weak self] finished in
             guard let self else { return }
-            let recommendedRoutineView = RecommendedRoutineView(viewModel: self.viewModel)
+            let recommendedRoutineView = OnboardingRecommendedRoutineView(viewModel: self.viewModel)
             self.navigationController?.pushViewController(recommendedRoutineView, animated: true)
         })
     }

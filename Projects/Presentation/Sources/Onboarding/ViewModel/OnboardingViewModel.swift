@@ -6,13 +6,15 @@
 //
 
 import Combine
+import Domain
+import Shared
 
 final class OnboardingViewModel: ViewModel {
     enum Input {
         case selectOnboardingChoice(selectedChoice: OnboardingChoiceType)
         case fetchOnboardingChoice(onboarding: OnboardingType)
         case makeOnboardingResult
-        case fetchRecommendedRoutine
+        case registerOnboarding
         case selectRoutine(routine: RecommendedRoutine)
         case registerRecommendedRoutine
     }
@@ -21,7 +23,7 @@ final class OnboardingViewModel: ViewModel {
         let timeOnboardingChoicePublisher: AnyPublisher<OnboardingChoiceType?, Never>
         let frequencyOnboardingChoicePublisher: AnyPublisher<OnboardingChoiceType?, Never>
         let feelingOnboardingChoicePublisher: AnyPublisher<Set<OnboardingChoiceType>, Never>
-        let outdoorGoalOnboardingChoicePublisher: AnyPublisher<OnboardingChoiceType?, Never>
+        let outdoorOnboardingChoicePublisher: AnyPublisher<OnboardingChoiceType?, Never>
         let onboardingResultPublisher: AnyPublisher<[String], Never>
         let recommendedRoutinePublisher: AnyPublisher<Set<RecommendedRoutine>, Never>
         let selectedRoutinePublisher: AnyPublisher<Set<RecommendedRoutine>, Never>
@@ -32,18 +34,20 @@ final class OnboardingViewModel: ViewModel {
     private let timeOnboardingChoiceSubject = CurrentValueSubject<OnboardingChoiceType?, Never>(nil)
     private let frequencyOnboardingChoiceSubject = CurrentValueSubject<OnboardingChoiceType?, Never>(nil)
     private let feelingOnboardingChoiceSubject = CurrentValueSubject<Set<OnboardingChoiceType>, Never>([])
-    private let outdoorGoalOnboardingChoiceSubject = CurrentValueSubject<OnboardingChoiceType?, Never>(nil)
+    private let outdoorOnboardingChoiceSubject = CurrentValueSubject<OnboardingChoiceType?, Never>(nil)
     private let onboardingResultSubject = CurrentValueSubject<[String], Never>([])
     private let recommendedRoutineSubject = CurrentValueSubject<Set<RecommendedRoutine>, Never>([])
     private let selectedRoutineSubject = CurrentValueSubject<Set<RecommendedRoutine>, Never>([])
     private let nextButtonSubject = PassthroughSubject<Bool, Never>()
 
-    init() {
+    private let onboardingUseCase: OnboardingUseCaseProtocol
+    init(onboardingUseCase: OnboardingUseCaseProtocol) {
+        self.onboardingUseCase = onboardingUseCase
         self.output = Output(
             timeOnboardingChoicePublisher: timeOnboardingChoiceSubject.eraseToAnyPublisher(),
             frequencyOnboardingChoicePublisher: frequencyOnboardingChoiceSubject.eraseToAnyPublisher(),
             feelingOnboardingChoicePublisher: feelingOnboardingChoiceSubject.eraseToAnyPublisher(),
-            outdoorGoalOnboardingChoicePublisher: outdoorGoalOnboardingChoiceSubject.eraseToAnyPublisher(),
+            outdoorOnboardingChoicePublisher: outdoorOnboardingChoiceSubject.eraseToAnyPublisher(),
             onboardingResultPublisher: onboardingResultSubject.eraseToAnyPublisher(),
             recommendedRoutinePublisher: recommendedRoutineSubject.eraseToAnyPublisher(),
             selectedRoutinePublisher: selectedRoutineSubject.eraseToAnyPublisher(),
@@ -55,14 +59,19 @@ final class OnboardingViewModel: ViewModel {
         switch input {
         case .selectOnboardingChoice(let selectedChoice):
             selectChoice(choice: selectedChoice)
+
         case .fetchOnboardingChoice(let onboarding):
             fetchChoice(onboarding: onboarding)
+
         case .makeOnboardingResult:
             makeOnboardingResult()
-        case .fetchRecommendedRoutine:
-            fetchRecommendedRoutine()
+
+        case .registerOnboarding:
+            registerOnboarding()
+
         case .selectRoutine(let routine):
             selectRoutine(routine: routine)
+
         case .registerRecommendedRoutine:
             registerRecommendedRoutine()
         }
@@ -83,16 +92,16 @@ final class OnboardingViewModel: ViewModel {
             frequencyOnboardingChoiceSubject.send(frequencyOnboardingChoiceSubject.value)
             updateNextButtonSubject(choiceSubject: frequencyOnboardingChoiceSubject)
 
-        case .outdoorGoal:
-            outdoorGoalOnboardingChoiceSubject.send(outdoorGoalOnboardingChoiceSubject.value)
-            updateNextButtonSubject(choiceSubject: outdoorGoalOnboardingChoiceSubject)
+        case .outdoor:
+            outdoorOnboardingChoiceSubject.send(outdoorOnboardingChoiceSubject.value)
+            updateNextButtonSubject(choiceSubject: outdoorOnboardingChoiceSubject)
         }
     }
 
     // 온보딩 선택지를 선택합니다.
     private func selectChoice(choice: OnboardingChoiceType) {
         switch choice.onboardingType {
-        case .time, .frequency, .outdoorGoal:
+        case .time, .frequency, .outdoor:
             selectOnlyOneChoice(choice: choice)
         case .feeling:
             selecteMultipleChoices(choice: choice)
@@ -107,10 +116,10 @@ final class OnboardingViewModel: ViewModel {
             onboardSubject = timeOnboardingChoiceSubject
         case .frequency:
             onboardSubject = frequencyOnboardingChoiceSubject
-        case .outdoorGoal:
-            onboardSubject = outdoorGoalOnboardingChoiceSubject
+        case .outdoor:
+            onboardSubject = outdoorOnboardingChoiceSubject
         default:
-            onboardSubject = outdoorGoalOnboardingChoiceSubject
+            onboardSubject = outdoorOnboardingChoiceSubject
         }
 
         let currentChoice = onboardSubject.value
@@ -161,27 +170,44 @@ final class OnboardingViewModel: ViewModel {
 
         guard
             let timeOnboardingChoice = timeOnboardingChoiceSubject.value,
-            let outdoorGoalOnboardingChoice = outdoorGoalOnboardingChoiceSubject.value,
+            let outdoorOnboardingChoice = outdoorOnboardingChoiceSubject.value,
             let timeResult = timeOnboardingChoice.resultTitle,
-            let outdoorGoalResult = outdoorGoalOnboardingChoice.resultTitle
+            let outdoorResult = outdoorOnboardingChoice.resultTitle
         else {
             return
         }
 
-        let result = [timeResult, feelingResult, outdoorGoalResult]
+        let result = [timeResult, feelingResult, outdoorResult]
         onboardingResultSubject.send(result)
     }
 
-    // 온보딩 결과를 바탕으로 추천 루틴을 불러옵니다.
-    private func fetchRecommendedRoutine() {
-        recommendedRoutineSubject.send([])
-        // TODO: 서버 API 만들어진 후 UseCase와 연동하는 작업이 필요합니다.
-        let recommendedRoutines: [RecommendedRoutine] = [
-            RecommendedRoutine(id: 1, mainTitle: "루틴명", subTitle: "세부 루틴 한 줄 설명"),
-            RecommendedRoutine(id: 2, mainTitle: "루틴명", subTitle: "세부 루틴 한 줄 설명"),
-            RecommendedRoutine(id: 3, mainTitle: "루틴명", subTitle: "세부 루틴 한 줄 설명")
-        ]
-        recommendedRoutineSubject.send(Set(recommendedRoutines))
+    // 온보딩 결과를 등록하고, 그 결과를 바탕으로 추천 루틴을 받아옵니다.
+    private func registerOnboarding() {
+        var onboardingChoices: [OnboardingChoiceType] = []
+
+        let feelingOnboarding = Array(feelingOnboardingChoiceSubject.value)
+        guard
+            let timeOnboarding = timeOnboardingChoiceSubject.value,
+            !feelingOnboarding.isEmpty,
+            let frequencyOnboarding = frequencyOnboardingChoiceSubject.value,
+            let outdoorOnboarding = outdoorOnboardingChoiceSubject.value
+        else { return }
+
+        onboardingChoices.append(timeOnboarding)
+        onboardingChoices += feelingOnboarding
+        onboardingChoices.append(frequencyOnboarding)
+        onboardingChoices.append(outdoorOnboarding)
+
+        Task {
+            do {
+                let entities = try await onboardingUseCase.registerOnboarding(onboardingChoices: onboardingChoices)
+                let recommendedRoutines = entities.map({ $0.toRecommendedRoutine() })
+                recommendedRoutineSubject.send([])
+                recommendedRoutineSubject.send(Set(recommendedRoutines))
+            } catch {
+                BitnagilLogger.log(logType: .error, message: "\(error.localizedDescription)")
+            }
+        }
     }
 
     // 추천 루틴을 선택합니다.

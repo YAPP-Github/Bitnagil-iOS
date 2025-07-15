@@ -7,6 +7,7 @@
 
 import UIKit
 import Combine
+import Domain
 
 final class OnboardingView: BaseViewController<OnboardingViewModel> {
 
@@ -164,7 +165,7 @@ final class OnboardingView: BaseViewController<OnboardingViewModel> {
             }
             .store(in: &cancellables)
 
-        viewModel.output.outdoorGoalOnboardingChoicePublisher
+        viewModel.output.outdoorOnboardingChoicePublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] outdoorChoice in
                 self?.updateOnboardingChoice(onboardingChoice: outdoorChoice)
@@ -207,8 +208,8 @@ final class OnboardingView: BaseViewController<OnboardingViewModel> {
         case .frequency:
             nextStep = .feeling
         case .feeling:
-            nextStep = .outdoorGoal
-        case .outdoorGoal:
+            nextStep = .outdoor
+        case .outdoor:
             nextStep = nil
         }
 

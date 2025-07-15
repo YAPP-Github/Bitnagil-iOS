@@ -1,5 +1,5 @@
 //
-//  RecommendedRoutineView.swift
+//  OnboardingRecommendedRoutineView.swift
 //  Presentation
 //
 //  Created by 최정인 on 7/11/25.
@@ -7,8 +7,9 @@
 
 import UIKit
 import Combine
+import Domain
 
-final class RecommendedRoutineView: BaseViewController<OnboardingViewModel> {
+final class OnboardingRecommendedRoutineView: BaseViewController<OnboardingViewModel> {
 
     private enum Layout {
         static let horizontalMargin: CGFloat = 20
@@ -46,11 +47,11 @@ final class RecommendedRoutineView: BaseViewController<OnboardingViewModel> {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel.action(input: .fetchRecommendedRoutine)
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        viewModel.action(input: .registerOnboarding)
 
         let stepCount = OnboardingType.allCases.count + 1
         configureNavigationBar(navigationStyle: .withPrograssBarWithCustomBackButton(step: stepCount, stepCount: stepCount))

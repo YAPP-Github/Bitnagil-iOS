@@ -5,48 +5,9 @@
 //  Created by 최정인 on 7/9/25.
 //
 
-enum OnboardingChoiceType: CaseIterable, OnboardingChoiceProtocol {
-    case morningTime
-    case eveningTime
-    case allTime
+import Domain
 
-    case never
-    case rarely
-    case sometimes
-    case often
-
-    case stability
-    case connection
-    case growth
-    case vitality
-
-    case once
-    case twoToThree
-    case fourOrMore
-    case notSure
-
-    var onboardingType: OnboardingType {
-        switch self {
-        case .morningTime: .time
-        case .eveningTime: .time
-        case .allTime: .time
-
-        case .never: .frequency
-        case .rarely: .frequency
-        case .sometimes: .frequency
-        case .often: .frequency
-
-        case .stability: .feeling
-        case .connection: .feeling
-        case .growth: .feeling
-        case .vitality: .feeling
-
-        case .once: .outdoorGoal
-        case .twoToThree: .outdoorGoal
-        case .fourOrMore: .outdoorGoal
-        case .notSure: .outdoorGoal
-        }
-    }
+extension OnboardingChoiceType: OnboardingChoiceProtocol {
 
     var mainTitle: String {
         switch self {
