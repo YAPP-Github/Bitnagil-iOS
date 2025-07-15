@@ -32,5 +32,11 @@ public struct DomainDependencyAssembler: DependencyAssemblerProtocol {
         DIContainer.shared.register(type: WithdrawUseCaseProtocol.self) { _ in
             return WithdrawUseCase(authRepository: authRepository)
         }
+
+        DIContainer.shared.register(type: OnboardingUseCaseProtocol.self) { container in
+            guard let onboardingRepository = container.resolve(type: OnboardingRepositoryProtocol.self)
+            else { return }
+            return OnboardingUseCase(onboardingRepository: onboardingRepository)
+        }
     }
 }

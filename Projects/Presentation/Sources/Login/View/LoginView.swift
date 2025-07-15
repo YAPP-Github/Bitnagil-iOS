@@ -93,15 +93,24 @@ final class LoginView: BaseViewController<LoginViewModel> {
     override func bind() {
         viewModel.output.loginResultPublisher
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] loginResult in
+            .sink { [weak self] userState in
                 guard let self else { return }
-                if loginResult {
-                    BitnagilLogger.log(logType: .debug, message: "서버 로그인 성공")
+                guard let userState else {
+                    // TODO: 로그인 실패 시, 에러 처리
+                    BitnagilLogger.log(logType: .error, message: "서버 로그인 실패")
+                    return
+                }
+
+                BitnagilLogger.log(logType: .info, message: "서버 로그인 성공")
+                if userState == .guest {
                     let agreementView = TermsAgreementView(viewModel: self.viewModel)
                     self.navigationController?.pushViewController(agreementView, animated: true)
                 } else {
-                    // TODO: 로그인 실패 시, 에러 처리
-                    BitnagilLogger.log(logType: .error, message: "서버 로그인 실패")
+                    guard let onboardingViewModel = DIContainer.shared.resolve(type: OnboardingViewModel.self) else {
+                        fatalError("onboardingViewModel 의존성이 등록되지 않았습니다.")
+                    }
+                    let onboardingView = OnboardingView(viewModel: onboardingViewModel, onboarding: .time)
+                    self.navigationController?.pushViewController(onboardingView, animated: true)
                 }
             }
             .store(in: &cancellables)

@@ -26,12 +26,13 @@ final class AuthRepository: AuthRepositoryProtocol {
         self.userDefaultsStorage = userDefaultsStorage
     }
 
-    func kakaoLogin() async throws {
+    func kakaoLogin() async throws -> UserEntity {
         let accessToken = try await fetchKakaoToken()
-        try await requestServerLogin(socialType: .kakao, nickname: nil, token: accessToken)
+        let user = try await requestServerLogin(socialType: .kakao, nickname: nil, token: accessToken)
+        return user
     }
 
-    func appleLogin(nickname: String?, authToken: String) async throws {
+    func appleLogin(nickname: String?, authToken: String) async throws -> UserEntity {
         var savedNickname: String = ""
         if let nickname {
             try saveNickname(nickname: nickname)
@@ -39,7 +40,8 @@ final class AuthRepository: AuthRepositoryProtocol {
         } else {
             savedNickname = try loadNickname()
         }
-        try await requestServerLogin(socialType: .apple, nickname: savedNickname, token: authToken)
+        let user = try await requestServerLogin(socialType: .apple, nickname: savedNickname, token: authToken)
+        return user
     }
 
     func submitAgreement(agreements: [TermsType : Bool]) async throws {
@@ -107,24 +109,30 @@ final class AuthRepository: AuthRepositoryProtocol {
         socialType: SocialLoginType,
         nickname: String?,
         token: String
-    ) async throws {
+    ) async throws -> UserEntity {
         let endpoint = AuthEndpoint.login(
             socialLoginType: socialType,
             nickname: nickname,
             token: token)
 
-        guard let userResponse = try await networkService.request(endpoint: endpoint, type: LoginResponseDTO.self)
-        else { return }
+        do {
+            guard let userResponse = try await networkService.request(endpoint: endpoint, type: LoginResponseDTO.self)
+            else { throw AuthError.invalidUserData }
+            
+            let userEntity = userResponse.toUserEntity()
+            guard
+                saveToken(tokenType: .accessToken, token: userEntity.accessToken),
+                saveToken(tokenType: .refreshToken, token: userEntity.refreshToken)
+            else { throw AuthError.tokenSaveFailed }
 
-        let userEntity = userResponse.toUserEntity()
-        guard
-            saveToken(tokenType: .accessToken, token: userEntity.accessToken),
-            saveToken(tokenType: .refreshToken, token: userEntity.refreshToken)
-        else { throw AuthError.tokenSaveFailed }
+            BitnagilLogger.log(logType: .debug, message: "User Logined: \(userEntity.userState)")
+            BitnagilLogger.log(logType: .debug, message: "AccessToken Saved: \(userEntity.accessToken)")
+            BitnagilLogger.log(logType: .debug, message: "RefreshToken Saved: \(userEntity.refreshToken)")
 
-        BitnagilLogger.log(logType: .debug, message: "User Logined: \(userEntity.userState)")
-        BitnagilLogger.log(logType: .debug, message: "AccessToken Saved: \(userEntity.accessToken)")
-        BitnagilLogger.log(logType: .debug, message: "RefreshToken Saved: \(userEntity.refreshToken)")
+            return userEntity
+        } catch {
+            throw error
+        }
     }
 
     private func saveToken(tokenType: TokenType, token: String) -> Bool {

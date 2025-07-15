@@ -13,6 +13,7 @@ enum AuthError: Error, CustomStringConvertible {
     case nicknameSaveFailed
     case nicknameLoadFailed
     case nicknameRemoveFailed
+    case invalidUserData
     case unknown(Error)
 
     public var description: String {
@@ -31,6 +32,8 @@ enum AuthError: Error, CustomStringConvertible {
             return "닉네임 불러오기에 실패했습니다."
         case .nicknameRemoveFailed:
             return "닉네임 삭제에 실패했습니다."
+        case .invalidUserData:
+            return "서버 응답에 사용자 정보가 포함되어 있지 않습니다."
         case .unknown(let error):
             return "알 수 없는 에러가 발생했습니다. \(error.localizedDescription)"
         }

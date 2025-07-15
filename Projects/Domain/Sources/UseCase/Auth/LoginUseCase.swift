@@ -14,12 +14,14 @@ public final class LoginUseCase: LoginUseCaseProtocol {
         self.authRepository = authRepository
     }
 
-    public func kakaoLogin() async throws {
-        try await authRepository.kakaoLogin()
+    public func kakaoLogin() async throws -> UserState {
+        let user = try await authRepository.kakaoLogin()
+        return user.userState
     }
 
-    public func appleLogin(nickname: String?, authToken: String) async throws {
-        try await authRepository.appleLogin(nickname: nickname, authToken: authToken)
+    public func appleLogin(nickname: String?, authToken: String) async throws -> UserState {
+        let user = try await authRepository.appleLogin(nickname: nickname, authToken: authToken)
+        return user.userState
     }
 
     public func sumbitAgreement(agreements: [TermsType: Bool]) async throws {

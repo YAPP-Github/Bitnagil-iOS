@@ -19,13 +19,13 @@ final class LoginViewModel: ViewModel {
     }
 
     struct Output {
-        let loginResultPublisher: AnyPublisher<Bool, Never>
+        let loginResultPublisher: AnyPublisher<UserState?, Never>
         let agreementStatePublisher: AnyPublisher<TermsAgreementState, Never>
         let agreementResultPublisher: AnyPublisher<Bool, Never>
     }
 
     private(set) var output: Output
-    private let loginResultSubject = PassthroughSubject<Bool, Never>()
+    private let loginResultSubject = PassthroughSubject<UserState?, Never>()
     private let agreementStateSubject = CurrentValueSubject<TermsAgreementState, Never>(TermsAgreementState())
     private let agreementResultSubject = PassthroughSubject<Bool, Never>()
 
@@ -45,22 +45,22 @@ final class LoginViewModel: ViewModel {
         case .kakaoLogin:
             Task {
                 do {
-                    try await loginUseCase.kakaoLogin()
-                    loginResultSubject.send(true)
+                    let user = try await loginUseCase.kakaoLogin()
+                    loginResultSubject.send(user)
                 } catch {
                     BitnagilLogger.log(logType: .error, message: "\(error.localizedDescription)")
-                    loginResultSubject.send(false)
+                    loginResultSubject.send(nil)
                 }
             }
 
         case .appleLogin(let nickname, let authToken):
             Task {
                 do {
-                    try await loginUseCase.appleLogin(nickname: nickname, authToken: authToken)
-                    loginResultSubject.send(true)
+                    let user = try await loginUseCase.appleLogin(nickname: nickname, authToken: authToken)
+                    loginResultSubject.send(user)
                 } catch {
                     BitnagilLogger.log(logType: .error, message: "\(error.localizedDescription)")
-                    loginResultSubject.send(false)
+                    loginResultSubject.send(nil)
                 }
             }
 
