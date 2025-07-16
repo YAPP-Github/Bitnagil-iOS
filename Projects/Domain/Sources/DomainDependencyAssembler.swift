@@ -19,7 +19,7 @@ public struct DomainDependencyAssembler: DependencyAssemblerProtocol {
         preAssembler.assemble()
 
         guard let authRepository = DIContainer.shared.resolve(type: AuthRepositoryProtocol.self)
-        else { return }
+        else { fatalError("authRepository 의존성이 등록되지 않았습니다.") }
 
         DIContainer.shared.register(type: LoginUseCaseProtocol.self) { _ in
             return LoginUseCase(authRepository: authRepository)
@@ -35,7 +35,8 @@ public struct DomainDependencyAssembler: DependencyAssemblerProtocol {
 
         DIContainer.shared.register(type: OnboardingUseCaseProtocol.self) { container in
             guard let onboardingRepository = container.resolve(type: OnboardingRepositoryProtocol.self)
-            else { return }
+            else { fatalError("onboardingRepository 의존성이 등록되지 않았습니다.") }
+
             return OnboardingUseCase(onboardingRepository: onboardingRepository)
         }
     }

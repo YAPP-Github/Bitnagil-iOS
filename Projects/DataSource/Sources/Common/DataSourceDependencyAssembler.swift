@@ -25,7 +25,7 @@ public struct DataSourceDependencyAssembler: DependencyAssemblerProtocol {
             let networkService = DIContainer.shared.resolve(type: NetworkServiceProtocol.self),
             let keychainStorage = DIContainer.shared.resolve(type: KeychainStorageProtocol.self),
             let userDefaultsStorage = DIContainer.shared.resolve(type: UserDefaultsStorageProtocol.self)
-        else { return }
+        else { fatalError("networkService, keychainStorage, userDefaultsStorage 의존성이 등록되지 않았습니다.") }
 
         DIContainer.shared.register(type: AuthRepositoryProtocol.self) { _ in
             return AuthRepository(

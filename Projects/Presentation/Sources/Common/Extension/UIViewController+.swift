@@ -62,7 +62,8 @@ extension UIViewController {
     }
 
     @objc private func popTwoViewControllers() {
-        guard let navigationController = navigationController else { return }
+        guard let navigationController = navigationController
+        else { return }
         let viewControllers = navigationController.viewControllers
 
         guard viewControllers.count >= 3 else {
