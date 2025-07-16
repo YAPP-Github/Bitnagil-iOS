@@ -25,16 +25,11 @@ public final class OnboardingUseCase: OnboardingUseCaseProtocol {
     }
 
     private func convertToDictionary(onboardingChoices: [OnboardingChoiceType]) -> [String: String] {
-        guard
-            let timeSlot = onboardingChoices.filter({ $0.onboardingType == .time }).first,
-            let frequency = onboardingChoices.filter({ $0.onboardingType == .frequency }).first,
-            let emotion = onboardingChoices.filter({ $0.onboardingType == .feeling }).first,
-            let outdoor = onboardingChoices.filter({ $0.onboardingType == .outdoor }).first
-        else { return [:] }
-
         var result: [String: String] = [:]
-        let choices = [timeSlot, frequency, emotion, outdoor]
-        for choice in choices {
+        let onboardingTypes: [OnboardingType] = [.time, .frequency, .feeling, .outdoor]
+        for type in onboardingTypes {
+            guard let choice = onboardingChoices.first(where: { $0.onboardingType == type })
+            else { break }
             result[choice.onboardingType.key] = choice.value
         }
         return result
