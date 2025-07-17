@@ -38,8 +38,11 @@ final public class TabBarView: UITabBarController {
         tabBar.tintColor = BitnagilColor.navy600
         tabBar.unselectedItemTintColor = BitnagilColor.navy100
 
+        guard let viewModel = DIContainer.shared.resolve(type: RecommendedRoutineViewModel.self) else {
+            fatalError("RecommendedViewModel 의존성이 등록되지 않았습니다.")
+        }
         let homeView = HomeView()
-        let recommendView = RecommendView()
+        let recommendView = RecommendedRoutineView(viewModel: viewModel)
         let reportView = ReportView()
         let mypageView = MypageView()
 
@@ -74,13 +77,6 @@ final public class TabBarView: UITabBarController {
 
 // TODO: - 홈, 추천, 마이페이지 생성 후 지워주세요
 final class HomeView: UIViewController {
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .white
-    }
-}
-
-final class RecommendView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
