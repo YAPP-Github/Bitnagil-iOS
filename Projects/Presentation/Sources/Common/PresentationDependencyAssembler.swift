@@ -35,5 +35,9 @@ public struct PresentationDependencyAssembler: DependencyAssemblerProtocol {
 
             return OnboardingViewModel(onboardingUseCase: onboardingUseCase)
         }
+
+        DIContainer.shared.register(type: RecommendedRoutineViewModel.self) { _ in
+            return RecommendedRoutineViewModel()
+        }
     }
 }
