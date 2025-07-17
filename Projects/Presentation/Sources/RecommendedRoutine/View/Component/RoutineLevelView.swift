@@ -19,6 +19,7 @@ final class RoutineLevelView: UIViewController {
     }
 
     private let levelTableView = UITableView()
+    private let sortedRoutineLevels = RoutineLevelType.allCases.sorted(by: { $0.id < $1.id })
     private var selectedLevel: RoutineLevelType? {
         didSet {
             delegate?.routineLevelView(self, didSelectLevel: selectedLevel)
@@ -50,13 +51,13 @@ final class RoutineLevelView: UIViewController {
 // MARK: UITableViewDelegate, UITableViewDataSource
 extension RoutineLevelView: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return RoutineLevelType.allCases.count
+        return sortedRoutineLevels.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "RoutineLevelCell", for: indexPath) as? RoutineLevelCell
         else { return UITableViewCell() }
-        let level = RoutineLevelType.allCases.sorted(by: { $0.id < $1.id })[indexPath.row]
+        let level = sortedRoutineLevels[indexPath.row]
 
         let isSelected = selectedLevel == level
         cell.configureCell(level: level, isSelected: isSelected)
