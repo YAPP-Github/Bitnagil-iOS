@@ -191,7 +191,7 @@ extension RecommendedRoutineView: RoutineCategoryViewDelegate {
 
 // MARK: RecommendedRoutineCardViewDelegate
 extension RecommendedRoutineView: RecommendedRoutineCardViewDelegate {
-    func recommendedRoutineCardViewDelegate(_ sender: RecommendedRoutineCardView, didTapRecommendedRoutine routine: RecommendedRoutine) {
+    func recommendedRoutineCardView(_ sender: RecommendedRoutineCardView, didTapRecommendedRoutine routine: RecommendedRoutine) {
         // TODO: 루틴 등록하기 화면으로 이동해야 함 + 추천 루틴 들고
         print("\(routine.mainTitle)")
     }
@@ -199,7 +199,7 @@ extension RecommendedRoutineView: RecommendedRoutineCardViewDelegate {
 
 // MARK: RoutineLevelViewDelegate
 extension RecommendedRoutineView: RoutineLevelViewDelegate {
-    func routineLevelViewDelegate(_ sender: RoutineLevelView, didSelectLevel: RoutineLevelType?) {
+    func routineLevelView(_ sender: RoutineLevelView, didSelectLevel: RoutineLevelType?) {
         viewModel.action(input: .selectLevel(selectedLevel: didSelectLevel))
         levelButton.updateButton(level: didSelectLevel)
     }

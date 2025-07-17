@@ -8,10 +8,10 @@
 import UIKit
 
 protocol RoutineLevelViewDelegate: AnyObject {
-    func routineLevelViewDelegate(_ sender: RoutineLevelView, didSelectLevel: RoutineLevelType?)
+    func routineLevelView(_ sender: RoutineLevelView, didSelectLevel: RoutineLevelType?)
 }
 
-public final class RoutineLevelView: UIViewController {
+final class RoutineLevelView: UIViewController {
 
     private enum Layout {
         static let cellHeight: CGFloat = 52
@@ -21,12 +21,12 @@ public final class RoutineLevelView: UIViewController {
     private var selectedLevel: RoutineLevelType? = nil {
         didSet {
             levelTableView.reloadData()
-            delegate?.routineLevelViewDelegate(self, didSelectLevel: selectedLevel)
+            delegate?.routineLevelView(self, didSelectLevel: selectedLevel)
         }
     }
     weak var delegate: RoutineLevelViewDelegate?
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         configureAttribute()
         configureLayout()
@@ -49,11 +49,11 @@ public final class RoutineLevelView: UIViewController {
 
 // MARK: UITableViewDelegate, UITableViewDataSource
 extension RoutineLevelView: UITableViewDelegate, UITableViewDataSource {
-    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return RoutineLevelType.allCases.count
     }
 
-    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "RoutineLevelCell", for: indexPath) as? RoutineLevelCell
         else { return UITableViewCell() }
         let level = RoutineLevelType.allCases.sorted(by: { $0.id < $1.id })[indexPath.row]
@@ -63,11 +63,11 @@ extension RoutineLevelView: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
 
-    public func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return Layout.cellHeight
     }
 
-    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedLevel = RoutineLevelType.allCases.sorted(by: { $0.id < $1.id })[indexPath.row]
         if self.selectedLevel == selectedLevel {
             self.selectedLevel = nil

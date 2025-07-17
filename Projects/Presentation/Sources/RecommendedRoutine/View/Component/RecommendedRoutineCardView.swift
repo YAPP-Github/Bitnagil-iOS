@@ -8,7 +8,7 @@
 import UIKit
 
 protocol RecommendedRoutineCardViewDelegate: AnyObject {
-    func recommendedRoutineCardViewDelegate(_ sender: RecommendedRoutineCardView, didTapRecommendedRoutine routine: RecommendedRoutine)
+    func recommendedRoutineCardView(_ sender: RecommendedRoutineCardView, didTapRecommendedRoutine routine: RecommendedRoutine)
 }
 
 final class RecommendedRoutineCardView: UIView {
@@ -70,7 +70,7 @@ final class RecommendedRoutineCardView: UIView {
             $0.tintColor = BitnagilColor.navy500
             $0.addAction(UIAction { [weak self] _ in
                 guard let self else { return }
-                self.delegate?.recommendedRoutineCardViewDelegate(self, didTapRecommendedRoutine: recommendedRoutine)
+                self.delegate?.recommendedRoutineCardView(self, didTapRecommendedRoutine: recommendedRoutine)
             }, for: .touchUpInside)
         }
     }
