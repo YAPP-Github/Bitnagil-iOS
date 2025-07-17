@@ -15,6 +15,11 @@ enum BitnagilIcon {
     static let kakaoIcon = UIImage(named: "kakao_icon", in: bundle, with: nil)
     static let appleIcon = UIImage(named: "apple_icon", in: bundle, with: nil)
     static let checkIcon = UIImage(named: "check_icon", in: bundle, with: nil)?.withRenderingMode(.alwaysTemplate)
+    static let plusIcon = UIImage(named: "plus_icon", in: bundle, with: nil)?.withRenderingMode(.alwaysTemplate)
+    static let chevronIcon = UIImage(named: "chevron_icon", in: bundle, with: nil)
+    static func chevronIcon(direction: Direction) -> UIImage? {
+        return BitnagilIcon.chevronIcon?.rotate(degrees: direction.rotation)?.withRenderingMode(.alwaysTemplate)
+    }
 
     // MARK: - Tab Bar Icons
     static let homeFillIcon = UIImage(named: "home_fill_icon", in: bundle, with: nil)
@@ -28,4 +33,20 @@ enum BitnagilIcon {
 
     static let mypageFillIcon = UIImage(named: "mypage_fill_icon", in: bundle, with: nil)
     static let mypageEmptyIcon = UIImage(named: "mypage_empty_icon", in: bundle, with: nil)
+}
+
+enum Direction {
+    case up
+    case down
+    case left
+    case right
+
+    var rotation: Float {
+        switch self {
+        case .up: 90
+        case .down: -90
+        case .left: 0
+        case .right: 180
+        }
+    }
 }
