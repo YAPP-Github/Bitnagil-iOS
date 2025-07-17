@@ -15,12 +15,12 @@ final class RoutineLevelView: UIViewController {
 
     private enum Layout {
         static let cellHeight: CGFloat = 52
+        static let cellHorizontalMargin: CGFloat = 20
     }
 
     private let levelTableView = UITableView()
-    private var selectedLevel: RoutineLevelType? = nil {
+    private var selectedLevel: RoutineLevelType? {
         didSet {
-            levelTableView.reloadData()
             delegate?.routineLevelView(self, didSelectLevel: selectedLevel)
         }
     }
@@ -67,6 +67,16 @@ extension RoutineLevelView: UITableViewDelegate, UITableViewDataSource {
         return Layout.cellHeight
     }
 
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        let isLastCell = indexPath.row == RoutineLevelType.allCases.count - 1
+
+        if isLastCell {
+            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: .greatestFiniteMagnitude)
+        } else {
+            cell.separatorInset = UIEdgeInsets(top: 0, left: Layout.cellHorizontalMargin, bottom: 0, right: Layout.cellHorizontalMargin)
+        }
+    }
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedLevel = RoutineLevelType.allCases.sorted(by: { $0.id < $1.id })[indexPath.row]
         if self.selectedLevel == selectedLevel {
@@ -74,6 +84,7 @@ extension RoutineLevelView: UITableViewDelegate, UITableViewDataSource {
         } else {
             self.selectedLevel = selectedLevel
         }
+        levelTableView.reloadData()
         dismiss(animated: true)
     }
 }

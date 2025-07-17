@@ -10,6 +10,15 @@ import UIKit
 
 final class CustomBottomSheet: UIViewController {
 
+    private enum Layout {
+        static let bottomSheetCornerRadius: CGFloat = 20
+        static let dragHandleTopSpacing: CGFloat = 16
+        static let dragHandleCornerRadius: CGFloat = 2
+        static let dragHandleHeight: CGFloat = 4
+        static let dragHandleWidth: CGFloat = 32
+        static let contentViewTopSpacing: CGFloat = 16
+    }
+
     private let maxHeight: CGFloat
     private let contentViewController: UIViewController
 
@@ -46,19 +55,19 @@ final class CustomBottomSheet: UIViewController {
 
     private func configureAttribute() {
         dimmedView.do {
-            $0.backgroundColor = UIColor.black.withAlphaComponent(0.3)
+            $0.backgroundColor = UIColor.black.withAlphaComponent(0.7)
             $0.alpha = 0
         }
 
         bottomSheetView.do {
             $0.backgroundColor = UIColor.systemBackground
-            $0.layer.cornerRadius = 20
+            $0.layer.cornerRadius = Layout.bottomSheetCornerRadius
             $0.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         }
 
         dragHandle.do {
             $0.backgroundColor = UIColor.systemGray4
-            $0.layer.cornerRadius = 2
+            $0.layer.cornerRadius = Layout.dragHandleCornerRadius
         }
         
         contentView.do {
@@ -89,19 +98,17 @@ final class CustomBottomSheet: UIViewController {
         }
 
         dragHandle.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(16)
+            make.top.equalToSuperview().offset(Layout.dragHandleTopSpacing)
             make.centerX.equalToSuperview()
-            make.width.equalTo(32)
-            make.height.equalTo(4)
+            make.width.equalTo(Layout.dragHandleWidth)
+            make.height.equalTo(Layout.dragHandleHeight)
         }
 
         contentView.snp.makeConstraints { make in
-            make.top.equalTo(dragHandle.snp.bottom).offset(16)
+            make.top.equalTo(dragHandle.snp.bottom).offset(Layout.contentViewTopSpacing)
             make.leading.trailing.equalToSuperview()
             make.bottom.equalToSuperview()
         }
-
-
     }
 
     private func setupContent() {
