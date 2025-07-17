@@ -21,7 +21,7 @@ final class RecommendedRoutineView: BaseViewController<RecommendedRoutineViewMod
         static let headerStackViewHeight: CGFloat = 40
         static let recommendedRoutineStackViewSpacing: CGFloat = 12
         static let recommendedRoutineScrollViewTopSpacing: CGFloat = 12
-        static let recommendedRoutineScrollViewBottomSpacing: CGFloat = 60
+        static let recommendedRoutineScrollViewBottomSpacing: CGFloat = 10
         static let recommendedRoutineStackViewBottomSpacing: CGFloat = 50
         static let routineCardHeight: CGFloat = 80
         static let registerEmotionButtonHeight: CGFloat = 52
