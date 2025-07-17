@@ -8,7 +8,7 @@
 import UIKit
 
 extension UIViewController {
-
+    // MARK: - NavigationBar
     func configureNavigationBar(navigationStyle: NavigationBarStyle) {
         switch navigationStyle {
         case .hidden:
@@ -73,6 +73,12 @@ extension UIViewController {
 
         let targetViewController = viewControllers[viewControllers.count - 3]
         navigationController.popToViewController(targetViewController, animated: true)
+    }
+
+    // MARK: - BottomSheet
+    func presentCustomBottomSheet(contentViewController: UIViewController, maxHeight: CGFloat) {
+        let bottomSheet = CustomBottomSheet(contentViewController: contentViewController, maxHeight: maxHeight)
+        present(bottomSheet, animated: true)
     }
 }
 
