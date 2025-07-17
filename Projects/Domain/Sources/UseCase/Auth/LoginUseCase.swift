@@ -5,8 +5,6 @@
 //  Created by 최정인 on 6/30/25.
 //
 
-import Foundation
-
 public final class LoginUseCase: LoginUseCaseProtocol {
     private let authRepository: AuthRepositoryProtocol
 

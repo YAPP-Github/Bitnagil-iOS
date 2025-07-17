@@ -5,10 +5,10 @@
 //  Created by 최정인 on 6/15/25.
 //
 
-import UIKit
 import KakaoSDKAuth
 import Presentation
 import Shared
+import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?

@@ -5,8 +5,8 @@
 //  Created by 최정인 on 7/8/25.
 //
 
-import Foundation
 import Domain
+import Foundation
 
 extension TermsType {
     var title: String {

@@ -5,12 +5,12 @@
 //  Created by 최정인 on 6/26/25.
 //
 
-import Foundation
 import DataSource
 import Domain
-import Presentation
+import Foundation
 import NetworkService
 import Persistence
+import Presentation
 import Shared
 
 extension DIContainer {

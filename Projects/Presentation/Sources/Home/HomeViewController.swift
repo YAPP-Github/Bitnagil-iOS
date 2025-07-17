@@ -5,12 +5,11 @@
 //  Created by 최정인 on 6/15/25.
 //
 
-import Foundation
 import Combine
-import UIKit
+import Shared
 import SnapKit
 import Then
-import Shared
+import UIKit
 
 final class HomeViewController: BaseViewController<HomeViewModel> {
     private var cancellables: Set<AnyCancellable>

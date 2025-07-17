@@ -5,8 +5,6 @@
 //  Created by 최정인 on 7/15/25.
 //
 
-import Foundation
-
 public final class OnboardingUseCase: OnboardingUseCaseProtocol {
     private let onboardingRepository: OnboardingRepositoryProtocol
 

@@ -5,7 +5,6 @@
 //  Created by 최정인 on 6/23/25.
 //
 
-
 public enum NetworkError: Error, CustomStringConvertible {
     case invalidURL
     case invalidResponse

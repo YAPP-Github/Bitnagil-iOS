@@ -5,9 +5,9 @@
 //  Created by 최정인 on 7/10/25.
 //
 
-import UIKit
 import Combine
 import Domain
+import UIKit
 
 final class OnboardingResultView: BaseViewController<OnboardingViewModel> {
 

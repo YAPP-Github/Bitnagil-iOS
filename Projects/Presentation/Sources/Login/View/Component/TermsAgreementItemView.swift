@@ -6,8 +6,8 @@
 //
 
 import Domain
-import UIKit
 import SnapKit
+import UIKit
 
 protocol TermsAgreementItemViewDelegate: AnyObject {
     func termsAgreementItemView(_ sender: TermsAgreementItemView, didToggleCheckFor termType: TermsType)

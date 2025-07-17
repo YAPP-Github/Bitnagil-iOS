@@ -5,8 +5,8 @@
 //  Created by 최정인 on 7/6/25.
 //
 
-import UIKit
 import SnapKit
+import UIKit
 
 final class SocialLoginButton: UIButton {
 

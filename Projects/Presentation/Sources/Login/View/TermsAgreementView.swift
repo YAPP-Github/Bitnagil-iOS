@@ -5,13 +5,13 @@
 //  Created by 최정인 on 7/7/25.
 //
 
-import UIKit
 import Combine
 import Domain
+import SafariServices
 import Shared
 import SnapKit
 import Then
-import SafariServices
+import UIKit
 
 final class TermsAgreementView: BaseViewController<LoginViewModel> {
 

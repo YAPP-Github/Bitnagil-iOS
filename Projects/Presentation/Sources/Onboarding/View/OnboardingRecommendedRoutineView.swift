@@ -5,10 +5,10 @@
 //  Created by 최정인 on 7/11/25.
 //
 
-import UIKit
 import Combine
 import Domain
 import Shared
+import UIKit
 
 final class OnboardingRecommendedRoutineView: BaseViewController<OnboardingViewModel> {
 

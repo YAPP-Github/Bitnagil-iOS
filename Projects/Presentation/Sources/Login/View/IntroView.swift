@@ -5,10 +5,10 @@
 //  Created by 최정인 on 7/6/25.
 //
 
-import UIKit
+import Shared
 import SnapKit
 import Then
-import Shared
+import UIKit
 
 public final class IntroView: UIViewController {
 

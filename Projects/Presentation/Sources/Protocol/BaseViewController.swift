@@ -5,7 +5,6 @@
 //  Created by 최정인 on 6/26/25.
 //
 
-import Foundation
 import UIKit
 
 class BaseViewController<T: ViewModel>: UIViewController {
