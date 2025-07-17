@@ -19,7 +19,7 @@ enum BitnagilColor {
     static let gradientLeft = UIColor(named: "GradientLeft", in: bundle, compatibleWith: nil)
     static let gradientRight = UIColor(named: "GradientRight", in: bundle, compatibleWith: nil)
     static let homeGradientLeft = UIColor(named: "HomeGradientLeft", in: bundle, compatibleWith: nil)
-    static let homeGgradientRight = UIColor(named: "HomeGradientRight", in: bundle, compatibleWith: nil)
+    static let homeGradientRight = UIColor(named: "HomeGradientRight", in: bundle, compatibleWith: nil)
 
     // MARK: - Emotion Colors
     static let happy = UIColor(named: "EmotionHappy", in: bundle, compatibleWith: nil)
