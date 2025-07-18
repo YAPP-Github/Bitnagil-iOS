@@ -20,6 +20,7 @@ enum BitnagilIcon {
     static func chevronIcon(direction: Direction) -> UIImage? {
         return BitnagilIcon.chevronIcon?.rotate(degrees: direction.rotation)?.withRenderingMode(.alwaysTemplate)
     }
+    static let ellipsisIcon = UIImage(named: "ellipsis_icon", in: bundle, with: nil)
 
     // MARK: - Tab Bar Icons
     static let homeFillIcon = UIImage(named: "home_fill_icon", in: bundle, with: nil)
