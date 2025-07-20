@@ -33,6 +33,10 @@ enum BitnagilIcon {
 
     static let mypageFillIcon = UIImage(named: "mypage_fill_icon", in: bundle, with: nil)
     static let mypageEmptyIcon = UIImage(named: "mypage_empty_icon", in: bundle, with: nil)
+
+    static let settingIcon = UIImage(named: "setting_icon", in: bundle, with: nil)
+
+    static let chevronRightIcon = UIImage(named: "chevron_right_icon", in: bundle, with: nil)
 }
 
 enum Direction {
