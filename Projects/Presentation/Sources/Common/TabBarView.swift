@@ -38,13 +38,19 @@ final public class TabBarView: UITabBarController {
         tabBar.tintColor = BitnagilColor.navy600
         tabBar.unselectedItemTintColor = BitnagilColor.navy100
 
+
         guard let viewModel = DIContainer.shared.resolve(type: RecommendedRoutineViewModel.self) else {
             fatalError("RecommendedViewModel 의존성이 등록되지 않았습니다.")
         }
+
+        guard let mypageViewModel = DIContainer.shared.resolve(type: MypageViewModel.self) else {
+            fatalError("mypageViewModel 의존성이 등록되지 않았습니다.")
+        }
+        
         let homeView = HomeView()
         let recommendView = RecommendedRoutineView(viewModel: viewModel)
         let reportView = ReportView()
-        let mypageView = MypageView()
+        let mypageView = MypageView(viewModel: mypageViewModel)
 
         homeView.tabBarItem = UITabBarItem(
             title: "홈",
@@ -84,13 +90,6 @@ final class HomeView: UIViewController {
 }
 
 final class ReportView: UIViewController {
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .white
-    }
-}
-
-final class MypageView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white

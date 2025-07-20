@@ -39,5 +39,12 @@ public struct PresentationDependencyAssembler: DependencyAssemblerProtocol {
         DIContainer.shared.register(type: RecommendedRoutineViewModel.self) { _ in
             return RecommendedRoutineViewModel()
         }
+
+        DIContainer.shared.register(type: MypageViewModel.self) { container in
+            guard let userDataRepository = container.resolve(type: UserDataRepositoryProtocol.self)
+            else { fatalError("userDataRepository 의존성이 등록되지 않았습니다.") }
+
+            return MypageViewModel(userDataRepository: userDataRepository)
+        }
     }
 }
