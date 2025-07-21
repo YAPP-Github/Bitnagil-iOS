@@ -5,15 +5,13 @@
 //  Created by 이동현 on 7/17/25.
 //
 import Combine
+import SafariServices
 import Shared
 import SnapKit
 import UIKit
 
 final class MypageView: BaseViewController<MypageViewModel> {
     private enum Layout {
-        static let titleLabelHeight: CGFloat = 54
-        static let settingButtonSize: CGFloat = 48
-        static let settingButtonTrailingSpacing: CGFloat = 8
         static let profileImageViewSize: CGFloat = 80
         static let profileImageViewCornerRadius: CGFloat = profileImageViewSize / 2
         static let profileImageViewTopSpacing: CGFloat = 32
@@ -25,7 +23,7 @@ final class MypageView: BaseViewController<MypageViewModel> {
     }
 
     private let titleLabel = UILabel()
-    private let settingButton = UIButton()
+    private let settingButton = UIBarButtonItem()
     private let profileImageView = UIImageView()
     private let nicknameLabel = UILabel()
     private let dividerView = UIView()
@@ -41,19 +39,16 @@ final class MypageView: BaseViewController<MypageViewModel> {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
-
     override func configureAttribute() {
         view.backgroundColor = .white
+        navigationItem.rightBarButtonItem = settingButton
+        title = "마이페이지"
 
-        titleLabel.text = "마이페이지"
-        titleLabel.font = BitnagilFont(style: .title3, weight: .semiBold).font
-        titleLabel.textAlignment = .center
-        titleLabel.textColor = .black
-
-        settingButton.setImage(BitnagilIcon.settingIcon, for: .normal)
+        settingButton.action = #selector(settingButtonTapped)
+        settingButton.tintColor = .black
+        settingButton.image = BitnagilIcon
+            .settingIcon?
+            .withRenderingMode(.alwaysTemplate)
 
         profileImageView.layer.cornerRadius = Layout.profileImageViewCornerRadius
         profileImageView.layer.masksToBounds = true
@@ -73,26 +68,13 @@ final class MypageView: BaseViewController<MypageViewModel> {
 
     override func configureLayout() {
         let safeArea = view.safeAreaLayoutGuide
-        view.addSubview(titleLabel)
-        view.addSubview(settingButton)
         view.addSubview(profileImageView)
         view.addSubview(nicknameLabel)
         view.addSubview(dividerView)
         view.addSubview(tableView)
 
-        titleLabel.snp.makeConstraints { make in
-            make.horizontalEdges.top.equalTo(safeArea)
-            make.height.equalTo(Layout.titleLabelHeight)
-        }
-
-        settingButton.snp.makeConstraints { make in
-            make.centerY.equalTo(titleLabel)
-            make.trailing.equalToSuperview().inset(Layout.settingButtonTrailingSpacing)
-            make.size.equalTo(Layout.settingButtonSize)
-        }
-
         profileImageView.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(Layout.profileImageViewTopSpacing)
+            make.top.equalTo(safeArea.snp.top).offset(Layout.profileImageViewTopSpacing)
             make.centerX.equalToSuperview()
             make.size.equalTo(Layout.profileImageViewSize)
         }
@@ -124,10 +106,15 @@ final class MypageView: BaseViewController<MypageViewModel> {
             .store(in: &cancellables)
 
         viewModel.output.externalURLPublisher
-            .sink { url in
-                UIApplication.shared.open(url)
+            .sink { [weak self] url in
+                let safariView = SFSafariViewController(url: url)
+                self?.present(safariView, animated: true)
             }
             .store(in: &cancellables)
+    }
+
+    @objc private func settingButtonTapped() {
+        // TODO: - 추후 설정 페이지 연결
     }
 }
 
@@ -145,9 +132,9 @@ extension MypageView: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard
-            let cell = tableView.dequeueReusableCell(withIdentifier: MypageTableViewCell.className) as? MypageTableViewCell
-        else { return .init() }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: MypageTableViewCell.className) as? MypageTableViewCell else {
+            return .init()
+        }
 
         let title = MypageViewModel.MypageMenu
             .allCases[indexPath.row]

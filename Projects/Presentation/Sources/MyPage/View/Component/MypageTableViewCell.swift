@@ -11,6 +11,7 @@ import UIKit
 final class MypageTableViewCell: UITableViewCell {
     private enum Layout {
         static let titleLableLeadingSpacing: CGFloat = 20
+        static let titleLableTrailingSpacing: CGFloat = 8
         static let chevronImageViewTrailingSpacing: CGFloat = 6
         static let chevronImageViewSize: CGFloat = 36
     }
@@ -51,7 +52,7 @@ final class MypageTableViewCell: UITableViewCell {
         titleLabel.snp.makeConstraints { make in
             make.verticalEdges.equalToSuperview()
             make.leading.equalToSuperview().offset(Layout.titleLableLeadingSpacing)
-            make.trailing.equalTo(chevronImageView.snp.leading).offset(-8)
+            make.trailing.equalTo(chevronImageView.snp.leading).offset(-Layout.titleLableTrailingSpacing)
         }
     }
 }

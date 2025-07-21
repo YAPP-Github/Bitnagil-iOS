@@ -11,7 +11,7 @@ enum UserError: Error, CustomStringConvertible {
     case unknown(error: Error)
 
 
-    public var description: String {
+    var description: String {
         switch self {
         case .accessTokenLoadFailed:
             return "토큰 불러오기에 실패했습니다."
