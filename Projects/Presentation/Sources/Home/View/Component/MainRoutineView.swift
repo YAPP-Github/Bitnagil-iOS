@@ -14,8 +14,21 @@ protocol MainRoutineViewDelegate: AnyObject {
 
 final class MainRoutineView: UIView {
 
+    private enum Layout {
+        static let cornerRadius: CGFloat = 8
+        static let checkBoxCornerRadius: CGFloat = 5.33
+        static let checkIconSize: CGFloat = 24
+        static let buttonStackViewSpacing: CGFloat = 12
+        static let checkButtonHeight: CGFloat = 43
+        static let checkButtonWidth: CGFloat = 165
+        static let checkButtonLeadingSpacing: CGFloat = 16
+        static let moreButtonTrailingSpacing: CGFloat = 5
+        static let moreButtonSize: CGFloat = 24
+    }
+
     private let mainLabel = UILabel()
     private let checkButton = UIButton()
+    private let buttonStackView = UIStackView()
     private let checkBackgroundView = UIView()
     private let checkIcon = UIImageView()
     private let moreButton = UIButton()
@@ -41,72 +54,69 @@ final class MainRoutineView: UIView {
     private func configureAttribute() {
         backgroundColor = BitnagilColor.lightBlue75
         layer.masksToBounds = true
-        layer.cornerRadius = 8
+        layer.cornerRadius = Layout.cornerRadius
 
-        mainLabel.do {
-            $0.text = mainRoutine.title
-            $0.font = BitnagilFont(style: .subtitle1, weight: .semiBold).font
-            $0.textColor = BitnagilColor.navy500
-        }
+        mainLabel.text = mainRoutine.title
+        mainLabel.font = BitnagilFont(style: .subtitle1, weight: .semiBold).font
+        mainLabel.textColor = BitnagilColor.navy500
 
         checkButton.addAction(UIAction { [weak self] _ in
             guard let self else { return }
             self.delegate?.mainRoutineView(self, didTapCheckButton: mainRoutine)
         }, for: .touchUpInside)
 
-        checkBackgroundView.do {
-            $0.isUserInteractionEnabled = false
-            $0.backgroundColor = .white
-            $0.layer.masksToBounds = true
-            $0.layer.cornerRadius = 5.33
-        }
+        buttonStackView.axis = .horizontal
+        buttonStackView.spacing = Layout.buttonStackViewSpacing
+        buttonStackView.alignment = .center
+        buttonStackView.isUserInteractionEnabled = false
 
-        checkIcon.do {
-            $0.image = BitnagilIcon.checkIcon
-            $0.tintColor = BitnagilColor.navy50
-        }
+        checkBackgroundView.backgroundColor = .white
+        checkBackgroundView.layer.masksToBounds = true
+        checkBackgroundView.layer.cornerRadius = Layout.checkBoxCornerRadius
 
-        moreButton.do {
-            $0.setImage(BitnagilIcon.ellipsisIcon, for: .normal)
-            $0.addAction(UIAction { [weak self] _ in
-                guard let self else { return }
-                self.delegate?.mainRoutineView(self, didTapMoreButton: mainRoutine)
-            }, for: .touchUpInside)
-        }
+        checkIcon.image = BitnagilIcon.checkIcon
+        checkIcon.tintColor = BitnagilColor.navy50
+
+        moreButton.setImage(BitnagilIcon.ellipsisIcon, for: .normal)
+        moreButton.addAction(UIAction { [weak self] _ in
+            guard let self else { return }
+            self.delegate?.mainRoutineView(self, didTapMoreButton: mainRoutine)
+        }, for: .touchUpInside)
     }
 
     private func configureLayout() {
-        [checkBackgroundView, checkIcon].forEach {
-            checkButton.addSubview($0)
+        [checkBackgroundView, mainLabel].forEach {
+            buttonStackView.addArrangedSubview($0)
         }
+        checkBackgroundView.addSubview(checkIcon)
+        checkButton.addSubview(buttonStackView)
         addSubview(checkButton)
-        addSubview(mainLabel)
         addSubview(moreButton)
 
         checkBackgroundView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.size.equalTo(Layout.checkIconSize)
         }
 
         checkIcon.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.size.equalTo(24)
+            make.size.equalTo(Layout.checkIconSize)
         }
 
         checkButton.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
-            make.leading.equalToSuperview().offset(16)
-            make.size.equalTo(24)
+            make.leading.equalToSuperview().offset(Layout.checkButtonLeadingSpacing)
+            make.height.equalTo(Layout.checkButtonHeight)
+            make.width.equalTo(Layout.checkButtonWidth)
         }
 
-        mainLabel.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.leading.equalTo(checkButton.snp.trailing).offset(12)
+        buttonStackView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
 
         moreButton.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
-            make.trailing.equalToSuperview().inset(5)
-            make.size.equalTo(24)
+            make.trailing.equalToSuperview().inset(Layout.moreButtonTrailingSpacing)
+            make.size.equalTo(Layout.moreButtonSize)
         }
     }
 
@@ -118,9 +128,4 @@ final class MainRoutineView: UIView {
     func updateState(isDone: Bool) {
         mainRoutine.isDone = isDone
     }
-}
-
-struct MainRoutine {
-    let title: String
-    var isDone: Bool
 }
