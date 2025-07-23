@@ -38,18 +38,17 @@ final public class TabBarView: UITabBarController {
         tabBar.tintColor = BitnagilColor.navy600
         tabBar.unselectedItemTintColor = BitnagilColor.navy100
 
+        guard let homeViewModel = DIContainer.shared.resolve(type: HomeViewModel.self)
+        else { fatalError("homeViewModel 의존성이 등록되지 않았습니다.") }
 
-        guard let viewModel = DIContainer.shared.resolve(type: RecommendedRoutineViewModel.self) else {
-            fatalError("RecommendedViewModel 의존성이 등록되지 않았습니다.")
-        }
+        guard let recommendedRoutineViewModel = DIContainer.shared.resolve(type: RecommendedRoutineViewModel.self)
+        else { fatalError("recommendedRoutineViewModel 의존성이 등록되지 않았습니다.") }
 
-        guard let mypageViewModel = DIContainer.shared.resolve(type: MypageViewModel.self) else {
-            fatalError("mypageViewModel 의존성이 등록되지 않았습니다.")
-        }
-        
-        let homeView = HomeView()
-        let recommendView = RecommendedRoutineView(viewModel: viewModel)
-        let reportView = ReportView()
+        guard let mypageViewModel = DIContainer.shared.resolve(type: MypageViewModel.self)
+        else { fatalError("mypageViewModel 의존성이 등록되지 않았습니다.") }
+
+        let homeView = HomeView(viewModel: homeViewModel)
+        let recommendView = RecommendedRoutineView(viewModel: recommendedRoutineViewModel)
         let mypageView = MypageView(viewModel: mypageViewModel)
 
         homeView.tabBarItem = UITabBarItem(
@@ -62,11 +61,6 @@ final public class TabBarView: UITabBarController {
             image: BitnagilIcon.recommendEmptyIcon,
             selectedImage: BitnagilIcon.recommendFillIcon)
 
-        reportView.tabBarItem = UITabBarItem(
-            title: "리포트",
-            image: BitnagilIcon.reportEmptyIcon,
-            selectedImage: BitnagilIcon.reportFillIcon)
-
         mypageView.tabBarItem = UITabBarItem(
             title: "마이페이지",
             image: BitnagilIcon.mypageEmptyIcon,
@@ -74,24 +68,8 @@ final public class TabBarView: UITabBarController {
 
         viewControllers = [
             UINavigationController(rootViewController: homeView),
-            UINavigationController(rootViewController: recommendView),
             UINavigationController(rootViewController: reportView),
             UINavigationController(rootViewController: mypageView)
         ]
-    }
-}
-
-// TODO: - 홈, 추천, 마이페이지 생성 후 지워주세요
-final class HomeView: UIViewController {
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .white
-    }
-}
-
-final class ReportView: UIViewController {
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .white
     }
 }

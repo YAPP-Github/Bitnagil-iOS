@@ -225,7 +225,7 @@ final class OnboardingRecommendedRoutineView: BaseViewController<OnboardingViewM
         guard let homeViewModel = DIContainer.shared.resolve(type: HomeViewModel.self) else {
             fatalError("homeViewModel 의존성이 등록되지 않았습니다.")
         }
-        let homeView = HomeViewController(viewModel: homeViewModel)
+        let homeView = HomeView(viewModel: homeViewModel)
         self.navigationController?.pushViewController(homeView, animated: true)
     }
 }
