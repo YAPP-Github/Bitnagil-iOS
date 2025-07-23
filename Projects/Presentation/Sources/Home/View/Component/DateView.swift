@@ -98,4 +98,8 @@ final class DateView: UIView {
     private func selectDate() {
         didTappedDateButton?(date)
     }
+
+    func updateSelectState(isSelected: Bool) {
+        self.isSelected = isSelected
+    }
 }
