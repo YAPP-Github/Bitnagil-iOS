@@ -1,0 +1,34 @@
+//
+//  Date+.swift
+//  Presentation
+//
+//  Created by 최정인 on 7/18/25.
+//
+
+import Foundation
+
+extension Date {
+    func convertToString(dateType: DateType) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = dateType.formatString
+
+        return formatter.string(from: self)
+    }
+
+    enum DateType {
+        case yearMonth
+        case dayOfWeek
+        case date
+        case amPmTime
+
+        var formatString: String {
+            switch self {
+            case .yearMonth: "yyyy년 M월"
+            case .dayOfWeek: "E"
+            case .date: "d"
+            case .amPmTime: "a HH:mm"
+            }
+        }
+    }
+}
