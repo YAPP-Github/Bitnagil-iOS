@@ -5,7 +5,7 @@
 //  Created by 최정인 on 7/17/25.
 //
 
-enum RoutineLevelType: CaseIterable {
+enum RoutineLevelType: SelectableItem, CaseIterable {
     case easy
     case normal
     case hard
@@ -18,7 +18,7 @@ enum RoutineLevelType: CaseIterable {
         }
     }
 
-    var levelTitle: String {
+    var title: String {
         switch self {
         case .easy: "가볍게 할 수 있어요"
         case .normal: "조금 신경써서 할 수 있어요"

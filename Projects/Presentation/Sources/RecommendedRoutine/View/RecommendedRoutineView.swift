@@ -31,7 +31,7 @@ final class RecommendedRoutineView: BaseViewController<RecommendedRoutineViewMod
     private let headerStackView = UIStackView()
     private let routineLabel = UILabel()
     private let levelButton = RoutineLevelButton()
-    private let levelView = RoutineLevelView()
+    private let levelView = SelectableItemTableView<RoutineLevelType>(items: RoutineLevelType.allCases.sorted(by: { $0.id < $1.id }))
     private let recommendedRoutineScrollView = UIScrollView()
     private let recommendedRoutineStackView = UIStackView()
     private var recommendedRoutineCards: [Int: RecommendedRoutineCardView] = [:]
@@ -80,10 +80,6 @@ final class RecommendedRoutineView: BaseViewController<RecommendedRoutineViewMod
             $0.axis = .vertical
             $0.spacing = Layout.recommendedRoutineStackViewSpacing
         }
-    }
-
-    private func showBottomSheet() {
-        presentCustomBottomSheet(contentViewController: levelView, maxHeight: Layout.bottomSheetHeight)
     }
 
     public override func configureLayout() {
@@ -172,6 +168,10 @@ final class RecommendedRoutineView: BaseViewController<RecommendedRoutineViewMod
         }
     }
 
+    private func showBottomSheet() {
+        presentCustomBottomSheet(contentViewController: levelView, maxHeight: Layout.bottomSheetHeight)
+    }
+
     private func showEmotionButton() {
         recommendedRoutineStackView.addArrangedSubview(registerEmotionButton)
 
@@ -193,13 +193,14 @@ extension RecommendedRoutineView: RoutineCategoryViewDelegate {
 extension RecommendedRoutineView: RecommendedRoutineCardViewDelegate {
     func recommendedRoutineCardView(_ sender: RecommendedRoutineCardView, didTapRecommendedRoutine routine: RecommendedRoutine) {
         // TODO: 루틴 등록하기 화면으로 이동해야 함 + 추천 루틴 들고
-        print("\(routine.mainTitle)")
     }
 }
 
-// MARK: RoutineLevelViewDelegate
-extension RecommendedRoutineView: RoutineLevelViewDelegate {
-    func routineLevelView(_ sender: RoutineLevelView, didSelectLevel: RoutineLevelType?) {
+// MARK: SelectableItemTableViewDelegate
+extension RecommendedRoutineView: SelectableItemTableViewDelegate {
+    func selectableItemTableView<T: SelectableItem & CaseIterable & Equatable>(_ sender: SelectableItemTableView<T>, didSelectItem: T?) {
+        guard let didSelectLevel = didSelectItem as? RoutineLevelType?
+        else { return }
         viewModel.action(input: .selectLevel(selectedLevel: didSelectLevel))
         levelButton.updateButton(level: didSelectLevel)
     }

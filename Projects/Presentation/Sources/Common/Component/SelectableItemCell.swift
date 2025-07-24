@@ -1,14 +1,13 @@
 //
-//  RoutineLevelCell.swift
+//  SelectableItemCell.swift
 //  Presentation
 //
-//  Created by 최정인 on 7/17/25.
+//  Created by 최정인 on 7/24/25.
 //
 
 import UIKit
 
-final class RoutineLevelCell: UITableViewCell {
-
+final class SelectableItemCell: UITableViewCell {
     private enum Layout {
         static let checkIconSize: CGFloat = 16
         static let horizontalMargin: CGFloat = 20
@@ -28,18 +27,14 @@ final class RoutineLevelCell: UITableViewCell {
     }
 
     private func configureAttribute() {
-        titleLabel.do {
-            $0.font = BitnagilFont(style: .body1, weight: .regular).font
-            $0.textColor = .black
-        }
+        titleLabel.font = BitnagilFont(style: .body1, weight: .regular).font
+        titleLabel.textColor = .black
 
-        checkIcon.do {
-            let checkImage = BitnagilIcon.checkIcon?
-                .resizeAspectFit(to: CGSize(width: Layout.checkIconSize, height: Layout.checkIconSize))?
-                .withRenderingMode(.alwaysTemplate)
-            $0.tintColor = BitnagilColor.orange500
-            $0.image = checkImage
-        }
+        let checkImage = BitnagilIcon.checkIcon?
+            .resizeAspectFit(to: CGSize(width: Layout.checkIconSize, height: Layout.checkIconSize))?
+            .withRenderingMode(.alwaysTemplate)
+        checkIcon.tintColor = BitnagilColor.orange500
+        checkIcon.image = checkImage
     }
 
     private func configureLayout() {
@@ -58,8 +53,8 @@ final class RoutineLevelCell: UITableViewCell {
         }
     }
 
-    func configureCell(level: RoutineLevelType, isSelected: Bool) {
-        titleLabel.text = level.levelTitle
+    func configureCell(item: SelectableItem, isSelected: Bool) {
+        titleLabel.text = item.title
         checkIcon.isHidden = !isSelected
     }
 }

@@ -44,7 +44,7 @@ final class RoutineLevelButton: UIButton {
         }
 
         buttonLabel.do {
-            $0.text = level?.levelTitle ?? "난이도 선택"
+            $0.text = level?.title ?? "난이도 선택"
             $0.font = BitnagilFont(style: .body2, weight: .medium).font
             $0.textColor = BitnagilColor.gray60
         }
@@ -79,7 +79,7 @@ final class RoutineLevelButton: UIButton {
     }
 
     private func updateButtonLabel() {
-        buttonLabel.text = level?.levelTitle ?? "난이도 선택"
+        buttonLabel.text = level?.title ?? "난이도 선택"
     }
 
     func updateButton(level: RoutineLevelType?) {
