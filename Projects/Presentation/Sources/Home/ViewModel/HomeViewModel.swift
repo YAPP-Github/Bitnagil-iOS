@@ -23,12 +23,12 @@ final class HomeViewModel: ViewModel {
     private(set) var output: Output
     private var routines: [String: [MainRoutine]] = [:]
     private let nicknameSubject = CurrentValueSubject<String, Never>("")
-    private let routinesSuject = CurrentValueSubject<[MainRoutine], Never>([])
+    private let routinesSubject = CurrentValueSubject<[MainRoutine], Never>([])
 
     init() {
         self.output = Output(
             nicknamePublisher: nicknameSubject.eraseToAnyPublisher(),
-            routinesPublisher: routinesSuject.eraseToAnyPublisher()
+            routinesPublisher: routinesSubject.eraseToAnyPublisher()
         )
     }
 
@@ -98,9 +98,9 @@ final class HomeViewModel: ViewModel {
     private func fetchRoutines(for date: Date) {
         let dateKey = date.convertToString(dateType: .yearMonthDate)
         guard let dailyRoutines = routines[dateKey] else {
-            routinesSuject.send([])
+            routinesSubject.send([])
             return
         }
-        routinesSuject.send(dailyRoutines)
+        routinesSubject.send(dailyRoutines)
     }
 }
