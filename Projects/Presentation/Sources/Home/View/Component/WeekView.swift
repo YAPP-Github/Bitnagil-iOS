@@ -8,6 +8,11 @@
 import SnapKit
 import UIKit
 
+protocol WeekViewDelegate: AnyObject {
+    func weekView(_ sender: WeekView, didMoveWeek weekStartDate: Date)
+    func weekView(_ sender: WeekView, didSelectDate date: Date)
+}
+
 final class WeekView: UIView {
 
     private enum Layout {
@@ -30,13 +35,14 @@ final class WeekView: UIView {
     private let today = Date()
     private var selectedDate = Date()
     private var currentWeekStartDate = Date()
+    weak var delegate: WeekViewDelegate?
 
     init() {
         super.init(frame: .zero)
         configureAttribute()
         configureLayout()
-        setupCurrentWeek()
-        setWeekDateViews()
+        calculateCurrentWeek()
+        updateWeekDateViews()
     }
 
     required init?(coder: NSCoder) {
@@ -104,21 +110,21 @@ final class WeekView: UIView {
         }
     }
 
-    // 날짜 세팅 및 현재 주의 첫째날 세팅
-    private func setupCurrentWeek() {
+    // 현재 날짜 세팅 및 현재 주의 첫째날을 세팅합니다.
+    private func calculateCurrentWeek() {
         selectedDate = today
-        currentWeekStartDate = getWeekStartDate(for: today)
+        currentWeekStartDate = calculateWeekStartDate(for: today)
     }
 
-    // 현재 주의 첫째 날을 뱉어줌
-    private func getWeekStartDate(for date: Date) -> Date {
+    // 현재 주의 첫째 날을 계산해줍니다.
+    private func calculateWeekStartDate(for date: Date) -> Date {
         let weekday = calendar.component(.weekday, from: date)
         let daysFromMonday = (weekday == 1) ? 6 : weekday - 2
         return calendar.date(byAdding: .day, value: -daysFromMonday, to: date) ?? date
     }
 
-    // current 주에 맞춰 DateView들 세팅
-    private func setWeekDateViews() {
+    // 현재 주에 맞춰 DateView들 업데이트합니다.
+    private func updateWeekDateViews() {
         dateViews.values.forEach {
             $0.removeFromSuperview()
         }
@@ -135,7 +141,7 @@ final class WeekView: UIView {
                                     isSelected: isSelected,
                                     isToday: isToday)
             dateView.didTappedDateButton = { [weak self] date in
-                self?.dateSelected(date: date)
+                self?.selectDate(date: date)
             }
             dateViews[date] = dateView
             dateStackView.addArrangedSubview(dateView)
@@ -145,7 +151,7 @@ final class WeekView: UIView {
         }
     }
 
-    // 선택한 날짜의 dateView update
+    // 선택한 날짜의 dateView를 업데이트합니다.
     private func updateSelectState() {
         for (date, dateView) in dateViews {
             let isSelected = calendar.isDate(date, inSameDayAs: selectedDate)
@@ -153,19 +159,21 @@ final class WeekView: UIView {
         }
     }
 
-    // 날짜 선택
-    private func dateSelected(date: Date) {
+    // 날짜를 선택합니다.
+    private func selectDate(date: Date) {
         selectedDate = date
         updateMonthLabel()
         updateSelectState()
+
+        delegate?.weekView(self, didSelectDate: date)
     }
 
-    // month Label update
+    // monthLabel를 업데이트합니다.
     private func updateMonthLabel() {
         monthLabel.text = selectedDate.convertToString(dateType: .yearMonth)
     }
 
-    // 주를 움직여요
+    // 주(week)를 이동합니다.
     private func moveWeek(by week: Int) {
         guard let newWeekStartDate = calendar.date(byAdding: .weekOfYear, value: week, to: currentWeekStartDate)
         else { return }
@@ -173,6 +181,9 @@ final class WeekView: UIView {
 
         selectedDate = currentWeekStartDate
         updateMonthLabel()
-        setWeekDateViews()
+        updateWeekDateViews()
+
+        delegate?.weekView(self, didMoveWeek: currentWeekStartDate)
+        delegate?.weekView(self, didSelectDate: selectedDate)
     }
 }

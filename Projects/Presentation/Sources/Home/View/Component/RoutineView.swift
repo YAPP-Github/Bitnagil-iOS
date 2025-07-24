@@ -53,6 +53,17 @@ final class RoutineView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override var intrinsicContentSize: CGSize {
+        let baseHeight = Layout.timeLabelHeight + Layout.mainRoutineViewTopSpacing + Layout.mainRoutineViewHeight
+
+        if routine.subRoutines.isEmpty {
+            return CGSize(width: UIView.noIntrinsicMetric, height: baseHeight)
+        } else {
+            let subRoutineHeight = Layout.subRoutineLabelTopSpacing + Layout.subRoutineLabelHeight + Layout.subRoutineStackViewTopSpacing + (CGFloat(routine.subRoutines.count) * Layout.subRoutineViewHeight)
+            return CGSize(width: UIView.noIntrinsicMetric, height: baseHeight + subRoutineHeight)
+        }
+    }
+
     private func configureAttribute() {
         timeLabel.text = "\(routine.startTime.convertToString(dateType: .amPmTime))부터 시작"
         timeLabel.font = BitnagilFont(style: .caption1, weight: .regular).font

@@ -17,6 +17,7 @@ extension Date {
     }
 
     enum DateType {
+        case yearMonthDate
         case yearMonth
         case dayOfWeek
         case date
@@ -24,6 +25,7 @@ extension Date {
 
         var formatString: String {
             switch self {
+            case .yearMonthDate: "yyyy-MM-dd"
             case .yearMonth: "yyyy년 M월"
             case .dayOfWeek: "E"
             case .date: "d"

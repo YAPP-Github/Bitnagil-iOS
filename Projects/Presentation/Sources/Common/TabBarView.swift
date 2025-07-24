@@ -68,7 +68,7 @@ final public class TabBarView: UITabBarController {
 
         viewControllers = [
             UINavigationController(rootViewController: homeView),
-            UINavigationController(rootViewController: reportView),
+            UINavigationController(rootViewController: recommendView),
             UINavigationController(rootViewController: mypageView)
         ]
     }
