@@ -61,6 +61,7 @@ final class OnboardingChoiceButton: UIButton {
         mainLabel.font = BitnagilFont(style: .subtitle1, weight: .semiBold).font
         mainLabel.textColor = BitnagilColor.gray50
 
+        subLabel = UILabel()
         if let subLabel {
             subLabel.text = subTitle
             subLabel.font = BitnagilFont(style: .body2, weight: .regular).font

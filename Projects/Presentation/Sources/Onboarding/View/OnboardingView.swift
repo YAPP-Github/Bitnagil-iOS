@@ -66,13 +66,14 @@ final class OnboardingView: BaseViewController<OnboardingViewModel> {
         mainLabel.numberOfLines = 2
         mainLabel.textAlignment = .left
 
-        if
-            let subTitle = onboarding.subTitle,
-            let subLabel {
-            subLabel.attributedText = BitnagilFont(style: .body2, weight: .medium).attributedString(text: subTitle)
-            subLabel.textColor = BitnagilColor.gray50
-            subLabel.numberOfLines = 2
-            subLabel.textAlignment = .left
+        if let subTitle = onboarding.subTitle {
+            subLabel = UILabel()
+            if let subLabel {
+                subLabel.attributedText = BitnagilFont(style: .body2, weight: .medium).attributedString(text: subTitle)
+                subLabel.textColor = BitnagilColor.gray50
+                subLabel.numberOfLines = 2
+                subLabel.textAlignment = .left
+            }
         }
 
         choiceStackView.axis = .vertical

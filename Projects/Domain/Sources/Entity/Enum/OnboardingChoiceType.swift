@@ -50,23 +50,23 @@ public enum OnboardingChoiceType: CaseIterable {
 
     var value: String {
         switch self {
-        case .morningTime: "MORNING"
-        case .eveningTime: "EVENING"
-        case .allTime: "NOTHING"
+        case .morningTime: "08:00:00"
+        case .eveningTime: "20:00:00"
+        case .allTime: "00:00:00"
 
-        case .never: "ZERO_PER_WEEK"
-        case .rarely: "ONE_TO_TWO_PER_WEEK"
-        case .sometimes: "THREE_TO_FOUR_PER_WEEK"
-        case .often: "MORE_THAN_FIVE_PER_WEEK"
+        case .never: "NEVER"
+        case .rarely: "SHORT"
+        case .sometimes: "SOMETIMES"
+        case .often: "OFTEN"
 
         case .stability: "STABILITY"
         case .connection: "CONNECTEDNESS"
         case .growth: "GROWTH"
         case .vitality: "VITALITY"
 
-        case .once: "ONE_TO_TWO_PER_WEEK"
-        case .twoToThree: "THREE_TO_FOUR_PER_WEEK"
-        case .fourOrMore: "MORE_THAN_FIVE_PER_WEEK"
+        case .once: "ONE_PER_WEEK"
+        case .twoToThree: "TWO_TO_THREE_PER_WEEK"
+        case .fourOrMore: "MORE_THAN_FOUR_PER_WEEK"
         case .notSure: "UNKNOWN"
         }
     }
