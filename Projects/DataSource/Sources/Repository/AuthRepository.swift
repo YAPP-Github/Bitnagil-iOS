@@ -41,21 +41,18 @@ final class AuthRepository: AuthRepositoryProtocol {
     }
 
     func submitAgreement(agreements: [TermsType : Bool]) async throws {
-        let accessToken = try tokenManager.loadToken(tokenType: .accessToken)
-        let endpoint = AuthEndpoint.agreements(accessToken: accessToken, agreements: agreements)
+        let endpoint = AuthEndpoint.agreements(agreements: agreements)
         _ = try await networkService.request(endpoint: endpoint, type: EmptyResponseDTO.self)
     }
 
     func logout() async throws {
-        let accessToken = try tokenManager.loadToken(tokenType: .accessToken)
-        let endpoint = AuthEndpoint.logout(accessToken: accessToken)
+        let endpoint = AuthEndpoint.logout
         _ = try await networkService.request(endpoint: endpoint, type: String.self)
         try tokenManager.removeToken()
     }
 
     func withdraw() async throws {
-        let accessToken = try tokenManager.loadToken(tokenType: .accessToken)
-        let endpoint = AuthEndpoint.withdraw(accessToken: accessToken)
+        let endpoint = AuthEndpoint.withdraw
         _ = try await networkService.request(endpoint: endpoint, type: String.self)
         try tokenManager.removeToken()
         try removeNickname()

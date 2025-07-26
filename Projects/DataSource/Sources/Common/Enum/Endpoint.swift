@@ -12,4 +12,5 @@ public protocol Endpoint {
     var headers: [String: String] { get }
     var queryParameters: [String: String] { get }
     var bodyParameters: [String: Any] { get }
+    var isAuthorized: Bool { get }
 }

@@ -10,17 +10,17 @@ import Domain
 
 enum AuthEndpoint {
     case login(socialLoginType: SocialLoginType, nickname: String?, token: String)
-    case logout(accessToken: String)
-    case withdraw(accessToken: String)
+    case logout
+    case withdraw
     case reissue(refreshToken: String)
-    case agreements(accessToken: String, agreements: [TermsType: Bool])
+    case agreements(agreements: [TermsType: Bool])
 }
 
 extension AuthEndpoint: Endpoint {
     var baseURL: String {
         return AppProperties.baseURL + "/api/v1/auth"
     }
-    
+
     var path: String {
         switch self {
         case .login: baseURL + "/login"
@@ -30,37 +30,38 @@ extension AuthEndpoint: Endpoint {
         case .agreements: baseURL + "/agreements"
         }
     }
-    
+
     var method: HTTPMethod {
         return .post
     }
-    
+
     var headers: [String : String] {
         var headers: [String: String] = [
             "Content-Type": "application/json",
             "accept": "*/*"
         ]
 
+        if isAuthorized {
+            let accessToken = try! TokenManager.shared.loadToken(tokenType: .accessToken)
+            headers["Authorization"] = "Bearer \(accessToken)"
+        }
+
         switch self {
         case .login(_, _, let token):
             headers["SocialAccessToken"] = token
-        case .logout(let accessToken):
-            headers["Authorization"] = "Bearer \(accessToken)"
-        case .withdraw(let accessToken):
-            headers["Authorization"] = "Bearer \(accessToken)"
         case .reissue(let refreshToken):
             headers["Refresh-Token"] = refreshToken
-        case .agreements(let accessToken, _):
-            headers["Authorization"] = "Bearer \(accessToken)"
+        default:
+            break
         }
 
         return headers
     }
-    
+
     var queryParameters: [String : String] {
         return [:]
     }
-    
+
     var bodyParameters: [String : Any] {
         switch self {
         case .login(let socialLoginType, let nickname, _):
@@ -69,7 +70,7 @@ extension AuthEndpoint: Endpoint {
                 parameters["nickname"] = nickname
             }
             return parameters
-        case .agreements(_, let agreements):
+        case .agreements(let agreements):
             var parameters: [String: Any] = [:]
             for agreement in agreements {
                 parameters[agreement.key.termKey] = agreement.value
@@ -77,6 +78,13 @@ extension AuthEndpoint: Endpoint {
             return parameters
         default:
             return [:]
+        }
+    }
+
+    var isAuthorized: Bool {
+        switch self {
+        case .login, .reissue: false
+        case .logout, .withdraw, .agreements: true
         }
     }
 }

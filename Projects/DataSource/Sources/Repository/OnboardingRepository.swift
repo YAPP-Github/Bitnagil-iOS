@@ -9,12 +9,9 @@ import Domain
 
 final class OnboardingRepository: OnboardingRepositoryProtocol {
     private let networkService = NetworkService.shared
-    private let tokenManager = TokenManager.shared
 
     func registerOnboarding(onboardingChoices: [String : String]) async throws -> [RecommendedRoutineEntity] {
-        let accessToken = try tokenManager.loadToken(tokenType: .accessToken)
-        let endpoint = OnboardingEndpoint.registerOnboarding(accessToken: accessToken, choices: onboardingChoices)
-
+        let endpoint = OnboardingEndpoint.registerOnboarding(choices: onboardingChoices)
         guard let response = try await networkService.request(endpoint: endpoint, type: RecommendedRoutineListResponseDTO.self)
         else { return [] }
 
@@ -23,8 +20,7 @@ final class OnboardingRepository: OnboardingRepositoryProtocol {
     }
 
     func registerRecommendedRoutines(selectedRoutines: [Int]) async throws {
-        let accessToken = try tokenManager.loadToken(tokenType: .accessToken)
-        let endpoint = OnboardingEndpoint.registerRecommendedRoutine(accessToken: accessToken, selectedRoutines: selectedRoutines)
+        let endpoint = OnboardingEndpoint.registerRecommendedRoutine(selectedRoutines: selectedRoutines)
         _ = try await networkService.request(endpoint: endpoint, type: EmptyResponseDTO.self)
     }
 }
