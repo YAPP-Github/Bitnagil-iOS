@@ -7,4 +7,6 @@
 
 enum UserDefaultsKey: String {
     case nickname
+    case socialLoginType
+    case profileImageUrl
 }
