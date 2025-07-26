@@ -13,7 +13,7 @@ import KakaoSDKAuth
 
 final class AuthRepository: AuthRepositoryProtocol {
     private let networkService = NetworkService.shared
-    private let keychainStorage = KeychainStorage.shared
+    private let tokenManager = TokenManager.shared
     private let userDefaultsStorage = UserDefaultsStorage.shared
 
     func kakaoLogin() async throws -> UserEntity {
@@ -41,38 +41,36 @@ final class AuthRepository: AuthRepositoryProtocol {
     }
 
     func submitAgreement(agreements: [TermsType : Bool]) async throws {
-        let accessToken = try loadToken(tokenType: .accessToken)
+        let accessToken = try tokenManager.loadToken(tokenType: .accessToken)
         let endpoint = AuthEndpoint.agreements(accessToken: accessToken, agreements: agreements)
         _ = try await networkService.request(endpoint: endpoint, type: EmptyResponseDTO.self)
     }
 
     func logout() async throws {
-        let accessToken = try loadToken(tokenType: .accessToken)
+        let accessToken = try tokenManager.loadToken(tokenType: .accessToken)
         let endpoint = AuthEndpoint.logout(accessToken: accessToken)
         _ = try await networkService.request(endpoint: endpoint, type: String.self)
-        try removeToken()
+        try tokenManager.removeToken()
     }
 
     func withdraw() async throws {
-        let accessToken = try loadToken(tokenType: .accessToken)
+        let accessToken = try tokenManager.loadToken(tokenType: .accessToken)
         let endpoint = AuthEndpoint.withdraw(accessToken: accessToken)
         _ = try await networkService.request(endpoint: endpoint, type: String.self)
-        try removeToken()
+        try tokenManager.removeToken()
         try removeNickname()
     }
 
     func reissueToken() async throws {
-        let refreshToken = try loadToken(tokenType: .refreshToken)
+        let refreshToken = try tokenManager.loadToken(tokenType: .refreshToken)
         let endpoint = AuthEndpoint.reissue(refreshToken: refreshToken)
 
         guard let userResponse = try await networkService.request(endpoint: endpoint, type: LoginResponseDTO.self)
         else { return }
         let userEntity = userResponse.toUserEntity()
 
-        guard
-            saveToken(tokenType: .accessToken, token: userEntity.accessToken),
-            saveToken(tokenType: .refreshToken, token: userEntity.refreshToken)
-        else { throw AuthError.tokenSaveFailed }
+        try tokenManager.saveToken(token: userEntity.accessToken, tokenType: .accessToken)
+        try tokenManager.saveToken(token: userEntity.refreshToken, tokenType: .refreshToken)
 
         BitnagilLogger.log(logType: .debug, message: "User Logined: \(userEntity.userState)")
         BitnagilLogger.log(logType: .debug, message: "AccessToken Saved: \(userEntity.accessToken)")
@@ -115,34 +113,14 @@ final class AuthRepository: AuthRepositoryProtocol {
         else { throw AuthError.invalidUserData }
 
         let userEntity = userResponse.toUserEntity()
-        guard
-            saveToken(tokenType: .accessToken, token: userEntity.accessToken),
-            saveToken(tokenType: .refreshToken, token: userEntity.refreshToken)
-        else { throw AuthError.tokenSaveFailed }
+        try tokenManager.saveToken(token: userEntity.accessToken, tokenType: .accessToken)
+        try tokenManager.saveToken(token: userEntity.refreshToken, tokenType: .refreshToken)
 
         BitnagilLogger.log(logType: .debug, message: "User Logined: \(userEntity.userState)")
         BitnagilLogger.log(logType: .debug, message: "AccessToken Saved: \(userEntity.accessToken)")
         BitnagilLogger.log(logType: .debug, message: "RefreshToken Saved: \(userEntity.refreshToken)")
 
         return userEntity
-    }
-
-    private func saveToken(tokenType: TokenType, token: String) -> Bool {
-        return keychainStorage.save(token, forKey: tokenType.rawValue)
-    }
-
-    private func loadToken(tokenType: TokenType) throws -> String {
-        guard let token = keychainStorage.load(forKey: tokenType.rawValue) else {
-            throw AuthError.tokenLoadFailed
-        }
-        return token
-    }
-
-    private func removeToken() throws {
-        guard
-            keychainStorage.remove(forKey: TokenType.accessToken.rawValue),
-            keychainStorage.remove(forKey: TokenType.refreshToken.rawValue)
-        else { throw AuthError.tokenRemoveFailed }
     }
 
     private func saveNickname(nickname: String) throws {
