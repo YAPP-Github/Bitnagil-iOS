@@ -28,16 +28,14 @@ final class UserDataRepository: UserDataRepositoryProtocol {
             let refreshToken = try tokenManager.loadToken(tokenType: .refreshToken)
             let endpoint = AuthEndpoint.reissue(refreshToken: refreshToken)
 
-            guard let userResponse = try await networkService.request(endpoint: endpoint, type: LoginResponseDTO.self)
+            guard let tokenResponse = try await networkService.request(endpoint: endpoint, type: TokenResponseDTO.self)
             else { return false }
-            let userEntity = userResponse.toUserEntity()
 
-            try tokenManager.saveToken(token: userEntity.accessToken, tokenType: .accessToken)
-            try tokenManager.saveToken(token: userEntity.refreshToken, tokenType: .refreshToken)
+            try tokenManager.saveToken(token: tokenResponse.accessToken, tokenType: .accessToken)
+            try tokenManager.saveToken(token: tokenResponse.refreshToken, tokenType: .refreshToken)
 
-            BitnagilLogger.log(logType: .debug, message: "User Logined: \(userEntity.userState)")
-            BitnagilLogger.log(logType: .debug, message: "AccessToken Saved: \(userEntity.accessToken)")
-            BitnagilLogger.log(logType: .debug, message: "RefreshToken Saved: \(userEntity.refreshToken)")
+            BitnagilLogger.log(logType: .debug, message: "AccessToken Saved: \(tokenResponse.accessToken)")
+            BitnagilLogger.log(logType: .debug, message: "RefreshToken Saved: \(tokenResponse.refreshToken)")
 
             return true
         } catch {
