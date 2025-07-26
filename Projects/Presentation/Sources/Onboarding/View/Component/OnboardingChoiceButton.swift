@@ -45,32 +45,26 @@ final class OnboardingChoiceButton: UIButton {
         layer.borderWidth = 1
         layer.cornerRadius = Layout.cornerRadius
 
-        stackView.do {
-            $0.axis = .vertical
-            $0.alignment = .leading
-            $0.spacing = Layout.stackViewSpacing
-            $0.isUserInteractionEnabled = false
-        }
+        stackView.axis = .vertical
+        stackView.alignment = .leading
+        stackView.spacing = Layout.stackViewSpacing
+        stackView.isUserInteractionEnabled = false
 
         guard let subTitle = onboardingChoice.subTitle else {
-            mainLabel.do {
-                $0.text = onboardingChoice.mainTitle
-                $0.font = BitnagilFont(style: .body1, weight: .regular).font
-                $0.textColor = BitnagilColor.gray50
-            }
+            mainLabel.text = onboardingChoice.mainTitle
+            mainLabel.font = BitnagilFont(style: .body1, weight: .regular).font
+            mainLabel.textColor = BitnagilColor.gray50
             return
         }
 
-        mainLabel.do {
-            $0.text = onboardingChoice.mainTitle
-            $0.font = BitnagilFont(style: .subtitle1, weight: .semiBold).font
-            $0.textColor = BitnagilColor.gray50
-        }
+        mainLabel.text = onboardingChoice.mainTitle
+        mainLabel.font = BitnagilFont(style: .subtitle1, weight: .semiBold).font
+        mainLabel.textColor = BitnagilColor.gray50
 
-        subLabel = UILabel().then {
-            $0.text = subTitle
-            $0.font = BitnagilFont(style: .body2, weight: .regular).font
-            $0.textColor = BitnagilColor.gray50
+        if let subLabel {
+            subLabel.text = subTitle
+            subLabel.font = BitnagilFont(style: .body2, weight: .regular).font
+            subLabel.textColor = BitnagilColor.gray50
         }
     }
 

@@ -9,7 +9,6 @@ import AuthenticationServices
 import Combine
 import Shared
 import SnapKit
-import Then
 import UIKit
 
 final class LoginView: BaseViewController<LoginViewModel> {
@@ -47,9 +46,7 @@ final class LoginView: BaseViewController<LoginViewModel> {
     }
 
     override func configureAttribute() {
-        logoView.do {
-            $0.backgroundColor = BitnagilColor.gray90
-        }
+        logoView.backgroundColor = BitnagilColor.gray90
 
         kakaoLoginButton.addAction(UIAction { [weak self] _ in
             self?.viewModel.action(input: .kakaoLogin)

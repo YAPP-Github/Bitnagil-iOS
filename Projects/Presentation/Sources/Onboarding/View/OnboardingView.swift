@@ -61,26 +61,22 @@ final class OnboardingView: BaseViewController<OnboardingViewModel> {
     }
 
     override func configureAttribute() {
-        mainLabel.do {
-            $0.attributedText = BitnagilFont(style: .title2, weight: .bold).attributedString(text: onboarding.mainTitle)
-            $0.textColor = BitnagilColor.navy500
-            $0.numberOfLines = 2
-            $0.textAlignment = .left
+        mainLabel.attributedText = BitnagilFont(style: .title2, weight: .bold).attributedString(text: onboarding.mainTitle)
+        mainLabel.textColor = BitnagilColor.navy500
+        mainLabel.numberOfLines = 2
+        mainLabel.textAlignment = .left
+
+        if
+            let subTitle = onboarding.subTitle,
+            let subLabel {
+            subLabel.attributedText = BitnagilFont(style: .body2, weight: .medium).attributedString(text: subTitle)
+            subLabel.textColor = BitnagilColor.gray50
+            subLabel.numberOfLines = 2
+            subLabel.textAlignment = .left
         }
 
-        if let subTitle = onboarding.subTitle {
-            subLabel = UILabel().then {
-                $0.attributedText = BitnagilFont(style: .body2, weight: .medium).attributedString(text: subTitle)
-                $0.textColor = BitnagilColor.gray50
-                $0.numberOfLines = 2
-                $0.textAlignment = .left
-            }
-        }
-
-        choiceStackView.do {
-            $0.axis = .vertical
-            $0.spacing = Layout.choiceStackViewSpacing
-        }
+        choiceStackView.axis = .vertical
+        choiceStackView.spacing = Layout.choiceStackViewSpacing
 
         for (index, choice) in onboarding.choices.enumerated() {
             let choiceButton = OnboardingChoiceButton(onboardingChoice: choice)

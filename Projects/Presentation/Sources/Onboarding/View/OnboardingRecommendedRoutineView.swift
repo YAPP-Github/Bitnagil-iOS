@@ -22,6 +22,8 @@ final class OnboardingRecommendedRoutineView: BaseViewController<OnboardingViewM
         static let routineButtonHeight: CGFloat = 84
         static let registerButtonHeight: CGFloat = 54
         static let registerButtonBottomSpacing: CGFloat = 10
+        static let skipButtonLabelFontSize: CGFloat = 14
+        static let skipButtonLabelLineHeight: CGFloat = 20
         static let skipButtonHeight: CGFloat = 54
         static let skipButtonBottomSpacing: CGFloat = 20
 
@@ -63,40 +65,32 @@ final class OnboardingRecommendedRoutineView: BaseViewController<OnboardingViewM
     }
 
     override func configureAttribute() {
-        mainLabel.do {
-            let text = "당신만의 추천 루틴이\n생성되었어요!"
-            $0.attributedText = BitnagilFont(style: .title2, weight: .bold).attributedString(text: text)
-            $0.textColor = BitnagilColor.navy500
-            $0.numberOfLines = 2
-            $0.textAlignment = .left
-        }
+        let mainLabelText = "당신만의 추천 루틴이\n생성되었어요!"
+        mainLabel.attributedText = BitnagilFont(style: .title2, weight: .bold).attributedString(text: mainLabelText)
+        mainLabel.textColor = BitnagilColor.navy500
+        mainLabel.numberOfLines = 2
+        mainLabel.textAlignment = .left
 
-        subLabel.do {
-            let text = "당신의 생활 패턴과 목표에 맞춰 구성된 맞춤 루틴이에요.\n원하는 루틴을 선택해서 가볍게 시작해보세요."
-            $0.attributedText = BitnagilFont(style: .body2, weight: .medium).attributedString(text: text)
-            $0.textColor = BitnagilColor.gray50
-            $0.numberOfLines = 2
-            $0.textAlignment = .left
-        }
+        let subLabelText = "당신의 생활 패턴과 목표에 맞춰 구성된 맞춤 루틴이에요.\n원하는 루틴을 선택해서 가볍게 시작해보세요."
+        subLabel.attributedText = BitnagilFont(style: .body2, weight: .medium).attributedString(text: subLabelText)
+        subLabel.textColor = BitnagilColor.gray50
+        subLabel.numberOfLines = 2
+        subLabel.textAlignment = .left
 
-        recommendedRoutineStackView.do {
-            $0.axis = .vertical
-            $0.spacing = Layout.routineStackViewSpacing
-        }
+        recommendedRoutineStackView.axis = .vertical
+        recommendedRoutineStackView.spacing = Layout.routineStackViewSpacing
 
         registerButton.addAction(UIAction { [weak self] _ in
             self?.viewModel.action(input: .registerRecommendedRoutine)
         }, for: .touchUpInside)
 
-        skipButtonLabel.do {
-            $0.attributedText = BitnagilFont(
-                fontSize: 14,
-                lineHeight: 20,
-                underline: true,
-                weight: .regular
-            ).attributedString(text: "건너뛰기")
-            $0.textColor = BitnagilColor.navy500
-        }
+        skipButtonLabel.attributedText = BitnagilFont(
+            fontSize: Layout.skipButtonLabelFontSize,
+            lineHeight: Layout.skipButtonLabelLineHeight,
+            underline: true,
+            weight: .regular
+        ).attributedString(text: "건너뛰기")
+        skipButtonLabel.textColor = BitnagilColor.navy500
 
         skipButton.addAction(UIAction { [weak self] _ in
             self?.goToHomeView()

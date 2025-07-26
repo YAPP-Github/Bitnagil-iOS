@@ -8,7 +8,6 @@
 import Combine
 import Shared
 import SnapKit
-import Then
 import UIKit
 
 final class HomeView: BaseViewController<HomeViewModel> {

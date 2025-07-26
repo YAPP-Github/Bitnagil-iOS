@@ -7,7 +7,6 @@
 
 import Shared
 import SnapKit
-import Then
 import UIKit
 
 public final class IntroView: UIViewController {
@@ -37,17 +36,13 @@ public final class IntroView: UIViewController {
     }
 
     private func configureAttribute() {
-        introLabel.do {
-            let text = "당신의 하루 리듬을 이해하고,\n작은 변화를 함께 시작해볼게요."
-            $0.attributedText = BitnagilFont(style: .title2, weight: .bold).attributedString(text: text)
-            $0.textAlignment = .center
-            $0.textColor = BitnagilColor.navy500
-            $0.numberOfLines = 2
-        }
+        let text = "당신의 하루 리듬을 이해하고,\n작은 변화를 함께 시작해볼게요."
+        introLabel.attributedText = BitnagilFont(style: .title2, weight: .bold).attributedString(text: text)
+        introLabel.textAlignment = .center
+        introLabel.textColor = BitnagilColor.navy500
+        introLabel.numberOfLines = 2
 
-        graphView.do {
-            $0.backgroundColor = BitnagilColor.gray90
-        }
+        graphView.backgroundColor = BitnagilColor.gray90
 
         startButton.addAction(UIAction { [weak self] _ in
             guard let loginViewModel = DIContainer.shared.resolve(type: LoginViewModel.self) else {

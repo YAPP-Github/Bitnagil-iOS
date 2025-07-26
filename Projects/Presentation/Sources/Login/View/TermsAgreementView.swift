@@ -10,7 +10,6 @@ import Domain
 import SafariServices
 import Shared
 import SnapKit
-import Then
 import UIKit
 
 final class TermsAgreementView: BaseViewController<LoginViewModel> {
@@ -51,13 +50,11 @@ final class TermsAgreementView: BaseViewController<LoginViewModel> {
     }
 
     override func configureAttribute() {
-        agreementLabel.do {
-            let text = "빛나길 이용을 위해\n필수 약관에 동의해 주세요."
-            $0.attributedText = BitnagilFont(style: .title2, weight: .bold).attributedString(text: text)
-            $0.textAlignment = .left
-            $0.numberOfLines = 2
-            $0.textColor = BitnagilColor.navy500
-        }
+        let text = "빛나길 이용을 위해\n필수 약관에 동의해 주세요."
+        agreementLabel.attributedText = BitnagilFont(style: .title2, weight: .bold).attributedString(text: text)
+        agreementLabel.textAlignment = .left
+        agreementLabel.numberOfLines = 2
+        agreementLabel.textColor = BitnagilColor.navy500
 
         totalAgreementButton.addAction(UIAction { [weak self] _ in
             self?.viewModel.action(input: .toggleTotalAgreement)
