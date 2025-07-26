@@ -58,22 +58,6 @@ final class AuthRepository: AuthRepositoryProtocol {
         try removeNickname()
     }
 
-    func reissueToken() async throws {
-        let refreshToken = try tokenManager.loadToken(tokenType: .refreshToken)
-        let endpoint = AuthEndpoint.reissue(refreshToken: refreshToken)
-
-        guard let userResponse = try await networkService.request(endpoint: endpoint, type: LoginResponseDTO.self)
-        else { return }
-        let userEntity = userResponse.toUserEntity()
-
-        try tokenManager.saveToken(token: userEntity.accessToken, tokenType: .accessToken)
-        try tokenManager.saveToken(token: userEntity.refreshToken, tokenType: .refreshToken)
-
-        BitnagilLogger.log(logType: .debug, message: "User Logined: \(userEntity.userState)")
-        BitnagilLogger.log(logType: .debug, message: "AccessToken Saved: \(userEntity.accessToken)")
-        BitnagilLogger.log(logType: .debug, message: "RefreshToken Saved: \(userEntity.refreshToken)")
-    }
-
     private func fetchKakaoToken() async throws -> String {
         try await withCheckedThrowingContinuation { continuation in
             let resultHandler: (OAuthToken?, Error?) -> Void = { oauthToken, error in

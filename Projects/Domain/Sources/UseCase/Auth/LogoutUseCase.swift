@@ -15,8 +15,4 @@ public final class LogoutUseCase: LogoutUseCaseProtocol {
     public func logout() async throws {
         try await authRepository.logout()
     }
-
-    public func reissueToken() async throws {
-        try await authRepository.reissueToken()
-    }
 }
