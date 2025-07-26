@@ -25,8 +25,6 @@ let project = Project(
                 .project(target: "Presentation", path: "../Presentation"),
                 .project(target: "Domain", path: "../Domain"),
                 .project(target: "DataSource", path: "../DataSource"),
-                .project(target: "NetworkService", path: "../NetworkService"),
-                .project(target: "Persistence", path: "../Persistence"),
                 .project(target: "Shared", path: "../Shared")
             ]
         )

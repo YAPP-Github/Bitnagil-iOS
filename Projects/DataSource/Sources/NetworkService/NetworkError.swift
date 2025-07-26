@@ -5,14 +5,14 @@
 //  Created by 최정인 on 6/23/25.
 //
 
-public enum NetworkError: Error, CustomStringConvertible {
+enum NetworkError: Error, CustomStringConvertible {
     case invalidURL
     case invalidResponse
     case invalidStatusCode(statusCode: Int)
     case emptyData
     case decodingError
 
-    public var description: String {
+    var description: String {
         switch self {
         case .invalidURL:
             return "invalidURL"

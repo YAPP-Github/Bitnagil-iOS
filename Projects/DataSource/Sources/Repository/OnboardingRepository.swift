@@ -8,13 +8,8 @@
 import Domain
 
 final class OnboardingRepository: OnboardingRepositoryProtocol {
-    private let networkService: NetworkServiceProtocol
-    private let keychainStorage: KeychainStorageProtocol
-
-    init(networkService: NetworkServiceProtocol, keychainStorage: KeychainStorageProtocol) {
-        self.networkService = networkService
-        self.keychainStorage = keychainStorage
-    }
+    private let networkService = NetworkService.shared
+    private let keychainStorage = KeychainStorage.shared
 
     func registerOnboarding(onboardingChoices: [String : String]) async throws -> [RecommendedRoutineEntity] {
         let accessToken = try loadToken(tokenType: .accessToken)

@@ -12,19 +12,9 @@ import KakaoSDKUser
 import KakaoSDKAuth
 
 final class AuthRepository: AuthRepositoryProtocol {
-    private let networkService: NetworkServiceProtocol
-    private let keychainStorage: KeychainStorageProtocol
-    private let userDefaultsStorage: UserDefaultsStorageProtocol
-
-    init(
-        networkService: NetworkServiceProtocol,
-        keychainStorage: KeychainStorageProtocol,
-        userDefaultsStorage: UserDefaultsStorageProtocol
-    ) {
-        self.networkService = networkService
-        self.keychainStorage = keychainStorage
-        self.userDefaultsStorage = userDefaultsStorage
-    }
+    private let networkService = NetworkService.shared
+    private let keychainStorage = KeychainStorage.shared
+    private let userDefaultsStorage = UserDefaultsStorage.shared
 
     func kakaoLogin() async throws -> UserEntity {
         let accessToken = try await fetchKakaoToken()

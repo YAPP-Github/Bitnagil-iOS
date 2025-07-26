@@ -9,13 +9,8 @@ import Domain
 import Foundation
 
 final class UserDataRepository: UserDataRepositoryProtocol {
-    private let keychainStorage: KeychainStorageProtocol
-    private let userDefaultsStorage: UserDefaultsStorageProtocol
-
-    init(keychainStorage: KeychainStorageProtocol, userDefaultsStorage: UserDefaultsStorageProtocol) {
-        self.keychainStorage = keychainStorage
-        self.userDefaultsStorage = userDefaultsStorage
-    }
+    private let keychainStorage = KeychainStorage.shared
+    private let userDefaultsStorage = UserDefaultsStorage.shared
 
     // TODO: - accessToken fetch 로직 상의 후 결정
     func loadAccessToken() throws -> String {

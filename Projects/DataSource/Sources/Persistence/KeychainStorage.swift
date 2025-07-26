@@ -1,23 +1,19 @@
 //
 //  KeychainStorage.swift
-//  Persistence
+//  DataSource
 //
-//  Created by 반성준 on 6/21/25.
+//  Created by 최정인 on 7/26/25.
 //
 
-import DataSource
 import Foundation
 
-public final class KeychainStorage: KeychainStorageProtocol {
-    private let service: String
-    private let accessGroup: String?
+final class KeychainStorage {
+    static let shared = KeychainStorage()
+    private let service: String = Bundle.main.bundleIdentifier ?? "DefaultService"
 
-    public init(service: String? = nil, accessGroup: String? = nil) {
-        self.service = service ?? Bundle.main.bundleIdentifier ?? "DefaultService"
-        self.accessGroup = accessGroup
-    }
+    private init() { }
 
-    public func save(_ value: String, forKey key: String) -> Bool {
+    func save(_ value: String, forKey key: String) -> Bool {
         guard let data = value.data(using: .utf8) else {
             return false
         }
@@ -41,7 +37,7 @@ public final class KeychainStorage: KeychainStorageProtocol {
         return status == errSecSuccess
     }
 
-    public func load(forKey key: String) -> String? {
+    func load(forKey key: String) -> String? {
         var query = baseQuery(for: key)
         query[kSecReturnData as String] = kCFBooleanTrue
         query[kSecMatchLimit as String] = kSecMatchLimitOne
@@ -57,7 +53,7 @@ public final class KeychainStorage: KeychainStorageProtocol {
         return nil
     }
 
-    public func remove(forKey key: String) -> Bool {
+    func remove(forKey key: String) -> Bool {
         let query = baseQuery(for: key)
         let status = SecItemDelete(query as CFDictionary)
 
@@ -70,11 +66,6 @@ public final class KeychainStorage: KeychainStorageProtocol {
             kSecAttrService as String: service,
             kSecAttrAccount as String: key
         ]
-
-        if let accessGroup = accessGroup {
-            query[kSecAttrAccessGroup as String] = accessGroup
-        }
-
         return query
     }
 }

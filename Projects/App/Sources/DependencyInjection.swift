@@ -8,16 +8,12 @@
 import DataSource
 import Domain
 import Foundation
-import NetworkService
-import Persistence
 import Presentation
 import Shared
 
 extension DIContainer {
     func dependencyInjection() {
-        let networkAssembler = NetworkDependencyAssembler()
-        let persistenceAssembler = PersistenceDependencyAssembler()
-        let dataSourceAssembler = DataSourceDependencyAssembler(preAssemblers: [networkAssembler, persistenceAssembler])
+        let dataSourceAssembler = DataSourceDependencyAssembler()
         let domainAssembler = DomainDependencyAssembler(preAssembler: dataSourceAssembler)
         let presentationAssembler = PresentationDependencyAssembler(preAssembler: domainAssembler)
         presentationAssembler.assemble()
