@@ -32,17 +32,13 @@ final class ProgressBarView: UIView {
     }
 
     private func configureAttribute() {
-        backgroundView.do {
-            $0.frame = bounds
-            $0.backgroundColor = .white
-            $0.layer.cornerRadius = Layout.barHeight / 2
-            $0.layer.masksToBounds = true
-        }
+        backgroundView.frame = bounds
+        backgroundView.backgroundColor = .white
+        backgroundView.layer.cornerRadius = Layout.barHeight / 2
+        backgroundView.layer.masksToBounds = true
 
-        progressView.do {
-            $0.layer.cornerRadius = Layout.barHeight / 2
-            $0.layer.masksToBounds = true
-        }
+        progressView.layer.cornerRadius = Layout.barHeight / 2
+        progressView.layer.masksToBounds = true
     }
 
     private func configureLayout(step: Int, stepCount: Int) {

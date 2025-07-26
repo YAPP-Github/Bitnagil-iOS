@@ -38,10 +38,8 @@ final class RoutineCategoryView: UIView {
     private func configureAttribute() {
         scrollView.showsHorizontalScrollIndicator = false
 
-        buttonStackView.do {
-            $0.axis = .horizontal
-            $0.spacing = Layout.stackViewSpacing
-        }
+        buttonStackView.axis = .horizontal
+        buttonStackView.spacing = Layout.stackViewSpacing
 
         RoutineCategoryType.allCases.sorted(by: { $0.id < $1.id }).forEach { type in
             let button = RoutineCategoryButton(category: type)

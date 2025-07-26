@@ -34,11 +34,9 @@ final class RoutineCategoryButton: UIButton {
     private func configureAttribute() {
         backgroundColor = BitnagilColor.gray99
 
-        categoryLabel.do {
-            $0.text = routineCategory.title
-            $0.font = BitnagilFont(style: .caption1, weight: .regular).font
-            $0.textColor = BitnagilColor.navy100
-        }
+        categoryLabel.text = routineCategory.title
+        categoryLabel.font = BitnagilFont(style: .caption1, weight: .regular).font
+        categoryLabel.textColor = BitnagilColor.navy100
     }
 
     private func configureLayout() {

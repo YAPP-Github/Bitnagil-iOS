@@ -46,33 +46,25 @@ final class RecommendedRoutineCardView: UIView {
         backgroundColor = BitnagilColor.lightBlue75
         layer.cornerRadius = Layout.cornerRadius
 
-        labelStackView.do {
-            $0.axis = .vertical
-            $0.spacing = Layout.stackViewSpacing
-        }
+        labelStackView.axis = .vertical
+        labelStackView.spacing = Layout.stackViewSpacing
 
-        mainLabel.do {
-            $0.text = recommendedRoutine.mainTitle
-            $0.font = BitnagilFont(style: .body1, weight: .semiBold).font
-            $0.textColor = BitnagilColor.navy500
-        }
+        mainLabel.text = recommendedRoutine.mainTitle
+        mainLabel.font = BitnagilFont(style: .body1, weight: .semiBold).font
+        mainLabel.textColor = BitnagilColor.navy500
 
-        subLabel.do {
-            $0.text = recommendedRoutine.subTitle
-            $0.font = BitnagilFont(style: .body2, weight: .regular).font
-            $0.textColor = BitnagilColor.navy300
-        }
+        subLabel.text = recommendedRoutine.subTitle
+        subLabel.font = BitnagilFont(style: .body2, weight: .regular).font
+        subLabel.textColor = BitnagilColor.navy300
 
-        plusButton.do {
-            let plusIcon = BitnagilIcon.plusIcon?
-                .resizeAspectFit(to: CGSize(width: Layout.plusImageSize, height: Layout.plusImageSize))
-            $0.setImage(plusIcon, for: .normal)
-            $0.tintColor = BitnagilColor.navy500
-            $0.addAction(UIAction { [weak self] _ in
-                guard let self else { return }
-                self.delegate?.recommendedRoutineCardView(self, didTapRecommendedRoutine: recommendedRoutine)
-            }, for: .touchUpInside)
-        }
+        let plusIcon = BitnagilIcon.plusIcon?
+            .resizeAspectFit(to: CGSize(width: Layout.plusImageSize, height: Layout.plusImageSize))
+        plusButton.setImage(plusIcon, for: .normal)
+        plusButton.tintColor = BitnagilColor.navy500
+        plusButton.addAction(UIAction { [weak self] _ in
+            guard let self else { return }
+            self.delegate?.recommendedRoutineCardView(self, didTapRecommendedRoutine: recommendedRoutine)
+        }, for: .touchUpInside)
     }
 
     private func configureLayout() {

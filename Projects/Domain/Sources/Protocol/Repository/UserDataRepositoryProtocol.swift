@@ -12,5 +12,5 @@ public protocol UserDataRepositoryProtocol {
     func loadNickname() throws -> String
 
     /// 토큰 재발급을 진행합니다.
-    func reissueToken() async throws
+    func reissueToken() async -> Bool
 }

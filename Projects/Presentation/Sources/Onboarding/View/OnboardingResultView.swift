@@ -71,33 +71,24 @@ final class OnboardingResultView: BaseViewController<OnboardingViewModel> {
     }
 
     override func configureAttribute() {
-        mainLabel.do {
-            let text = "이제 당신에게\n꼭 맞는 루틴을 제안해드릴게요."
-            $0.attributedText = BitnagilFont(style: .title2, weight: .bold).attributedString(text: text)
-            $0.textColor = BitnagilColor.navy500
-            $0.numberOfLines = 2
-            $0.textAlignment = .left
-        }
+        let text = "이제 당신에게\n꼭 맞는 루틴을 제안해드릴게요."
+        mainLabel.attributedText = BitnagilFont(style: .title2, weight: .bold).attributedString(text: text)
+        mainLabel.textColor = BitnagilColor.navy500
+        mainLabel.numberOfLines = 2
+        mainLabel.textAlignment = .left
+        
+        subLabel.text = "당신은 지금"
+        subLabel.font = BitnagilFont(style: .body2, weight: .medium).font
+        subLabel.textColor = BitnagilColor.gray30
 
-        subLabel.do {
-            $0.text = "당신은 지금"
-            $0.font = BitnagilFont(style: .body2, weight: .medium).font
-            $0.textColor = BitnagilColor.gray30
-        }
-
-        resultStackView.do {
-            $0.axis = .vertical
-            $0.spacing = Layout.resultStackViewSpacing
-        }
+        resultStackView.axis = .vertical
+        resultStackView.spacing = Layout.resultStackViewSpacing
 
         [timeResultLabel, feelingResultLabel, outdoorResultLabel].forEach { label in
-            label.do {
-                $0.textColor = BitnagilColor.gray30
-            }
+            label.textColor = BitnagilColor.gray30
         }
-        graphicView.do {
-            $0.backgroundColor = BitnagilColor.gray90
-        }
+
+        graphicView.backgroundColor = BitnagilColor.gray90
     }
 
     override func configureLayout() {
@@ -180,22 +171,16 @@ final class OnboardingResultView: BaseViewController<OnboardingViewModel> {
             baseText = ""
         }
 
-        timeResultLabel.do {
-            $0.attributedText = NSAttributedString.highlighted(text: baseText, highlightText: timeResult)
-        }
+        timeResultLabel.attributedText = NSAttributedString.highlighted(text: baseText, highlightText: timeResult)
     }
 
     private func updateFeelingResultLabel(feelingResult: String) {
         let baseText = "• \(feelingResult)을 원하는 중이에요"
-        feelingResultLabel.do {
-            $0.attributedText = NSAttributedString.highlighted(text: baseText, highlightText: feelingResult)
-        }
+        feelingResultLabel.attributedText = NSAttributedString.highlighted(text: baseText, highlightText: feelingResult)
     }
 
     private func updateOutdoorResultLabel(outdoorResult: String) {
         let baseText = "• \(outdoorResult)을 목표로 해볼게요!"
-        outdoorResultLabel.do {
-            $0.attributedText = NSAttributedString.highlighted(text: baseText, highlightText: outdoorResult)
-        }
+        outdoorResultLabel.attributedText = NSAttributedString.highlighted(text: baseText, highlightText: outdoorResult)
     }
 }

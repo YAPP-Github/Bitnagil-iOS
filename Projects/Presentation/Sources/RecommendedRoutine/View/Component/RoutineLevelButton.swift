@@ -37,26 +37,20 @@ final class RoutineLevelButton: UIButton {
     }
     
     private func configureAttribute() {
-        stackView.do {
-            $0.isUserInteractionEnabled = false
-            $0.axis = .horizontal
-            $0.spacing = Layout.stackViewSpacing
-        }
+        stackView.isUserInteractionEnabled = false
+        stackView.axis = .horizontal
+        stackView.spacing = Layout.stackViewSpacing
 
-        buttonLabel.do {
-            $0.text = level?.title ?? "난이도 선택"
-            $0.font = BitnagilFont(style: .body2, weight: .medium).font
-            $0.textColor = BitnagilColor.gray60
-        }
+        buttonLabel.text = level?.title ?? "난이도 선택"
+        buttonLabel.font = BitnagilFont(style: .body2, weight: .medium).font
+        buttonLabel.textColor = BitnagilColor.gray60
 
-        chevronIcon.do {
-            $0.image = BitnagilIcon
-                .chevronIcon(direction: .down)?
-                .resizeAspectFit(to: CGSize(width: Layout.chevronImageSize, height: Layout.chevronImageSize))?
-                .withRenderingMode(.alwaysTemplate)
-            $0.contentMode = .center
-            $0.tintColor = BitnagilColor.gray60
-        }
+        chevronIcon.image = BitnagilIcon
+            .chevronIcon(direction: .down)?
+            .resizeAspectFit(to: CGSize(width: Layout.chevronImageSize, height: Layout.chevronImageSize))?
+            .withRenderingMode(.alwaysTemplate)
+        chevronIcon.contentMode = .center
+        chevronIcon.tintColor = BitnagilColor.gray60
     }
 
     private func configureLayout() {

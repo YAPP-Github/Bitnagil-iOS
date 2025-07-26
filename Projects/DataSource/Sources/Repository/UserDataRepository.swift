@@ -23,20 +23,27 @@ final class UserDataRepository: UserDataRepositoryProtocol {
         return nickname
     }
 
-    func reissueToken() async throws {
-        let refreshToken = try tokenManager.loadToken(tokenType: .refreshToken)
-        let endpoint = AuthEndpoint.reissue(refreshToken: refreshToken)
+    func reissueToken() async -> Bool {
+        do {
+            let refreshToken = try tokenManager.loadToken(tokenType: .refreshToken)
+            let endpoint = AuthEndpoint.reissue(refreshToken: refreshToken)
 
-        guard let userResponse = try await networkService.request(endpoint: endpoint, type: LoginResponseDTO.self)
-        else { return }
-        let userEntity = userResponse.toUserEntity()
+            guard let userResponse = try await networkService.request(endpoint: endpoint, type: LoginResponseDTO.self)
+            else { return false }
+            let userEntity = userResponse.toUserEntity()
 
-        try tokenManager.saveToken(token: userEntity.accessToken, tokenType: .accessToken)
-        try tokenManager.saveToken(token: userEntity.refreshToken, tokenType: .refreshToken)
+            try tokenManager.saveToken(token: userEntity.accessToken, tokenType: .accessToken)
+            try tokenManager.saveToken(token: userEntity.refreshToken, tokenType: .refreshToken)
 
-        BitnagilLogger.log(logType: .debug, message: "User Logined: \(userEntity.userState)")
-        BitnagilLogger.log(logType: .debug, message: "AccessToken Saved: \(userEntity.accessToken)")
-        BitnagilLogger.log(logType: .debug, message: "RefreshToken Saved: \(userEntity.refreshToken)")
+            BitnagilLogger.log(logType: .debug, message: "User Logined: \(userEntity.userState)")
+            BitnagilLogger.log(logType: .debug, message: "AccessToken Saved: \(userEntity.accessToken)")
+            BitnagilLogger.log(logType: .debug, message: "RefreshToken Saved: \(userEntity.refreshToken)")
+
+            return true
+        } catch {
+            BitnagilLogger.log(logType: .error, message: "\(error.localizedDescription)")
+            return false
+        }
     }
 }
 

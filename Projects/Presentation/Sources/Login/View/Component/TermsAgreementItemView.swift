@@ -47,31 +47,25 @@ final class TermsAgreementItemView: UIView {
     }
 
     private func configureAttribute() {
-        checkButton.do {
-            $0.setImage(BitnagilIcon.checkIcon, for: .normal)
-            $0.tintColor = BitnagilColor.navy100
-            $0.addAction(UIAction { [weak self] _ in
-                guard let self else { return }
-                self.isAgreed.toggle()
-                self.delegate?.termsAgreementItemView(self, didToggleCheckFor: self.termType)
-            }, for: .touchUpInside)
-        }
+        checkButton.setImage(BitnagilIcon.checkIcon, for: .normal)
+        checkButton.tintColor = BitnagilColor.navy100
+        checkButton.addAction(UIAction { [weak self] _ in
+            guard let self else { return }
+            self.isAgreed.toggle()
+            self.delegate?.termsAgreementItemView(self, didToggleCheckFor: self.termType)
+        }, for: .touchUpInside)
 
-        agreementLable.do {
-            $0.attributedText = BitnagilFont(style: .body2, weight: .medium).attributedString(text: termType.title)
-            $0.textColor = BitnagilColor.gray50
-        }
+        agreementLable.attributedText = BitnagilFont(style: .body2, weight: .medium).attributedString(text: termType.title)
+        agreementLable.textColor = BitnagilColor.gray50
 
-        moreButton.do {
-            let title = BitnagilFont(style: .captionUnderline1, weight: .semiBold).attributedString(text: "더보기")
-            $0.setAttributedTitle(title, for: .normal)
-            $0.setTitleColor(BitnagilColor.gray50, for: .normal)
-            $0.isHidden = termType.link == nil
-            $0.addAction(UIAction { [weak self] _ in
-                guard let self else { return }
-                self.delegate?.termsAgreementItemView(self, didTapMoreButtonFor: self.termType)
-            }, for: .touchUpInside)
-        }
+        let title = BitnagilFont(style: .captionUnderline1, weight: .semiBold).attributedString(text: "더보기")
+        moreButton.setAttributedTitle(title, for: .normal)
+        moreButton.setTitleColor(BitnagilColor.gray50, for: .normal)
+        moreButton.isHidden = termType.link == nil
+        moreButton.addAction(UIAction { [weak self] _ in
+            guard let self else { return }
+            self.delegate?.termsAgreementItemView(self, didTapMoreButtonFor: self.termType)
+        }, for: .touchUpInside)
     }
 
     private func configureLayout() {

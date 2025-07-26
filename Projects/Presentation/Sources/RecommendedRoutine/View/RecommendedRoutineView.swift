@@ -56,15 +56,11 @@ final class RecommendedRoutineView: BaseViewController<RecommendedRoutineViewMod
         title = "추천 루틴"
         categoryView.delegate = self
 
-        routineLabel.do {
-            $0.text = "루틴 목록"
-            $0.font = BitnagilFont(style: .body1, weight: .semiBold).font
-            $0.textColor = BitnagilColor.gray10
-        }
+        routineLabel.text = "루틴 목록"
+        routineLabel.font = BitnagilFont(style: .body1, weight: .semiBold).font
+        routineLabel.textColor = BitnagilColor.gray10
 
-        headerStackView.do {
-            $0.axis = .horizontal
-        }
+        headerStackView.axis = .horizontal
 
         levelButton.addAction(UIAction { _ in
             self.showBottomSheet()
@@ -72,14 +68,10 @@ final class RecommendedRoutineView: BaseViewController<RecommendedRoutineViewMod
 
         levelView.delegate = self
 
-        recommendedRoutineScrollView.do {
-            $0.showsVerticalScrollIndicator = false
-        }
-
-        recommendedRoutineStackView.do {
-            $0.axis = .vertical
-            $0.spacing = Layout.recommendedRoutineStackViewSpacing
-        }
+        recommendedRoutineScrollView.showsVerticalScrollIndicator = false
+        
+        recommendedRoutineStackView.axis = .vertical
+        recommendedRoutineStackView.spacing = Layout.recommendedRoutineStackViewSpacing
     }
 
     public override func configureLayout() {

@@ -37,19 +37,15 @@ final class RegisterEmotionButton: UIButton {
         layer.cornerRadius = Layout.cornerRadius
         layer.borderColor = BitnagilColor.navy100?.cgColor
 
-        plusIcon.do {
-            $0.contentMode = .center
-            $0.image = BitnagilIcon.plusIcon?
-                .resizeAspectFit(to: CGSize(width: Layout.plusIconImageSize, height: Layout.plusIconImageSize))?
-                .withRenderingMode(.alwaysTemplate)
-            $0.tintColor = BitnagilColor.navy400
-        }
+        plusIcon.contentMode = .center
+        plusIcon.image = BitnagilIcon.plusIcon?
+            .resizeAspectFit(to: CGSize(width: Layout.plusIconImageSize, height: Layout.plusIconImageSize))?
+            .withRenderingMode(.alwaysTemplate)
+        plusIcon.tintColor = BitnagilColor.navy400
 
-        buttonLabel.do {
-            $0.text = "오늘의 감정 루틴 추천받기"
-            $0.font = BitnagilFont(style: .body2, weight: .medium).font
-            $0.textColor = BitnagilColor.navy400
-        }
+        buttonLabel.text = "오늘의 감정 루틴 추천받기"
+        buttonLabel.font = BitnagilFont(style: .body2, weight: .medium).font
+        buttonLabel.textColor = BitnagilColor.navy400
     }
 
     private func configureLayout() {

@@ -69,23 +69,17 @@ final class SocialLoginButton: UIButton {
         backgroundColor = socialType.buttonColor
         layer.cornerRadius = Layout.cornerRadius
 
-        stackView.do {
-            $0.axis = .horizontal
-            $0.alignment = .center
-            $0.spacing = Layout.stackViewSpacing
-            $0.isUserInteractionEnabled = false
-        }
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.spacing = Layout.stackViewSpacing
+        stackView.isUserInteractionEnabled = false
 
-        iconImageView.do {
-            $0.image = socialType.iconImage
-            $0.contentMode = .scaleAspectFit
-        }
+        iconImageView.image = socialType.iconImage
+        iconImageView.contentMode = .scaleAspectFit
 
-        buttonLabel.do {
-            $0.text = socialType.buttonTitle
-            $0.textColor = socialType.buttonTextColor
-            $0.font = BitnagilFont(style: .button2, weight: .semiBold).font
-        }
+        buttonLabel.text = socialType.buttonTitle
+        buttonLabel.textColor = socialType.buttonTextColor
+        buttonLabel.font = BitnagilFont(style: .button2, weight: .semiBold).font
     }
 
     private func configureLayout() {

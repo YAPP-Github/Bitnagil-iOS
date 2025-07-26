@@ -5,6 +5,7 @@
 //  Created by 최정인 on 6/15/25.
 //
 
+import Domain
 import KakaoSDKAuth
 import Presentation
 import Shared
@@ -19,13 +20,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         DIContainer.shared.dependencyInjection()
 
-        let introView = IntroView()
-        let navigationController = UINavigationController(rootViewController: introView)
+        guard let userDateRepository = DIContainer.shared.resolve(type: UserDataRepositoryProtocol.self)
+        else { fatalError("userDateRepository 의존성이 등록되지 않았습니다.") }
 
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
-
-        self.window = window
+        Task {
+            let isLogined = await userDateRepository.reissueToken()
+            if isLogined {
+                window.rootViewController = TabBarView()
+            } else {
+                let introView = IntroView()
+                let navigationController = UINavigationController(rootViewController: introView)
+                window.rootViewController = navigationController
+            }
+            window.makeKeyAndVisible()
+            self.window = window
+        }
     }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {

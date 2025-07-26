@@ -41,24 +41,18 @@ final class TotalAgreementButton: UIButton {
         backgroundColor = BitnagilColor.gray99
         layer.cornerRadius = Layout.cornerRadius
 
-        stackView.do {
-            $0.axis = .horizontal
-            $0.alignment = .center
-            $0.spacing = Layout.stackViewSpacing
-            $0.isUserInteractionEnabled = false
-        }
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.spacing = Layout.stackViewSpacing
+        stackView.isUserInteractionEnabled = false
 
-        checkButton.do {
-            $0.image = BitnagilIcon.checkIcon
-            $0.tintColor = BitnagilColor.navy100
-            $0.contentMode = .scaleAspectFit
-        }
+        checkButton.image = BitnagilIcon.checkIcon
+        checkButton.tintColor = BitnagilColor.navy100
+        checkButton.contentMode = .scaleAspectFit
 
-        buttonLabel.do {
-            $0.text = "전체동의"
-            $0.textColor = BitnagilColor.gray50
-            $0.font = BitnagilFont(style: .subtitle1, weight: .semiBold).font
-        }
+        buttonLabel.text = "전체동의"
+        buttonLabel.textColor = BitnagilColor.gray50
+        buttonLabel.font = BitnagilFont(style: .subtitle1, weight: .semiBold).font
     }
 
     private func configureLayout() {

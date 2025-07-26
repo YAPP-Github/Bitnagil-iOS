@@ -216,10 +216,14 @@ final class OnboardingRecommendedRoutineView: BaseViewController<OnboardingViewM
     }
 
     private func goToHomeView() {
-        guard let homeViewModel = DIContainer.shared.resolve(type: HomeViewModel.self) else {
-            fatalError("homeViewModel 의존성이 등록되지 않았습니다.")
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = windowScene.windows.first(where: { $0.isKeyWindow }) {
+            window.rootViewController = TabBarView()
         }
-        let homeView = HomeView(viewModel: homeViewModel)
-        self.navigationController?.pushViewController(homeView, animated: true)
+        //        guard let homeViewModel = DIContainer.shared.resolve(type: HomeViewModel.self) else {
+        //            fatalError("homeViewModel 의존성이 등록되지 않았습니다.")
+        //        }
+        //        let homeView = HomeView(viewModel: homeViewModel)
+        //        self.navigationController?.pushViewController(homeView, animated: true)
     }
 }

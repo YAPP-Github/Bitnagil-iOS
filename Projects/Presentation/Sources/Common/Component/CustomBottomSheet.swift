@@ -54,25 +54,17 @@ final class CustomBottomSheet: UIViewController {
     }
 
     private func configureAttribute() {
-        dimmedView.do {
-            $0.backgroundColor = UIColor.black.withAlphaComponent(0.7)
-            $0.alpha = 0
-        }
+        dimmedView.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+        dimmedView.alpha = 0
 
-        bottomSheetView.do {
-            $0.backgroundColor = UIColor.systemBackground
-            $0.layer.cornerRadius = Layout.bottomSheetCornerRadius
-            $0.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        }
+        bottomSheetView.backgroundColor = UIColor.systemBackground
+        bottomSheetView.layer.cornerRadius = Layout.bottomSheetCornerRadius
+        bottomSheetView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
 
-        dragHandle.do {
-            $0.backgroundColor = UIColor.systemGray4
-            $0.layer.cornerRadius = Layout.dragHandleCornerRadius
-        }
-        
-        contentView.do {
-            $0.backgroundColor = .clear
-        }
+        dragHandle.backgroundColor = UIColor.systemGray4
+        dragHandle.layer.cornerRadius = Layout.dragHandleCornerRadius
+
+        contentView.backgroundColor = .clear
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissBottomSheet))
         dimmedView.addGestureRecognizer(tapGesture)
