@@ -20,11 +20,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         DIContainer.shared.dependencyInjection()
 
-        guard let userDateRepository = DIContainer.shared.resolve(type: UserDataRepositoryProtocol.self)
-        else { fatalError("userDateRepository 의존성이 등록되지 않았습니다.") }
+        guard let userDataRepository = DIContainer.shared.resolve(type: UserDataRepositoryProtocol.self)
+        else { fatalError("userDataRepository 의존성이 등록되지 않았습니다.") }
 
         Task {
-            let isLogined = await userDateRepository.reissueToken()
+            let isLogined = await userDataRepository.reissueToken()
             if isLogined {
                 window.rootViewController = TabBarView()
             } else {
