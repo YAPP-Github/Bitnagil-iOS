@@ -44,6 +44,7 @@ final class RoutineCreationView: BaseViewController<RoutineCreationViewModel> {
         static let registerButtonTopSpacing: CGFloat = 54
         static let registerButtonHeight: CGFloat = 54
         static let registerButtonBottomSpacing: CGFloat = 14
+        static let datePickerBottomSheetHeight: CGFloat = 347
     }
 
     private let scrollView = UIScrollView()
@@ -436,10 +437,9 @@ final class RoutineCreationView: BaseViewController<RoutineCreationViewModel> {
 
         viewModel.output.executionTimePublisher
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] executionTime in
-                self?.timePickerButton.configure(title: executionTime.description)
-
-                let allDayButtonImage = executionTime == .allDay
+            .sink { [weak self] executionType in
+                self?.timePickerButton.configure(title: executionType.description)
+                let allDayButtonImage = executionType == "하루종일"
                     ? BitnagilIcon.checkedIcon
                     : BitnagilIcon.uncheckedIcon
                 self?.allDayButton.setImage(allDayButtonImage, for: .normal)
@@ -500,7 +500,9 @@ final class RoutineCreationView: BaseViewController<RoutineCreationViewModel> {
 
         allDayButton.addAction(
             UIAction { [weak self] _ in
-                self?.viewModel.action(input: .configureExecution(type: .allDay))
+                let datePickerView = DatePickerView()
+                datePickerView.delegate = self
+                self?.presentCustomBottomSheet(contentViewController: datePickerView, maxHeight: Layout.datePickerBottomSheetHeight)
             },
             for: .touchUpInside)
     }
@@ -605,5 +607,11 @@ extension RoutineCreationView: RoutineCreationInputViewDelegate {
         guard let index = subroutineStackView.subviews.firstIndex(of: sender) else { return }
 
         viewModel.action(input: .configureSubRoutine(name: text, index: index))
+    }
+}
+
+extension RoutineCreationView: DatePickerViewDelegate {
+    func datePickerView(_ pickerView: DatePickerView, didSelectTime time: Date) {
+        viewModel.action(input: .configureExecution(type: .time(startAt: time)))
     }
 }

@@ -5,6 +5,7 @@
 //  Created by 이동현 on 7/20/25.
 //
 import Combine
+import Foundation
 
 final class RoutineCreationViewModel: ViewModel {
     enum RepeatType {
@@ -20,14 +21,18 @@ final class RoutineCreationViewModel: ViewModel {
     }
 
     enum ExecutionType: Comparable {
-        case time(startAt: String)
+        case time(startAt: Date)
         case allDay
         case none
 
         var description: String {
             switch self {
             case .time(let time):
-                return time
+                let dateFormatter = DateFormatter()
+                dateFormatter.locale = Locale(identifier: "ko_KR")
+                dateFormatter.dateFormat = "a h:mm"
+
+                return dateFormatter.string(from: time)
             case .allDay:
                 return "하루종일"
             case .none:
@@ -53,7 +58,7 @@ final class RoutineCreationViewModel: ViewModel {
         let subRoutinesPublisher: AnyPublisher<[String], Never>
         let repeatTypePublisher: AnyPublisher<RepeatType?, Never>
         let weekDayPublisher: AnyPublisher<Set<Week>, Never>
-        let executionTimePublisher: AnyPublisher<ExecutionType, Never>
+        let executionTimePublisher: AnyPublisher<String, Never>
         let isRoutineValid: AnyPublisher<Bool, Never>
     }
 
@@ -71,7 +76,9 @@ final class RoutineCreationViewModel: ViewModel {
             subRoutinesPublisher: subRoutinesSubject.eraseToAnyPublisher(),
             repeatTypePublisher: repeatTypeSubject.eraseToAnyPublisher(),
             weekDayPublisher: weekDaySubject.eraseToAnyPublisher(),
-            executionTimePublisher: executionTimeSubject.eraseToAnyPublisher(),
+            executionTimePublisher: executionTimeSubject
+                .map{ $0.description }
+                .eraseToAnyPublisher(),
             isRoutineValid: checkRoutinePublisher.eraseToAnyPublisher())
     }
 
@@ -90,9 +97,9 @@ final class RoutineCreationViewModel: ViewModel {
         case .toggleRepeatDay(let weekDay):
             configureWeekDay(weekDay: weekDay)
         case .toggleRepeatAllDay:
-            configurExecutionTime(time: .allDay)
+            configurExecutionTime(type: .allDay)
         case .configureExecution(let startTime):
-            configurExecutionTime(time: startTime)
+            configurExecutionTime(type: startTime)
         case .registerRoutine:
             registerRoutine()
         }
@@ -159,16 +166,16 @@ final class RoutineCreationViewModel: ViewModel {
         weekDaySubject.send(weekDays)
     }
 
-    private func configurExecutionTime(time: ExecutionType) {
+    private func configurExecutionTime(type: ExecutionType) {
         if
-            time == .allDay,
+            type == .allDay,
             executionTimeSubject.value == .allDay
         {
             executionTimeSubject.send(.none)
             return
         }
 
-        executionTimeSubject.send(time)
+        executionTimeSubject.send(type)
     }
 
     private func updateIsRoutineValid() {
