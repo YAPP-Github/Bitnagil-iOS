@@ -5,6 +5,7 @@
 //  Created by 최정인 on 7/27/25.
 //
 
+import SnapKit
 import UIKit
 
 public final class SplashView: UIViewController {
