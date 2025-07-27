@@ -29,12 +29,12 @@ final class RoutineCreationView: BaseViewController<RoutineCreationViewModel> {
         static let repeatWeekDayButtonLeadingSpacing: CGFloat = 13
         static let infoButtonSize: CGFloat = 16
         static let infoButtonLeadingSpacing: CGFloat = 6
-        static let toolTipViewHeight: CGFloat = 47
-        static let toolTipViewLeadingSpacing: CGFloat = 22
-        static let toolTipViewBottomSpacing: CGFloat = 8
-        static let toolTipViewTailLeadingSpacing: CGFloat = 16
-        static let detailToolTipWidth: CGFloat = 209
-        static let repeatToolTipWidth: CGFloat = 262
+        static let tooltipViewHeight: CGFloat = 47
+        static let tooltipViewLeadingSpacing: CGFloat = 22
+        static let tooltipViewBottomSpacing: CGFloat = 8
+        static let tooltipViewTailLeadingSpacing: CGFloat = 16
+        static let detailTooltipWidth: CGFloat = 209
+        static let repeatTooltipWidth: CGFloat = 262
         static let weekDayStackViewTopSpacing: CGFloat = 16
         static let weekDayStackViewSpacing: CGFloat = 10
         static let weekDayStackViewHeight: CGFloat = 48
@@ -58,11 +58,11 @@ final class RoutineCreationView: BaseViewController<RoutineCreationViewModel> {
     private let subroutineAdditionButton = SubroutineAdditionButton()
     private let subroutineStackView = UIStackView()
     private let detailWarningLabel = UILabel()
-    private let detailToolTipView = ToolTipView(tailPosition: .offsetFromLeading(Layout.toolTipViewTailLeadingSpacing))
+    private let detailToolTipView = TooltipView(tailPosition: .offsetFromLeading(Layout.tooltipViewTailLeadingSpacing))
 
     private let repeatTitleLabel = UILabel()
     private let repeatInfoButton = UIButton()
-    private let repeatToolTipView = ToolTipView(tailPosition: .offsetFromLeading(Layout.toolTipViewTailLeadingSpacing))
+    private let repeatToolTipView = TooltipView(tailPosition: .offsetFromLeading(Layout.tooltipViewTailLeadingSpacing))
     private let repeatDailyButton = UIButton()
     private let repeatWeekButton = UIButton()
 
@@ -257,10 +257,10 @@ final class RoutineCreationView: BaseViewController<RoutineCreationViewModel> {
         }
 
         detailToolTipView.snp.makeConstraints { make in
-            make.leading.equalTo(detailInfoButton.snp.centerX).offset(-Layout.toolTipViewLeadingSpacing)
-            make.bottom.equalTo(detailInfoButton.snp.top).offset(-Layout.toolTipViewBottomSpacing)
-            make.width.equalTo(Layout.detailToolTipWidth)
-            make.height.equalTo(Layout.toolTipViewHeight)
+            make.leading.equalTo(detailInfoButton.snp.centerX).offset(-Layout.tooltipViewLeadingSpacing)
+            make.bottom.equalTo(detailInfoButton.snp.top).offset(-Layout.tooltipViewBottomSpacing)
+            make.width.equalTo(Layout.detailTooltipWidth)
+            make.height.equalTo(Layout.tooltipViewHeight)
         }
 
         subroutineAdditionButton.snp.makeConstraints { make in
@@ -297,10 +297,10 @@ final class RoutineCreationView: BaseViewController<RoutineCreationViewModel> {
         }
 
         repeatToolTipView.snp.makeConstraints { make in
-            make.leading.equalTo(repeatInfoButton.snp.centerX).offset(-Layout.toolTipViewLeadingSpacing)
-            make.bottom.equalTo(repeatInfoButton.snp.top).offset(-Layout.toolTipViewBottomSpacing)
-            make.width.equalTo(Layout.repeatToolTipWidth)
-            make.height.equalTo(Layout.toolTipViewHeight)
+            make.leading.equalTo(repeatInfoButton.snp.centerX).offset(-Layout.tooltipViewLeadingSpacing)
+            make.bottom.equalTo(repeatInfoButton.snp.top).offset(-Layout.tooltipViewBottomSpacing)
+            make.width.equalTo(Layout.repeatTooltipWidth)
+            make.height.equalTo(Layout.tooltipViewHeight)
         }
 
         repeatDailyButton.snp.makeConstraints { make in
@@ -590,7 +590,7 @@ final class RoutineCreationView: BaseViewController<RoutineCreationViewModel> {
             return
         }
         
-        // 탭한 곳이 toolTip 영역 밖인 경우
+        // 탭한 곳이 tooltip 영역 밖인 경우
         if !detailToolTipView.frame.contains(location) {
             detailInfoButton.isSelected = false
             detailToolTipView.hideTooltip()

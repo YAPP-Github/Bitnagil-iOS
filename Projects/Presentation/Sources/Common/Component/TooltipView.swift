@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-final class ToolTipView: UIView {
+final class TooltipView: UIView {
     enum TooltipTailPosition {
         case center
         case offsetFromLeading(CGFloat)
