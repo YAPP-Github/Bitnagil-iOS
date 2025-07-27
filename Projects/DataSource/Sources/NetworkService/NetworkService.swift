@@ -15,7 +15,11 @@ final class NetworkService {
     private init() { }
 
     func request<T: Decodable>(endpoint: Endpoint, type: T.Type) async throws -> T? {
-        let request = try endpoint.makeURLRequest()
+        var request = try endpoint.makeURLRequest()
+        if endpoint.isAuthorized {
+            let accessToken = try TokenManager.shared.loadToken(tokenType: .accessToken)
+            request.headers["Authorization"] = "Bearer \(accessToken)"
+        }
         let (data, response) = try await URLSession.shared.data(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse

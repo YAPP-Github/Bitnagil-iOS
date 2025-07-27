@@ -14,14 +14,16 @@ public final class IntroView: UIViewController {
     private enum Layout {
         static let horizontalMargin: CGFloat = 20
         static let labelTopSpacing: CGFloat = 54
-        static let graphViewTopSpacing: CGFloat = 38
+        static let graphViewTopSpacing: CGFloat = 118
         static let graphViewBottomSpacing: CGFloat = 64
+        static let graphViewHeight: CGFloat = 295
+        static let graphViewWidth: CGFloat = 257
         static let startButtonBottomSpacing: CGFloat = 20
         static let startButtonHeight: CGFloat = 54
     }
 
     private let introLabel = UILabel()
-    private let graphView = UIView()
+    private let graphView = UIImageView()
     private let startButton = PrimaryButton(buttonState: .default, buttonTitle: "시작하기")
 
     public override func viewDidLoad() {
@@ -42,7 +44,7 @@ public final class IntroView: UIViewController {
         introLabel.textColor = BitnagilColor.navy500
         introLabel.numberOfLines = 2
 
-        graphView.backgroundColor = BitnagilColor.gray90
+        graphView.image = BitnagilGraphic.introGraphic
 
         startButton.addAction(UIAction { [weak self] _ in
             guard let loginViewModel = DIContainer.shared.resolve(type: LoginViewModel.self) else {
@@ -65,13 +67,14 @@ public final class IntroView: UIViewController {
             make.leading.equalTo(safeArea).offset(Layout.horizontalMargin)
             make.trailing.equalTo(safeArea).inset(Layout.horizontalMargin)
             make.top.equalTo(safeArea).offset(Layout.labelTopSpacing)
+            make.height.equalTo(60)
         }
 
         graphView.snp.makeConstraints { make in
-            make.leading.equalTo(safeArea).offset(Layout.horizontalMargin)
-            make.trailing.equalTo(safeArea).inset(Layout.horizontalMargin)
             make.top.equalTo(introLabel.snp.bottom).offset(Layout.graphViewTopSpacing)
-            make.bottom.equalTo(startButton.snp.top).offset(-Layout.graphViewBottomSpacing)
+            make.bottom.equalTo(startButton.snp.top).offset(-133)
+            make.leading.equalTo(safeArea).offset(53)
+            make.trailing.equalTo(safeArea).inset(65)
         }
 
         startButton.snp.makeConstraints { make in

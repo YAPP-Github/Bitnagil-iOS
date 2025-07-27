@@ -41,11 +41,6 @@ extension AuthEndpoint: Endpoint {
             "accept": "*/*"
         ]
 
-        if isAuthorized {
-            let accessToken = try! TokenManager.shared.loadToken(tokenType: .accessToken)
-            headers["Authorization"] = "Bearer \(accessToken)"
-        }
-
         switch self {
         case .login(_, _, let token):
             headers["SocialAccessToken"] = token

@@ -29,16 +29,10 @@ extension OnboardingEndpoint: Endpoint {
     }
     
     var headers: [String : String] {
-        var headers: [String: String] = [
+        let headers: [String: String] = [
             "Content-Type": "application/json",
             "accept": "*/*"
         ]
-
-        if isAuthorized {
-            let accessToken = try! TokenManager.shared.loadToken(tokenType: .accessToken)
-            headers["Authorization"] = "Bearer \(accessToken)"
-        }
-
         return headers
     }
     

@@ -7,6 +7,7 @@
 
 enum AuthError: Error, CustomStringConvertible {
     case kakaoTokenFetchFailed
+    case kakaoUserInformationFetchFailed
     case tokenSaveFailed
     case tokenLoadFailed
     case tokenRemoveFailed
@@ -20,6 +21,8 @@ enum AuthError: Error, CustomStringConvertible {
         switch self {
         case .kakaoTokenFetchFailed:
             return "카카오 토큰을 가져오는데 실패했습니다."
+        case .kakaoUserInformationFetchFailed:
+            return "카카오 유저 정보를 가져오는데 실패했습니다."
         case .tokenSaveFailed:
             return "토큰 저장에 실패했습니다."
         case .tokenLoadFailed:

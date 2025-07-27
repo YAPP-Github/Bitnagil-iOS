@@ -104,13 +104,11 @@ final class AuthRepository: AuthRepositoryProtocol {
                     let profileImageUrl = user?.kakaoAccount?.profile?.profileImageUrl {
                     continuation.resume(returning: (nickname, profileImageUrl))
                 } else {
-                    continuation.resume(throwing: AuthError.kakaoTokenFetchFailed)
+                    continuation.resume(throwing: AuthError.kakaoUserInformationFetchFailed)
                 }
             }
 
-            Task { @MainActor in
-                UserApi.shared.me(completion: resultHandler)
-            }
+            UserApi.shared.me(completion: resultHandler)
         }
     }
 

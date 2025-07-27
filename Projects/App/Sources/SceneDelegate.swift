@@ -23,7 +23,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let userDataRepository = DIContainer.shared.resolve(type: UserDataRepositoryProtocol.self)
         else { fatalError("userDataRepository 의존성이 등록되지 않았습니다.") }
 
-        Task {
+        window.rootViewController = SplashView()
+        window.makeKeyAndVisible()
+        self.window = window
+
+        Task { @MainActor in
             let isLogined = await userDataRepository.reissueToken()
             if isLogined {
                 window.rootViewController = TabBarView()
@@ -32,8 +36,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 let navigationController = UINavigationController(rootViewController: introView)
                 window.rootViewController = navigationController
             }
-            window.makeKeyAndVisible()
-            self.window = window
         }
     }
 
