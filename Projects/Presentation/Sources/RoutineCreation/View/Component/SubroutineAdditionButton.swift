@@ -42,10 +42,7 @@ final class SubroutineAdditionButton: UIButton {
 
         label.text = "세부루틴 추가"
         label.textColor = BitnagilColor.gray40
-        label.font = BitnagilFont
-            .init(style: .body2, weight: .medium)
-            .font
-            .withSize(14)
+        label.font = BitnagilFont.init(style: .body2, weight: .medium).font
     }
 
     private func configureLayout() {

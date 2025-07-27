@@ -12,8 +12,8 @@ final class MypageTableViewCell: UITableViewCell {
     private enum Layout {
         static let titleLableLeadingSpacing: CGFloat = 20
         static let titleLableTrailingSpacing: CGFloat = 8
-        static let chevronImageViewTrailingSpacing: CGFloat = 6
-        static let chevronImageViewSize: CGFloat = 36
+        static let chevronImageViewTrailingSpacing: CGFloat = 16
+        static let chevronImageViewSize: CGFloat = 16
     }
 
     private let titleLabel = UILabel()
@@ -36,7 +36,10 @@ final class MypageTableViewCell: UITableViewCell {
     private func configureAttribute() {
         titleLabel.font = BitnagilFont(style: .body1, weight: .regular).font
 
-        chevronImageView.image = BitnagilIcon.chevronRightIcon
+        chevronImageView.tintColor = .black
+        chevronImageView.image = BitnagilIcon
+            .chevronIcon(direction: .right)?
+            .withRenderingMode(.alwaysTemplate)
     }
 
     private func configureLayout() {

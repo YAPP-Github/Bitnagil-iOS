@@ -5,8 +5,8 @@
 //  Created by 이동현 on 7/20/25.
 //
 
-import UIKit
 import SnapKit
+import UIKit
 
 final class TooltipView: UIView {
     enum TooltipTailPosition {
@@ -47,10 +47,7 @@ final class TooltipView: UIView {
         backgroundView.backgroundColor = BitnagilColor.navy400
         backgroundView.layer.cornerRadius = Layout.cornerRadius
         messageLabel.textColor = .white
-        messageLabel.font = BitnagilFont
-            .init(style: .caption1, weight: .medium)
-            .font
-            .withSize(12)
+        messageLabel.font = BitnagilFont.init(style: .caption1, weight: .medium).font
     }
 
     private func configureLayout() {
@@ -129,6 +126,7 @@ final class TooltipView: UIView {
             }) { _ in
                 self.isHidden = true
                 self.transform = .identity
+                completion?()
         }
     }
 }

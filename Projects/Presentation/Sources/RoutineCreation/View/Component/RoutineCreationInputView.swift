@@ -23,7 +23,7 @@ final class RoutineCreationInputView: UIView {
         static let textFieldTrailingInset: CGFloat = 51
         static let textFieldHeight: CGFloat = 20
         static let deleteButtonSize: CGFloat = 24
-        static let deleteButtonTrailingInset: CGFloat = 17
+        static let deleteButtonTrailingInset: CGFloat = 8
     }
 
     private let textField = UITextField()
@@ -47,10 +47,7 @@ final class RoutineCreationInputView: UIView {
 
         textField.delegate = self
         textField.textColor = .black
-        textField.font = BitnagilFont
-            .init(style: .body2, weight: .semiBold)
-            .font
-            .withSize(14)
+        textField.font = BitnagilFont.init(style: .body2, weight: .semiBold).font
 
         deleteButton.setImage(BitnagilIcon.deleteIcon, for: .normal)
         deleteButton.addAction(
@@ -72,9 +69,9 @@ final class RoutineCreationInputView: UIView {
         }
 
         deleteButton.snp.makeConstraints { make in
-            make.size.equalTo(24)
+            make.size.equalTo(Layout.deleteButtonSize)
             make.centerY.equalToSuperview()
-            make.trailing.equalToSuperview().inset(8)
+            make.trailing.equalToSuperview().inset(Layout.deleteButtonTrailingInset)
         }
     }
 
@@ -90,10 +87,7 @@ final class RoutineCreationInputView: UIView {
             string: placeholder,
             attributes: [
                 .foregroundColor: placeholderColor,
-                .font: BitnagilFont
-                            .init(style: .body2, weight: .semiBold)
-                            .font
-                            .withSize(14)])
+                .font: BitnagilFont.init(style: .body2, weight: .semiBold).font])
     }
 
     func configure(title: String) {

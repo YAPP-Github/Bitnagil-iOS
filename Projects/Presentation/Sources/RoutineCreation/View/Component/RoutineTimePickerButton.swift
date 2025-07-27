@@ -37,15 +37,12 @@ final class RoutineTimePickerButton: UIButton {
         chevronDownImageView.contentMode = .scaleAspectFit
         chevronDownImageView.tintColor = BitnagilColor.navy400
         chevronDownImageView.image = BitnagilIcon
-            .chevronDownIcon?
+            .chevronIcon(direction: .down)?
             .withRenderingMode(.alwaysTemplate)
 
         label.text = "시간 선택"
         label.textColor = BitnagilColor.gray40
-        label.font = BitnagilFont
-            .init(style: .body2, weight: .medium)
-            .font
-            .withSize(14)
+        label.font = BitnagilFont.init(style: .body2, weight: .medium).font
     }
 
     private func configureLayout() {

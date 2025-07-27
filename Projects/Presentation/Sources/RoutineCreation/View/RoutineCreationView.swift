@@ -10,7 +10,7 @@ import SnapKit
 import UIKit
 
 final class RoutineCreationView: BaseViewController<RoutineCreationViewModel> {
-    enum Layout {
+    private enum Layout {
         static let horizontalInset: CGFloat = 20
         static let nameTitleLabelTopSpacing: CGFloat = 32
         static let titleLabelHeight: CGFloat = 24
@@ -126,16 +126,13 @@ final class RoutineCreationView: BaseViewController<RoutineCreationViewModel> {
         startTimeAsterisk.contentMode = .scaleAspectFit
 
         infoButtons.forEach {
-            $0.setImage(BitnagilIcon.infoIcon, for: .normal)
+            $0.setImage(BitnagilIcon.informationIcon, for: .normal)
         }
 
         repeatButtons.forEach {
             $0.layer.borderWidth = 1
             $0.layer.cornerRadius = 12
-            $0.titleLabel?.font = BitnagilFont
-                .init(style: .body2, weight: .semiBold)
-                .font
-                .withSize(16)
+            $0.titleLabel?.font = BitnagilFont.init(style: .body2, weight: .semiBold).font
         }
 
         nameTitleLabel.text = "루틴 이름"
@@ -164,10 +161,7 @@ final class RoutineCreationView: BaseViewController<RoutineCreationViewModel> {
 
         allDayLabel.text = "하루 종일"
         allDayLabel.textColor = BitnagilColor.navy400
-        allDayLabel.font = BitnagilFont
-            .init(style: .body2, weight: .medium)
-            .font
-            .withSize(14)
+        allDayLabel.font = BitnagilFont.init(style: .body2, weight: .medium).font
 
         registerButton.backgroundColor = BitnagilColor.navy50
         registerButton.setTitleColor(.white, for: .normal)
@@ -177,10 +171,7 @@ final class RoutineCreationView: BaseViewController<RoutineCreationViewModel> {
         registerButton.layer.masksToBounds = true
         registerButton.setTitle("등록하기", for: .normal)
         registerButton.isEnabled = false
-        registerButton.titleLabel?.font = BitnagilFont
-            .init(style: .body1, weight: .semiBold)
-            .font
-            .withSize(16)
+        registerButton.titleLabel?.font = BitnagilFont.init(style: .body1, weight: .semiBold).font
     }
 
     override func configureLayout() {
@@ -203,7 +194,6 @@ final class RoutineCreationView: BaseViewController<RoutineCreationViewModel> {
         contentView.addSubview(repeatTitleLabel)
         contentView.addSubview(repeatToolTipView)
         contentView.addSubview(repeatInfoButton)
-        contentView.addSubview(repeatToolTipView)
         contentView.addSubview(repeatDailyButton)
         contentView.addSubview(repeatWeekButton)
         contentView.addSubview(weekdaysStackView)
@@ -525,7 +515,7 @@ final class RoutineCreationView: BaseViewController<RoutineCreationViewModel> {
             .enumerated()
             .forEach {
                 let view = RoutineCreationInputView()
-                let placeholder = "\($0.offset + 1).ex) \($0.element.rawValue)"
+                let placeholder = "\($0.offset + 1). ex) \($0.element.rawValue)"
                 view.delegate = self
                 view.configure(canDelete: true, placeholder: placeholder)
                 view.snp.makeConstraints { make in
@@ -538,7 +528,7 @@ final class RoutineCreationView: BaseViewController<RoutineCreationViewModel> {
     private func configureWeekdaysStackView() {
         weekdaysStackView.isHidden = true
         weekdaysStackView.axis = .horizontal
-        weekdaysStackView.spacing = 10
+        weekdaysStackView.spacing = Layout.weekDayStackViewSpacing
         weekdaysStackView.distribution = .fillEqually
 
         Week.allCases.forEach { week in
@@ -547,10 +537,7 @@ final class RoutineCreationView: BaseViewController<RoutineCreationViewModel> {
             button.layer.cornerRadius = 12
             button.backgroundColor = .white
             button.setTitleColor(.black, for: .normal)
-            button.titleLabel?.font = BitnagilFont
-                .init(style: .body2, weight: .medium)
-                .font
-                .withSize(14)
+            button.titleLabel?.font = BitnagilFont.init(style: .body2, weight: .medium).font
             button.addAction(
                 UIAction { [weak self] _ in
                     self?.viewModel.action(input: .toggleRepeatDay(weekDay: week))
