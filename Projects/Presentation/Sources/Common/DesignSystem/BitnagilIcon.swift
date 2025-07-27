@@ -37,9 +37,18 @@ enum BitnagilIcon {
     static let mypageFillIcon = UIImage(named: "mypage_fill_icon", in: bundle, with: nil)
     static let mypageEmptyIcon = UIImage(named: "mypage_empty_icon", in: bundle, with: nil)
 
+    // MARK: - Mypage Icons
     static let settingIcon = UIImage(named: "setting_icon", in: bundle, with: nil)
-
     static let chevronRightIcon = UIImage(named: "chevron_right_icon", in: bundle, with: nil)
+
+    // MARK: - Routine Creation Icons
+    static let asteriskIcon = UIImage(named: "asterisk_icon", in: bundle, with: nil)
+    static let chevronDownIcon = UIImage(named: "chevron_down_icon", in: bundle, with: nil)
+    static let deleteIcon = UIImage(named: "delete_icon", in: bundle, with: nil)
+    static let infoIcon = UIImage(named: "info_icon", in: bundle, with: nil)
+    static let uncheckedIcon = UIImage(named: "unchecked_icon", in: bundle, with: nil)
+    static let checkedIcon = UIImage(named: "checked_icon", in: bundle, with: nil)
+    static let routineCreationIcon = UIImage(named: "routine_creation_icon", in: bundle, with: nil)
 }
 
 enum Direction {
