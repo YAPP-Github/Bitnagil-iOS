@@ -71,7 +71,7 @@ final class RoutineCreationView: BaseViewController<RoutineCreationViewModel> {
     private let startTimeAsterisk = UIImageView()
     private let timePickerButton = RoutineTimePickerButton()
     private let allDayButton = UIButton()
-    private let allDayButton2 = UIButton()
+    private let allDayLabelButton = UIButton()
     private let allDayLabel = UILabel()
     private let weekdaysStackView = UIStackView()
 
@@ -203,7 +203,7 @@ final class RoutineCreationView: BaseViewController<RoutineCreationViewModel> {
         contentView.addSubview(startTimeTitleLabel)
         contentView.addSubview(startTimeAsterisk)
         contentView.addSubview(allDayButton)
-        contentView.addSubview(allDayButton2)
+        contentView.addSubview(allDayLabelButton)
         contentView.addSubview(allDayLabel)
         contentView.addSubview(timePickerButton)
 
@@ -344,7 +344,7 @@ final class RoutineCreationView: BaseViewController<RoutineCreationViewModel> {
             make.centerY.equalTo(startTimeTitleLabel)
         }
 
-        allDayButton2.snp.makeConstraints { make in
+        allDayLabelButton.snp.makeConstraints { make in
             make.edges.equalTo(allDayLabel)
         }
 
@@ -504,7 +504,7 @@ final class RoutineCreationView: BaseViewController<RoutineCreationViewModel> {
             },
             for: .touchUpInside)
 
-        [allDayButton, allDayButton2].forEach {
+        [allDayButton, allDayLabelButton].forEach {
             $0.addAction(
                 UIAction { [weak self] _ in
                     self?.viewModel.action(input: .configureExecution(type: .allDay))

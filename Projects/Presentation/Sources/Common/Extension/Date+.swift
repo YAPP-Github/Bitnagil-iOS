@@ -22,6 +22,7 @@ extension Date {
         case dayOfWeek
         case date
         case amPmTime
+        case amPmTimeShort
 
         var formatString: String {
             switch self {
@@ -30,6 +31,7 @@ extension Date {
             case .dayOfWeek: "E"
             case .date: "d"
             case .amPmTime: "a HH:mm"
+            case .amPmTimeShort: "a h:mm"
             }
         }
     }

@@ -17,7 +17,7 @@ final class DatePickerView: UIViewController {
         static let datePickerHeight: CGFloat = 195
         static let horizontalSpacing: CGFloat = 20
         static let registerButtonHeight: CGFloat = 54
-        static let reigisterButtonVerticalSpacing: CGFloat = 14
+        static let registerButtonVerticalSpacing: CGFloat = 14
     }
 
     private let datePicker = UIDatePicker()
@@ -30,7 +30,7 @@ final class DatePickerView: UIViewController {
         configureLayout()
     }
 
-    func configureAttribute() {
+    private func configureAttribute() {
         datePicker.preferredDatePickerStyle = .wheels
         datePicker.datePickerMode = .time
         datePicker.locale = Locale(identifier: "en_US")
@@ -52,7 +52,7 @@ final class DatePickerView: UIViewController {
             for: .touchUpInside)
     }
 
-    func configureLayout() {
+    private func configureLayout() {
         let safeArea = view.safeAreaLayoutGuide
         view.addSubview(datePicker)
         view.addSubview(registerButton)
@@ -64,8 +64,8 @@ final class DatePickerView: UIViewController {
 
         registerButton.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(Layout.horizontalSpacing)
-            make.top.equalTo(datePicker.snp.bottom).offset(Layout.reigisterButtonVerticalSpacing)
-            make.bottom.equalTo(safeArea.snp.bottom).offset(-Layout.reigisterButtonVerticalSpacing)
+            make.top.equalTo(datePicker.snp.bottom).offset(Layout.registerButtonVerticalSpacing)
+            make.bottom.equalTo(safeArea.snp.bottom).offset(-Layout.registerButtonVerticalSpacing)
             make.height.equalTo(Layout.registerButtonHeight)
         }
     }

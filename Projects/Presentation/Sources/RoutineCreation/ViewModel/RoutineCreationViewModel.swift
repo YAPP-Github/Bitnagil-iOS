@@ -28,11 +28,7 @@ final class RoutineCreationViewModel: ViewModel {
         var description: String {
             switch self {
             case .time(let time):
-                let dateFormatter = DateFormatter()
-                dateFormatter.locale = Locale(identifier: "ko_KR")
-                dateFormatter.dateFormat = "a h:mm"
-
-                return dateFormatter.string(from: time)
+                return time.convertToString(dateType: .amPmTimeShort)
             case .allDay:
                 return "하루종일"
             case .none:
@@ -97,9 +93,9 @@ final class RoutineCreationViewModel: ViewModel {
         case .toggleRepeatDay(let weekDay):
             configureWeekDay(weekDay: weekDay)
         case .toggleRepeatAllDay:
-            configurExecutionTime(type: .allDay)
+            configureExecutionTime(type: .allDay)
         case .configureExecution(let startTime):
-            configurExecutionTime(type: startTime)
+            configureExecutionTime(type: startTime)
         case .registerRoutine:
             registerRoutine()
         }
@@ -166,7 +162,7 @@ final class RoutineCreationViewModel: ViewModel {
         weekDaySubject.send(weekDays)
     }
 
-    private func configurExecutionTime(type: ExecutionType) {
+    private func configureExecutionTime(type: ExecutionType) {
         if
             type == .allDay,
             executionTimeSubject.value == .allDay
