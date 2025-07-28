@@ -19,7 +19,7 @@ struct RecommendedRoutineDTO: Decodable {
         case routineName = "recommendedRoutineName"
         case routineDescription = "recommendedRoutineDescription"
         case routineLevel = "recommendedRoutineLevel"
-        case subRoutines = "recommendedSubRoutineDetailSearchResult"
+        case subRoutines = "recommendedSubRoutineSearchResult"
     }
 
     func toRecommendedRoutineEntity(category: String? = nil) -> RecommendedRoutineEntity {

@@ -183,6 +183,7 @@ final class RecommendedRoutineView: BaseViewController<RecommendedRoutineViewMod
         viewModel.output.selectedCategoryPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] selectedCategory in
+                self?.showEmotionButton(isShowEmotionButton: selectedCategory == .recommendation)
                 self?.categoryView.updateSelectedCategory(selectedCategory: selectedCategory)
             }
             .store(in: &cancellables)
@@ -197,14 +198,12 @@ final class RecommendedRoutineView: BaseViewController<RecommendedRoutineViewMod
 
     private func fetchRecommendedRoutines(recommendedRoutines: [RecommendedRoutine]) {
         recommendedRoutineStackView.arrangedSubviews.forEach { view in
-            recommendedRoutineStackView.removeArrangedSubview(view)
-            view.removeFromSuperview()
+            if view != registerEmotionButton {
+                recommendedRoutineStackView.removeArrangedSubview(view)
+                view.removeFromSuperview()
+            }
         }
         recommendedRoutineCards.removeAll()
-
-        if recommendedRoutines.first?.routineCategory == .recommendation {
-            showEmotionButton()
-        }
 
         for routine in recommendedRoutines {
             let routineCard = RecommendedRoutineCardView(recommendedRoutine: routine)
@@ -224,9 +223,17 @@ final class RecommendedRoutineView: BaseViewController<RecommendedRoutineViewMod
         presentCustomBottomSheet(contentViewController: levelView, maxHeight: Layout.bottomSheetHeight)
     }
 
-    private func showEmotionButton() {
-        recommendedRoutineStackView.addArrangedSubview(registerEmotionButton)
+    private func showEmotionButton(isShowEmotionButton: Bool) {
+        guard isShowEmotionButton else {
+            registerEmotionButton.isHidden = true
+            return
+        }
+        guard !recommendedRoutineStackView.arrangedSubviews.contains(registerEmotionButton) else {
+            registerEmotionButton.isHidden = false
+            return
+        }
 
+        recommendedRoutineStackView.addArrangedSubview(registerEmotionButton)
         registerEmotionButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.height.equalTo(Layout.registerEmotionButtonHeight)
