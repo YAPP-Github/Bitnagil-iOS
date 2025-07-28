@@ -6,6 +6,7 @@
 //
 
 import Combine
+import Domain
 import Shared
 import SnapKit
 import UIKit
@@ -50,7 +51,7 @@ final class RecommendedRoutineView: BaseViewController<RecommendedRoutineViewMod
 
     public override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel.action(input: .fetchRecommendedRoutines(selectedCategory: .recommendation))
+        viewModel.action(input: .fetchRecommendedRoutines)
     }
 
     public override func configureAttribute() {
@@ -167,10 +168,6 @@ final class RecommendedRoutineView: BaseViewController<RecommendedRoutineViewMod
             routineCard.snp.makeConstraints { make in
                 make.height.equalTo(Layout.routineCardHeight)
             }
-        }
-
-        if !recommendedRoutines.isEmpty && recommendedRoutines[0].routineCategory == .recommendation {
-            showEmotionButton()
         }
     }
 
