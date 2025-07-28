@@ -5,7 +5,6 @@
 //  Created by 최정인 on 6/30/25.
 //
 
-import Foundation
 import Domain
 
 enum AuthEndpoint {

@@ -61,7 +61,7 @@ final class KeychainStorage {
     }
 
     private func baseQuery(for key: String) -> [String: Any] {
-        var query: [String: Any] = [
+        let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
             kSecAttrAccount as String: key

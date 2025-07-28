@@ -5,8 +5,6 @@
 //  Created by 최정인 on 7/15/25.
 //
 
-import Foundation
-
 enum OnboardingEndpoint {
     case registerOnboarding(choices: [String: String])
     case registerRecommendedRoutine(selectedRoutines: [Int])

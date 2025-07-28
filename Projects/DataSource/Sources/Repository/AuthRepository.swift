@@ -5,11 +5,11 @@
 //  Created by 최정인 on 6/30/25.
 //
 
-import Foundation
 import Domain
-import Shared
-import KakaoSDKUser
+import Foundation
 import KakaoSDKAuth
+import KakaoSDKUser
+import Shared
 
 final class AuthRepository: AuthRepositoryProtocol {
     private let networkService = NetworkService.shared
