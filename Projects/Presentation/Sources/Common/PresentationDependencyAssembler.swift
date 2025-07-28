@@ -17,7 +17,7 @@ public struct PresentationDependencyAssembler: DependencyAssemblerProtocol {
 
     public func assemble() {
         preAssembler.assemble()
-        
+
         DIContainer.shared.register(type: HomeViewModel.self) { _ in
             return HomeViewModel()
         }
@@ -52,6 +52,10 @@ public struct PresentationDependencyAssembler: DependencyAssemblerProtocol {
 
         DIContainer.shared.register(type: EmotionRegisterViewModel.self) { _ in
             return EmotionRegisterViewModel()
+        }
+
+        DIContainer.shared.register(type: RoutineCreationViewModel.self) { _ in
+            return RoutineCreationViewModel()
         }
     }
 }

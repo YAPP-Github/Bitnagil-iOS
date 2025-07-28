@@ -23,6 +23,7 @@ enum BitnagilIcon {
     static let ellipsisIcon = UIImage(named: "ellipsis_icon", in: bundle, with: nil)
     static let informationIcon = UIImage(named: "information_icon", in: bundle, with: nil)
     static let sortIcon = UIImage(named: "sort_icon", in: bundle, with: nil)
+    static let addRoutineIcon = UIImage(named: "add_routine_icon", in: bundle, with: nil)
 
     // MARK: - Tab Bar Icons
     static let homeFillIcon = UIImage(named: "home_fill_icon", in: bundle, with: nil)
