@@ -45,7 +45,7 @@ final class RecommendedRoutineView: BaseViewController<RecommendedRoutineViewMod
     private var recommendedRoutineCards: [Int: RecommendedRoutineCardView] = [:]
     private let registerEmotionButton = RegisterEmotionButton()
 
-    private var isShowingFloatinMenu: Bool = false
+    private var isShowingFloatingMenu: Bool = false
     private let dimmedView = UIView()
     private let floatingButton = FloatingButton()
     private let floatingMenu = FloatingMenuView()
@@ -218,7 +218,7 @@ final class RecommendedRoutineView: BaseViewController<RecommendedRoutineViewMod
     }
 
     private func showBottomSheet() {
-        if isShowingFloatinMenu {
+        if isShowingFloatingMenu {
             toggleFloatingButton()
         }
         presentCustomBottomSheet(contentViewController: levelView, maxHeight: Layout.bottomSheetHeight)
@@ -235,14 +235,14 @@ final class RecommendedRoutineView: BaseViewController<RecommendedRoutineViewMod
 
     private func toggleFloatingButton() {
         floatingButton.toggle()
-        isShowingFloatinMenu.toggle()
+        isShowingFloatingMenu.toggle()
 
-        floatingMenu.isHidden = !isShowingFloatinMenu
-        dimmedView.isHidden = !isShowingFloatinMenu
+        floatingMenu.isHidden = !isShowingFloatingMenu
+        dimmedView.isHidden = !isShowingFloatingMenu
 
         UIView.animate(withDuration: 0.2, delay: 0, options: [.curveEaseOut]) {
-            self.dimmedView.alpha = self.isShowingFloatinMenu ? 1 : 0
-            self.floatingMenu.alpha = self.isShowingFloatinMenu ? 1 : 0
+            self.dimmedView.alpha = self.isShowingFloatingMenu ? 1 : 0
+            self.floatingMenu.alpha = self.isShowingFloatingMenu ? 1 : 0
         }
     }
 
