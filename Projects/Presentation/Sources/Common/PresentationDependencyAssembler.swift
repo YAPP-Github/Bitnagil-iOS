@@ -46,5 +46,9 @@ public struct PresentationDependencyAssembler: DependencyAssemblerProtocol {
 
             return MypageViewModel(userDataRepository: userDataRepository)
         }
+
+        DIContainer.shared.register(type: EmotionRegisterViewModel.self) { _ in
+            return EmotionRegisterViewModel()
+        }
     }
 }

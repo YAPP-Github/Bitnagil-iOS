@@ -95,8 +95,13 @@ final class HomeView: BaseViewController<HomeViewModel> {
         emotionOrbView.layer.masksToBounds = true
         emotionOrbView.layer.cornerRadius = Layout.emotionOrbViewSize / 2
 
-        registerEmotionButton.addAction(UIAction { _ in
-            // TODO: 감정 등록 화면으로 이동해야 합니다.
+        registerEmotionButton.addAction(UIAction { [weak self] _ in
+            guard let emotionRegisterViewModel = DIContainer.shared.resolve(type: EmotionRegisterViewModel.self) else {
+                fatalError("emotionRegisterViewModel 의존성이 등록되지 않았습니다.")
+            }
+            let emotionRegisterView = EmotionRegisterView(viewModel: emotionRegisterViewModel)
+            emotionRegisterView.hidesBottomBarWhenPushed = true
+            self?.navigationController?.pushViewController(emotionRegisterView, animated: true)
         }, for: .touchUpInside)
 
         contentView.backgroundColor = .white
