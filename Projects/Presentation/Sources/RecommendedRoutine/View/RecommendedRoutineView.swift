@@ -155,6 +155,10 @@ final class RecommendedRoutineView: BaseViewController<RecommendedRoutineViewMod
         }
         recommendedRoutineCards.removeAll()
 
+        if recommendedRoutines.first?.routineCategory == .recommendation {
+            showEmotionButton()
+        }
+        
         for routine in recommendedRoutines {
             let routineCard = RecommendedRoutineCardView(recommendedRoutine: routine)
             recommendedRoutineCards[routine.id] = routineCard

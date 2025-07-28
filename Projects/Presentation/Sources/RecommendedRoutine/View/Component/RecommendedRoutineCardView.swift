@@ -84,6 +84,7 @@ final class RecommendedRoutineCardView: UIView {
 
         labelStackView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(Layout.horizontalMargin)
+            make.trailing.equalTo(plusButton.snp.leading)
             make.centerY.equalToSuperview()
         }
 
