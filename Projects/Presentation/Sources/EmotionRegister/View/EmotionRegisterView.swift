@@ -28,7 +28,7 @@ final class EmotionRegisterView: BaseViewController<EmotionRegisterViewModel> {
 
     private let mainLabel = UILabel()
     private let subLabel = UILabel()
-    private var emotionOrbCollectionView: UICollectionView = {
+    private let emotionOrbCollectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: Layout.emotionOrbCellWidth, height: Layout.emotionOrbCellHeight)
         layout.minimumInteritemSpacing = Layout.emotionOrbCollectionViewItemSpacing
