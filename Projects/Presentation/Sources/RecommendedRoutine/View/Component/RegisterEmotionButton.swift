@@ -13,7 +13,7 @@ final class RegisterEmotionButton: UIButton {
     private enum Layout {
         static let borderWith: CGFloat = 1
         static let cornerRadius: CGFloat = 12
-        static let plusIconImageSize: CGFloat = 8
+        static let plusIconImageSize: CGFloat = 10
         static let plusIconSize: CGFloat = 20
         static let plusIconLeadingSpacing: CGFloat = 24
         static let buttonLabelLeadingSpacing: CGFloat = 10

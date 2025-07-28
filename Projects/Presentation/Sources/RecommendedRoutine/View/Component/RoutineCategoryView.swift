@@ -5,6 +5,7 @@
 //  Created by 최정인 on 7/12/25.
 //
 
+import Domain
 import UIKit
 
 protocol RoutineCategoryViewDelegate: AnyObject {
@@ -23,6 +24,7 @@ final class RoutineCategoryView: UIView {
     private let scrollView = UIScrollView()
     private let buttonStackView = UIStackView()
     private var categoryButtons: [RoutineCategoryType: RoutineCategoryButton] = [:]
+    private let routineCategories = RoutineCategoryType.allCases.filter({ $0 != .outdoorReport }).sorted(by: { $0.id < $1.id })
     weak var delegate: RoutineCategoryViewDelegate?
 
     override init(frame: CGRect) {
@@ -41,7 +43,7 @@ final class RoutineCategoryView: UIView {
         buttonStackView.axis = .horizontal
         buttonStackView.spacing = Layout.stackViewSpacing
 
-        RoutineCategoryType.allCases.sorted(by: { $0.id < $1.id }).forEach { type in
+        routineCategories.forEach { type in
             let button = RoutineCategoryButton(category: type)
             button.addAction(UIAction { [weak self] _ in
                 guard let self else { return }
@@ -60,7 +62,7 @@ final class RoutineCategoryView: UIView {
             make.edges.equalToSuperview()
         }
 
-        RoutineCategoryType.allCases.sorted(by: { $0.id < $1.id }).forEach { type in
+        routineCategories.forEach { type in
             guard let button = categoryButtons[type] else { return }
             buttonStackView.addArrangedSubview(button)
             button.snp.makeConstraints { make in

@@ -5,22 +5,18 @@
 //  Created by 최정인 on 7/12/25.
 //
 
-enum RoutineCategoryType: CaseIterable {
-    case recommendation
-    case outdoor
-    case wakeup
-    case connection
-    case rest
-    case growth
+import Domain
 
+extension RoutineCategoryType {
     var id: Int {
         switch self {
         case .recommendation: 1
         case .outdoor: 2
-        case .wakeup: 3
-        case .connection: 4
-        case .rest: 5
-        case .growth: 6
+        case .outdoorReport: 3
+        case .wakeup: 4
+        case .connection: 5
+        case .rest: 6
+        case .growth: 7
         }
     }
 
@@ -28,6 +24,7 @@ enum RoutineCategoryType: CaseIterable {
         switch self {
         case .recommendation: "맞춤 추천"
         case .outdoor: "나가봐요"
+        case .outdoorReport: "나가봐요_제보"
         case .wakeup: "일어나요"
         case .connection: "연결해요"
         case .rest: "쉬어가요"

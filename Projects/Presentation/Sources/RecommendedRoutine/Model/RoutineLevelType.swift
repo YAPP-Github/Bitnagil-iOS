@@ -5,11 +5,9 @@
 //  Created by 최정인 on 7/17/25.
 //
 
-enum RoutineLevelType: SelectableItem, CaseIterable {
-    case easy
-    case normal
-    case hard
+import Domain
 
+extension RoutineLevelType: SelectableItem {
     var id: Int {
         switch self {
         case .easy: 1
