@@ -5,6 +5,7 @@
 //  Created by 최정인 on 7/28/25.
 //
 
+import Kingfisher
 import SnapKit
 import UIKit
 
@@ -53,8 +54,11 @@ final class EmotionOrbCollectionViewCell: UICollectionViewCell {
         }
     }
 
-    func configureCell(emotion: EmotionType) {
-        emotionOrbImage.image = emotion.image
-        emotionLabel.text = emotion.title
+    func configureCell(emotion: Emotion) {
+        emotionLabel.text = emotion.emotionTitle
+
+        if let imageUrl = emotion.emotionImageUrl {
+            emotionOrbImage.kf.setImage(with: imageUrl)
+        }
     }
 }
