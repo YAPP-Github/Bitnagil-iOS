@@ -11,8 +11,8 @@ import Shared
 final class NetworkService {
     static let shared = NetworkService()
     private let decoder = JSONDecoder()
-    private var plugins: [NetworkPlugin] = []
-    private var maxRetryCount = 0
+    private let plugins: [NetworkPlugin]
+    private let maxRetryCount = 1
 
     private init() {
         plugins = [

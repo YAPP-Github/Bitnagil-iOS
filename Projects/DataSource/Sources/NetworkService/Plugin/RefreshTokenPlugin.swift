@@ -43,6 +43,7 @@ struct RefreshTokenPlugin: NetworkPlugin {
             BitnagilLogger.log(logType: .debug, message: "RefreshToken Saved: \(tokenResponse.refreshToken)")
         } catch {
             BitnagilLogger.log(logType: .error, message: "\(error.localizedDescription)")
+            throw error
         }
     }
 }
