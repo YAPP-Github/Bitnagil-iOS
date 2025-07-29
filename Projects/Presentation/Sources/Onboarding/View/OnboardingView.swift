@@ -35,10 +35,16 @@ final class OnboardingView: BaseViewController<OnboardingViewModel> {
     private let choiceStackView = UIStackView()
     private var choiceButtons: [OnboardingChoiceType: OnboardingChoiceButton] = [:]
     private let nextButton = PrimaryButton(buttonState: .disabled, buttonTitle: "다음")
-    private var cancellables: Set<AnyCancellable>
 
-    init(viewModel: OnboardingViewModel, onboarding: OnboardingType) {
+    private let isFromMypage: Bool
+    private var cancellables: Set<AnyCancellable>
+    init(
+        viewModel: OnboardingViewModel,
+        onboarding: OnboardingType,
+        isFromMypage: Bool = false
+    ) {
         self.onboarding = onboarding
+        self.isFromMypage = isFromMypage
         cancellables = []
         super.init(viewModel: viewModel)
     }
@@ -212,9 +218,12 @@ final class OnboardingView: BaseViewController<OnboardingViewModel> {
 
         var nextView: UIViewController?
         if let nextStep {
-            nextView = OnboardingView(viewModel: viewModel, onboarding: nextStep)
+            nextView = OnboardingView(
+                viewModel: viewModel,
+                onboarding: nextStep,
+                isFromMypage: isFromMypage)
         } else {
-            nextView = OnboardingResultView(viewModel: viewModel)
+            nextView = OnboardingResultView(viewModel: viewModel, isFromMypage: isFromMypage)
         }
         guard let nextView else { return }
         self.navigationController?.pushViewController(nextView, animated: true)

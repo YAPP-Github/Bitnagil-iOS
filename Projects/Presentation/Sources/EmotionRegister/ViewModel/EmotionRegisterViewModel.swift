@@ -6,33 +6,47 @@
 //
 
 import Combine
+import Domain
+import Shared
 
 final class EmotionRegisterViewModel: ViewModel {
     enum Input {
-        case selectEmotion(emotion: EmotionType)
+        case fetchEmotions
     }
 
     struct Output {
-        let registerEmotionResultPublisher: AnyPublisher<Bool, Never>
+        let emotionListPublihser: AnyPublisher<[Emotion], Never>
     }
 
     private(set) var output: Output
-    private let registerEmotionResultSubject = PassthroughSubject<Bool, Never>()
-    init() {
+    private let emotionListSubject = CurrentValueSubject<[Emotion], Never>([])
+
+    private let emotionUseCase: EmotionUseCaseProtocol
+    init(emotionUseCase: EmotionUseCaseProtocol) {
+        self.emotionUseCase = emotionUseCase
         output = Output(
-            registerEmotionResultPublisher: registerEmotionResultSubject.eraseToAnyPublisher()
+            emotionListPublihser: emotionListSubject.eraseToAnyPublisher()
         )
     }
     
     func action(input: Input) {
         switch input {
-        case .selectEmotion(let emotion):
-            registerEmotion(emotion: emotion)
+        case .fetchEmotions:
+            fetchEmotions()
         }
     }
 
-    private func registerEmotion(emotion: EmotionType) {
-        // TODO: 서버 통신 로직
-        registerEmotionResultSubject.send(true)
+    private func fetchEmotions() {
+        Task {
+            do {
+                let emotionEntities = try await emotionUseCase.fetchEmotions()
+                let emotionList = emotionEntities.compactMap({ $0.toEmotion() })
+                BitnagilLogger.log(logType: .info, message: "감정 구슬 목록들 조회에 성공했습니다.")
+                emotionListSubject.send(emotionList)
+            } catch {
+                // TODO: 에러 처리 토스트뷰
+                BitnagilLogger.log(logType: .error, message: "\(error.localizedDescription)")
+            }
+        }
     }
 }
