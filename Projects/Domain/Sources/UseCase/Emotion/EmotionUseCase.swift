@@ -16,9 +16,4 @@ public final class EmotionUseCase: EmotionUseCaseProtocol {
         let emotions = try await emotionRepository.fetchEmotions()
         return emotions
     }
-
-    public func registerEmotion(emotion: String) async throws -> [RecommendedRoutineEntity] {
-        let recommendedRoutines = try await emotionRepository.registerEmotion(emotion: emotion)
-        return recommendedRoutines
-    }
 }

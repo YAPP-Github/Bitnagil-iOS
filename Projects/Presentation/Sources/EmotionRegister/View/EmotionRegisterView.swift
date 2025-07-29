@@ -116,22 +116,6 @@ final class EmotionRegisterView: BaseViewController<EmotionRegisterViewModel> {
                 }
             }
             .store(in: &cancellables)
-
-
-        viewModel.output.registerEmotionResultPublisher
-            .receive(on: DispatchQueue.main)
-            .sink { registerEmotionResult in
-                if registerEmotionResult {
-                    BitnagilLogger.log(logType: .error, message: "감정 등록 성공")
-                } else {
-                    BitnagilLogger.log(logType: .error, message: "감정 등록 실패")
-                }
-            }
-            .store(in: &cancellables)
-    }
-
-    private func goToNextView(recommendedRoutines: [RecommendedRoutine]) {
-        // TODO: 추천 루틴 결과 화면으로 이동해야 합니다.
     }
 }
 
@@ -139,7 +123,12 @@ final class EmotionRegisterView: BaseViewController<EmotionRegisterViewModel> {
 extension EmotionRegisterView: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let selectedEmotion = emotionList[indexPath.item]
-        viewModel.action(input: .selectEmotion(emotion: selectedEmotion))
+        guard let resultRecommendedRoutineViewModel = DIContainer.shared.resolve(type: ResultRecommendedRoutineViewModel.self)
+        else { fatalError("resultRecommendedRoutineViewModel 의존성이 등록되지 않았습니다.") }
+        resultRecommendedRoutineViewModel.configure(viewModelType: .emotion(emotion: selectedEmotion))
+
+        let resultRecommendedRoutineView = ResultRecommendedRoutineView(entryPoint: .emotion, viewModel: resultRecommendedRoutineViewModel)
+        self.navigationController?.pushViewController(resultRecommendedRoutineView, animated: true)
     }
 }
 

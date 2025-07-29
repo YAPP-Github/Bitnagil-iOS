@@ -13,10 +13,8 @@ final class OnboardingViewModel: ViewModel {
     enum Input {
         case selectOnboardingChoice(selectedChoice: OnboardingChoiceType)
         case fetchOnboardingChoice(onboarding: OnboardingType)
+        case fetchOnboardingChoices
         case makeOnboardingResult
-        case registerOnboarding
-        case selectRoutine(routine: RecommendedRoutine)
-        case registerRecommendedRoutine
     }
 
     struct Output {
@@ -25,9 +23,7 @@ final class OnboardingViewModel: ViewModel {
         let feelingOnboardingChoicePublisher: AnyPublisher<Set<OnboardingChoiceType>, Never>
         let outdoorOnboardingChoicePublisher: AnyPublisher<OnboardingChoiceType?, Never>
         let onboardingResultPublisher: AnyPublisher<[String], Never>
-        let recommendedRoutinePublisher: AnyPublisher<Set<RecommendedRoutine>, Never>
-        let selectedRoutinePublisher: AnyPublisher<Set<RecommendedRoutine>, Never>
-        let registerRoutineResultPublisher: AnyPublisher<Bool, Never>
+        let onboardingChoicesPublisher: AnyPublisher<[OnboardingChoiceType], Never>
         let nextButtonPublisher: AnyPublisher<Bool, Never>
     }
 
@@ -37,23 +33,17 @@ final class OnboardingViewModel: ViewModel {
     private let feelingOnboardingChoiceSubject = CurrentValueSubject<Set<OnboardingChoiceType>, Never>([])
     private let outdoorOnboardingChoiceSubject = CurrentValueSubject<OnboardingChoiceType?, Never>(nil)
     private let onboardingResultSubject = CurrentValueSubject<[String], Never>([])
-    private let recommendedRoutineSubject = CurrentValueSubject<Set<RecommendedRoutine>, Never>([])
-    private let selectedRoutineSubject = CurrentValueSubject<Set<RecommendedRoutine>, Never>([])
-    private let registerRoutineResultSubject = PassthroughSubject<Bool, Never>()
+    private let onboardingChoicesSubject = PassthroughSubject<[OnboardingChoiceType], Never>()
     private let nextButtonSubject = PassthroughSubject<Bool, Never>()
 
-    private let onboardingUseCase: OnboardingUseCaseProtocol
-    init(onboardingUseCase: OnboardingUseCaseProtocol) {
-        self.onboardingUseCase = onboardingUseCase
+    init() {
         self.output = Output(
             timeOnboardingChoicePublisher: timeOnboardingChoiceSubject.eraseToAnyPublisher(),
             frequencyOnboardingChoicePublisher: frequencyOnboardingChoiceSubject.eraseToAnyPublisher(),
             feelingOnboardingChoicePublisher: feelingOnboardingChoiceSubject.eraseToAnyPublisher(),
             outdoorOnboardingChoicePublisher: outdoorOnboardingChoiceSubject.eraseToAnyPublisher(),
             onboardingResultPublisher: onboardingResultSubject.eraseToAnyPublisher(),
-            recommendedRoutinePublisher: recommendedRoutineSubject.eraseToAnyPublisher(),
-            selectedRoutinePublisher: selectedRoutineSubject.eraseToAnyPublisher(),
-            registerRoutineResultPublisher: registerRoutineResultSubject.eraseToAnyPublisher(),
+            onboardingChoicesPublisher: onboardingChoicesSubject.eraseToAnyPublisher(),
             nextButtonPublisher: nextButtonSubject.eraseToAnyPublisher()
         )
     }
@@ -66,17 +56,11 @@ final class OnboardingViewModel: ViewModel {
         case .fetchOnboardingChoice(let onboarding):
             fetchChoice(onboarding: onboarding)
 
+        case .fetchOnboardingChoices:
+            makeOnboardingChoices()
+
         case .makeOnboardingResult:
             makeOnboardingResult()
-
-        case .registerOnboarding:
-            registerOnboarding()
-
-        case .selectRoutine(let routine):
-            selectRoutine(routine: routine)
-
-        case .registerRecommendedRoutine:
-            registerRecommendedRoutine()
         }
     }
 
@@ -155,18 +139,13 @@ final class OnboardingViewModel: ViewModel {
         }
     }
 
-    // 다음 버튼 활성화 여부를 결정합니다. (중복 선택 온보딩, 추천 루틴 등록)
-    private func updateNextButtonSubject(for registerButton: Bool = false) {
-        var result: Bool
-        if registerButton {
-            result = !selectedRoutineSubject.value.isEmpty
-        } else {
-            result = !feelingOnboardingChoiceSubject.value.isEmpty
-        }
+    // 다음 버튼 활성화 여부를 결정합니다. (중복 선택 온보딩)
+    private func updateNextButtonSubject() {
+        let result = !feelingOnboardingChoiceSubject.value.isEmpty
         nextButtonSubject.send(result)
     }
 
-    // 온보딩 결과를 만듭니다.
+    // 온보딩 결과 텍스트를 만듭니다.
     private func makeOnboardingResult() {
         let feelingOnboardingChoice = feelingOnboardingChoiceSubject.value
         let feelingResult = feelingOnboardingChoice.compactMap { $0.resultTitle }.joined(separator: ", ")
@@ -184,8 +163,8 @@ final class OnboardingViewModel: ViewModel {
         onboardingResultSubject.send(result)
     }
 
-    // 온보딩 결과를 등록하고, 그 결과를 바탕으로 추천 루틴을 받아옵니다.
-    private func registerOnboarding() {
+    // 온보딩 선택지를 통합합니다.
+    private func makeOnboardingChoices() {
         var onboardingChoices: [OnboardingChoiceType] = []
 
         let feelingOnboarding = Array(feelingOnboardingChoiceSubject.value)
@@ -201,43 +180,6 @@ final class OnboardingViewModel: ViewModel {
         onboardingChoices.append(frequencyOnboarding)
         onboardingChoices.append(outdoorOnboarding)
 
-        Task {
-            do {
-                let entities = try await onboardingUseCase.registerOnboarding(onboardingChoices: onboardingChoices)
-                let recommendedRoutines = entities.map({ $0.toRecommendedRoutine() })
-                recommendedRoutineSubject.send([])
-                recommendedRoutineSubject.send(Set(recommendedRoutines))
-            } catch {
-                BitnagilLogger.log(logType: .error, message: "\(error.localizedDescription)")
-            }
-        }
-    }
-
-    // 추천 루틴을 선택합니다.
-    private func selectRoutine(routine: RecommendedRoutine) {
-        var selectedRoutines = selectedRoutineSubject.value
-        if selectedRoutines.contains(routine) {
-            selectedRoutines.remove(routine)
-        } else {
-            selectedRoutines.insert(routine)
-        }
-
-        selectedRoutineSubject.send(selectedRoutines)
-        updateNextButtonSubject(for: true)
-    }
-
-    // 추천 루틴을 등록합니다.
-    private func registerRecommendedRoutine() {
-        let selectedRoutinesId = selectedRoutineSubject.value.map({ $0.id })
-
-        Task {
-            do {
-                try await onboardingUseCase.registerRecommendedRoutines(selectedRoutines: selectedRoutinesId)
-                registerRoutineResultSubject.send(true)
-            } catch {
-                BitnagilLogger.log(logType: .error, message: "\(error.localizedDescription)")
-                registerRoutineResultSubject.send(false)
-            }
-        }
+        onboardingChoicesSubject.send(onboardingChoices)
     }
 }
