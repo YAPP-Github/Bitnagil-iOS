@@ -11,16 +11,63 @@ import Shared
 final class NetworkService {
     static let shared = NetworkService()
     private let decoder = JSONDecoder()
+    private var plugins: [NetworkPlugin] = []
+    private var maxRetryCount = 0
 
-    private init() { }
+    private init() {
+        plugins = [
+            TokenInjectionPlugin(),
+            RefreshTokenPlugin(),
+            RetryPlugin()]
+    }
 
-    func request<T: Decodable>(endpoint: Endpoint, type: T.Type) async throws -> T? {
-        var request = try endpoint.makeURLRequest()
-        if endpoint.isAuthorized {
-            let accessToken = try TokenManager.shared.loadToken(tokenType: .accessToken)
-            request.headers["Authorization"] = "Bearer \(accessToken)"
+    func request<T: Decodable>(
+        endpoint: Endpoint,
+        type: T.Type,
+        withPlugins: Bool = true
+    ) async throws -> T? {
+        var retryCount = 0
+
+        while true {
+            do {
+                return try await performRequest(endpoint: endpoint, type: type, withPlugins: withPlugins)
+            } catch let error as NetworkError {
+                guard
+                    error == .needRetry,
+                    retryCount < maxRetryCount
+                else { throw error }
+
+                retryCount += 1
+                continue
+            }
         }
+    }
+
+    private func performRequest<T: Decodable>(
+        endpoint: Endpoint,
+        type: T.Type,
+        withPlugins: Bool = true
+    ) async throws -> T? {
+        var request = try endpoint.makeURLRequest()
+
+        if withPlugins {
+            for plugin in plugins {
+                request = try await plugin.willSend(request: request, endpoint: endpoint)
+            }
+        }
+
         let (data, response) = try await URLSession.shared.data(for: request)
+
+        // TODO: - 로깅 로직 수정
+        if let httpResponse = response as? HTTPURLResponse {
+            BitnagilLogger.log(logType: .info, message: "응답 코드: \(httpResponse.statusCode)")
+        }
+
+        if withPlugins {
+            for plugin in plugins {
+                try await plugin.didReceive(response: response, data: data, endpoint: endpoint)
+            }
+        }
 
         guard let httpResponse = response as? HTTPURLResponse
         else { throw NetworkError.invalidResponse }
@@ -39,7 +86,7 @@ final class NetworkService {
 
             guard let responseDTO = baseResponse.data
             else { return nil }
-            
+
             return responseDTO
         } catch {
             throw NetworkError.decodingError
