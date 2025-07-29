@@ -12,5 +12,6 @@ enum BitnagilGraphic {
         return Bundle(for: IntroView.self)
     }
     
-    static let introGraphic = UIImage(named: "IntroGraphic", in: bundle, with: nil)
+    static let introGraphic = UIImage(named: "intro_graphic", in: bundle, with: nil)
+    static let onboardingGraphic = UIImage(named: "onboarding_graphic", in: bundle, with: nil)
 }
