@@ -23,7 +23,7 @@ struct EmotionResponseDTO: Decodable {
 extension EmotionResponseDTO {
     func toEmotionEntity() -> EmotionEntity {
         return EmotionEntity(
-            emtionType: type,
+            emotionType: type,
             emotionName: name,
             emotionImageUrl: URL(string: imageUrl))
     }

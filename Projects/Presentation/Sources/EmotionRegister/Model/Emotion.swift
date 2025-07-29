@@ -17,7 +17,7 @@ struct Emotion {
 extension EmotionEntity {
     func toEmotion() -> Emotion {
         return Emotion(
-            emotionType: emtionType,
+            emotionType: emotionType,
             emotionTitle: emotionName,
             emotionImageUrl: emotionImageUrl)
     }

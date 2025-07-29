@@ -262,7 +262,7 @@ final class ResultRecommendedRoutineView: BaseViewController<ResultRecommendedRo
             recommendedRoutines[routine.id] = routineButton
             recommendedRoutineStackView.addArrangedSubview(routineButton)
             routineButton.addAction(UIAction { [weak self] _ in
-                self?.viewModel.action(input: .selecteRecommendedRoutine(routine: routine))
+                self?.viewModel.action(input: .selectRecommendedRoutine(routine: routine))
             }, for: .touchUpInside)
             routineButton.isEnabled = entryPoint.isRoutineButtonEnabled
             routineButton.snp.makeConstraints { make in

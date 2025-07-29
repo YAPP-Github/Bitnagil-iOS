@@ -15,7 +15,7 @@ final class EmotionRegisterViewModel: ViewModel {
     }
 
     struct Output {
-        let emotionListPublihser: AnyPublisher<[Emotion], Never>
+        let emotionListPublisher: AnyPublisher<[Emotion], Never>
     }
 
     private(set) var output: Output
@@ -25,7 +25,7 @@ final class EmotionRegisterViewModel: ViewModel {
     init(emotionUseCase: EmotionUseCaseProtocol) {
         self.emotionUseCase = emotionUseCase
         output = Output(
-            emotionListPublihser: emotionListSubject.eraseToAnyPublisher()
+            emotionListPublisher: emotionListSubject.eraseToAnyPublisher()
         )
     }
     

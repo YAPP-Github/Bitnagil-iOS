@@ -107,7 +107,7 @@ final class EmotionRegisterView: BaseViewController<EmotionRegisterViewModel> {
     }
 
     override func bind() {
-        viewModel.output.emotionListPublihser
+        viewModel.output.emotionListPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] emotionList in
                 self?.emotionList = emotionList

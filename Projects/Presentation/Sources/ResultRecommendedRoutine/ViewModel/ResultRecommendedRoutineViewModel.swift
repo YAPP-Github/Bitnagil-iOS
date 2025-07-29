@@ -19,7 +19,7 @@ final class ResultRecommendedRoutineViewModel: ViewModel {
     
     enum Input {
         case fetchResultRecommendedRoutines
-        case selecteRecommendedRoutine(routine: RecommendedRoutine)
+        case selectRecommendedRoutine(routine: RecommendedRoutine)
         case registerRecommendedRoutine
     }
 
@@ -53,7 +53,7 @@ final class ResultRecommendedRoutineViewModel: ViewModel {
         case .fetchResultRecommendedRoutines:
             fetchResultRecommendedRoutines()
 
-        case .selecteRecommendedRoutine(let routine):
+        case .selectRecommendedRoutine(let routine):
             selectRecommendedRoutine(routine: routine)
 
         case .registerRecommendedRoutine:
@@ -81,7 +81,8 @@ final class ResultRecommendedRoutineViewModel: ViewModel {
                     fatalError("ResultRecommendedRoutineViewModel Type이 설정되지 않았습니다.")
                 }
             } catch {
-
+                // TODO: 에러 처리
+                BitnagilLogger.log(logType: .error, message: "\(error.localizedDescription)")
             }
         }
     }
@@ -118,12 +119,12 @@ final class ResultRecommendedRoutineViewModel: ViewModel {
             selectedRoutines.insert(routine)
         }
         selectedRecommendedRoutineSubject.send(selectedRoutines)
-        updateReigsterButtonSubject()
+        updateRegisterButtonSubject()
     }
 
 
     // 등록하기 버튼 상태를 업데이트 합니다. (온보딩, 감정구슬 시에만 작동)
-    private func updateReigsterButtonSubject() {
+    private func updateRegisterButtonSubject() {
         let result = !selectedRecommendedRoutineSubject.value.isEmpty
         confirmButtonSubject.send(result)
     }

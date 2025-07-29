@@ -8,16 +8,16 @@
 import Foundation
 
 public struct EmotionEntity {
-    public let emtionType: String
+    public let emotionType: String
     public let emotionName: String
     public let emotionImageUrl: URL?
 
     public init(
-        emtionType: String,
+        emotionType: String,
         emotionName: String,
         emotionImageUrl: URL?
     ) {
-        self.emtionType = emtionType
+        self.emotionType = emotionType
         self.emotionName = emotionName
         self.emotionImageUrl = emotionImageUrl
     }
