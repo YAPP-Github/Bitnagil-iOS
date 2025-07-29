@@ -32,18 +32,25 @@ public struct DomainDependencyAssembler: DependencyAssemblerProtocol {
             return WithdrawUseCase(authRepository: authRepository)
         }
 
-        DIContainer.shared.register(type: OnboardingUseCaseProtocol.self) { container in
-            guard let onboardingRepository = container.resolve(type: OnboardingRepositoryProtocol.self)
-            else { fatalError("onboardingRepository 의존성이 등록되지 않았습니다.") }
-
-            return OnboardingUseCase(onboardingRepository: onboardingRepository)
-        }
-
         DIContainer.shared.register(type: RecommendedRoutineUseCaseProtocol.self) { container in
             guard let recommendedRoutineRepository = container.resolve(type: RecommendedRoutineRepositoryProtocol.self)
             else { fatalError("recommendedRoutineRepository 의존성이 등록되지 않았습니다.") }
 
             return RecommendedRoutineUseCase(recommendedRoutineRepository: recommendedRoutineRepository)
+        }
+
+        guard let emotionRepository = DIContainer.shared.resolve(type: EmotionRepositoryProtocol.self)
+        else { fatalError("emotionRepository 의존성이 등록되지 않았습니다.") }
+
+        DIContainer.shared.register(type: EmotionUseCaseProtocol.self) { _ in
+            return EmotionUseCase(emotionRepository: emotionRepository)
+        }
+
+        DIContainer.shared.register(type: ResultRecommendedRoutineUseCaseProtocol.self) { container in
+            guard let onboardingRepository = container.resolve(type: OnboardingRepositoryProtocol.self)
+            else { fatalError("emotionRepository 의존성이 등록되지 않았습니다.") }
+
+            return ResultRecommendedRoutineUseCase(onboardingRepository: onboardingRepository, emotionRepository: emotionRepository)
         }
     }
 }

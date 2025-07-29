@@ -29,11 +29,8 @@ public struct PresentationDependencyAssembler: DependencyAssemblerProtocol {
             return LoginViewModel(loginUseCase: loginUseCase)
         }
 
-        DIContainer.shared.register(type: OnboardingViewModel.self) { container in
-            guard let onboardingUseCase = container.resolve(type: OnboardingUseCaseProtocol.self)
-            else { fatalError("onboardingUseCase 의존성이 등록되지 않았습니다.") }
-
-            return OnboardingViewModel(onboardingUseCase: onboardingUseCase)
+        DIContainer.shared.register(type: OnboardingViewModel.self) { _ in
+            return OnboardingViewModel()
         }
 
         DIContainer.shared.register(type: RecommendedRoutineViewModel.self) { container in
@@ -50,12 +47,22 @@ public struct PresentationDependencyAssembler: DependencyAssemblerProtocol {
             return MypageViewModel(userDataRepository: userDataRepository)
         }
 
-        DIContainer.shared.register(type: EmotionRegisterViewModel.self) { _ in
-            return EmotionRegisterViewModel()
+        DIContainer.shared.register(type: EmotionRegisterViewModel.self) { container in
+            guard let emotionUseCase = container.resolve(type: EmotionUseCaseProtocol.self)
+            else { fatalError("emotionUseCase 의존성이 등록되지 않았습니다.") }
+
+            return EmotionRegisterViewModel(emotionUseCase: emotionUseCase)
         }
 
         DIContainer.shared.register(type: RoutineCreationViewModel.self) { _ in
             return RoutineCreationViewModel()
+        }
+
+        DIContainer.shared.register(type: ResultRecommendedRoutineViewModel.self) { container in
+            guard let resultRecommendedRoutineUseCase = container.resolve(type: ResultRecommendedRoutineUseCaseProtocol.self)
+            else { fatalError("resultRecommendedRoutineUseCase 의존성이 등록되지 않았습니다.") }
+
+            return ResultRecommendedRoutineViewModel(resultRecommendedRoutineUseCase: resultRecommendedRoutineUseCase)
         }
     }
 }
