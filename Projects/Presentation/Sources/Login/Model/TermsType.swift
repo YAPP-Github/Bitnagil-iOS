@@ -19,8 +19,8 @@ extension TermsType {
 
     var link: URL? {
         switch self {
-        case .service: URL(string: "https://yapp-workspace.notion.site/2282106a0e84804cb283e44f24ecc567")
-        case .privacy: URL(string: "https://yapp-workspace.notion.site/22a2106a0e848090864dc02fba31de34")
+        case .service: URL(string: "https://complex-wombat-99f.notion.site/2025-7-20-236f4587491d8071833adfaf8115bce2")
+        case .privacy: URL(string: "https://complex-wombat-99f.notion.site/2025-07-20-236f4587491d80308016eb810692d18b")
         case .age: nil
         }
     }
