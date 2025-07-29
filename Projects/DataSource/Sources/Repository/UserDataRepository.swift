@@ -14,13 +14,12 @@ final class UserDataRepository: UserDataRepositoryProtocol {
     private let userDefaultsStorage = UserDefaultsStorage.shared
     private let tokenManager = TokenManager.shared
 
-    func loadNickname() throws -> String {
-        // TODO: 서버에서 닉넴 보내준대요
-        guard let nickname: String = userDefaultsStorage.load(forKey: UserDefaultsKey.nickname.rawValue) else {
-            throw UserError.nicknameLoadFailed
-        }
+    func loadNickname() async throws -> String {
+        let endpoint = UserEndpoint.loadNickname
+        guard let user = try await networkService.request(endpoint: endpoint, type: UserDataResponseDTO.self)
+        else { return "" }
 
-        return nickname
+        return user.nickname
     }
 
     func reissueToken() async -> Bool {

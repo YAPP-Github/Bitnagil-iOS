@@ -9,7 +9,7 @@
 public protocol UserDataRepositoryProtocol {
     /// 저장한 닉네임을 가져옵니다.
     /// - Returns: 유저 닉네임
-    func loadNickname() throws -> String
+    func loadNickname() async throws -> String
 
     /// 토큰 재발급을 진행합니다.
     func reissueToken() async -> Bool

@@ -6,6 +6,7 @@
 //
 
 import Combine
+import Domain
 import Foundation
 
 final class HomeViewModel: ViewModel {
@@ -25,7 +26,9 @@ final class HomeViewModel: ViewModel {
     private let nicknameSubject = CurrentValueSubject<String, Never>("")
     private let routinesSubject = CurrentValueSubject<[MainRoutine], Never>([])
 
-    init() {
+    private let userDataUseCase: UserDataUseCaseProtocol
+    init(userDataUseCase: UserDataUseCaseProtocol) {
+        self.userDataUseCase = userDataUseCase
         self.output = Output(
             nicknamePublisher: nicknameSubject.eraseToAnyPublisher(),
             routinesPublisher: routinesSubject.eraseToAnyPublisher()
@@ -46,8 +49,14 @@ final class HomeViewModel: ViewModel {
     }
 
     private func loadNickname() {
-        // TODO: Repository 혹은 UseCase와 연동해야 합니다.
-        nicknameSubject.send("선영")
+        Task {
+            do {
+                let nickname = try await userDataUseCase.loadNickname()
+                nicknameSubject.send(nickname)
+            } catch {
+                
+            }
+        }
     }
 
     private func fetchRoutines() {

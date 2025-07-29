@@ -38,11 +38,13 @@ final class MypageViewModel: ViewModel {
             nickNamePublisher: nicknamePublisher.eraseToAnyPublisher(),
             externalURLPublisher: externalURLPublisher.eraseToAnyPublisher())
 
-        do {
-            let nickname = try userDataRepository.loadNickname()
-            nicknamePublisher.send(nickname)
-        } catch {
-            BitnagilLogger.log(logType: .debug, message: "\(error.localizedDescription)")
+        Task {
+            do {
+                let nickname = try await userDataRepository.loadNickname()
+                nicknamePublisher.send(nickname)
+            } catch {
+                BitnagilLogger.log(logType: .debug, message: "\(error.localizedDescription)")
+            }
         }
     }
 
