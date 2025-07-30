@@ -42,6 +42,11 @@ final class HomeView: BaseViewController<HomeViewModel> {
         static let floatingMenuBottomSpacing: CGFloat = 15
         static let floatingMenuHeight: CGFloat = 64
         static let floatingMenuWidth: CGFloat = 144
+        static let tooltipViewTailLeadingSpacing: CGFloat = 78.68
+        static let tooltipViewLeadingSpacing: CGFloat = 76
+        static let tooltipViewBottomSpacing: CGFloat = 4
+        static let tooltipViewWidth: CGFloat = 176
+        static let tooltipViewHeight: CGFloat = 47
     }
 
     private let gradientLayer = CAGradientLayer()
@@ -58,6 +63,8 @@ final class HomeView: BaseViewController<HomeViewModel> {
     private let routineSortButton = UIButton()
     private let routineSortView = SelectableItemTableView<RoutineSortType>(items: [RoutineSortType.complete, RoutineSortType.incomplete])
     private let routineStackView = UIStackView()
+
+    private let tooltipView = TooltipView(tailPosition: .offsetFromLeading(Layout.tooltipViewTailLeadingSpacing))
 
     private var isShowingFloatingMenu: Bool = false
     private let dimmedView = UIView()
@@ -96,8 +103,13 @@ final class HomeView: BaseViewController<HomeViewModel> {
         homeLabel.textColor = BitnagilColor.gray10
 
         informationButton.setImage(BitnagilIcon.informationIcon, for: .normal)
-        informationButton.addAction(UIAction { _ in
-            // TODO: 툴팁 뷰를 보여줘야 합니다.
+        informationButton.addAction(UIAction { [weak self] _ in
+            self?.informationButton.isSelected.toggle()
+            if self?.informationButton.isSelected ?? false {
+                self?.tooltipView.showTooltip()
+            } else {
+                self?.tooltipView.hideTooltip()
+            }
         }, for: .touchUpInside)
 
         emotionOrbView.backgroundColor = BitnagilColor.happy
@@ -148,6 +160,11 @@ final class HomeView: BaseViewController<HomeViewModel> {
         routineStackView.alignment = .fill
         routineStackView.distribution = .fill
 
+        tooltipView.configure(message: "감정 기록 시, 루틴을 추천 받아요!")
+        tooltipView.isHidden = true
+        let viewTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+        view.addGestureRecognizer(viewTapGesture)
+
         floatingButton.addAction(UIAction { [weak self] _ in
             self?.toggleFloatingButton()
         }, for: .touchUpInside)
@@ -159,8 +176,8 @@ final class HomeView: BaseViewController<HomeViewModel> {
         dimmedView.backgroundColor = UIColor.black.withAlphaComponent(0.7)
         dimmedView.alpha = 0
 
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tappedDimmedView))
-        dimmedView.addGestureRecognizer(tapGesture)
+        let dimmedViewTapGesture = UITapGestureRecognizer(target: self, action: #selector(tappedDimmedView))
+        dimmedView.addGestureRecognizer(dimmedViewTapGesture)
     }
 
     override func configureLayout() {
@@ -169,6 +186,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
 
         view.addSubview(homeLabel)
         view.addSubview(informationButton)
+        view.addSubview(tooltipView)
         view.addSubview(emotionOrbView)
         view.addSubview(registerEmotionButton)
 
@@ -193,6 +211,13 @@ final class HomeView: BaseViewController<HomeViewModel> {
             make.leading.equalTo(homeLabel.snp.trailing).offset(Layout.informationButtonLeadingSpacing)
             make.bottom.equalTo(homeLabel.snp.bottom).inset(Layout.informationButtonBottomSpacing)
             make.size.equalTo(Layout.informationButtonSize)
+        }
+
+        tooltipView.snp.makeConstraints { make in
+            make.leading.equalTo(informationButton).offset(-Layout.tooltipViewLeadingSpacing)
+            make.bottom.equalTo(informationButton.snp.top).offset(-Layout.tooltipViewBottomSpacing)
+            make.width.equalTo(Layout.tooltipViewWidth)
+            make.height.equalTo(Layout.tooltipViewHeight)
         }
 
         registerEmotionButton.snp.makeConstraints { make in
@@ -301,6 +326,9 @@ final class HomeView: BaseViewController<HomeViewModel> {
 
     // 루틴 정렬 Bottom Sheet를 보여줍니다.
     private func showRoutineSortBottomSheet() {
+        if !tooltipView.isHidden {
+            hideTooltipView()
+        }
         presentCustomBottomSheet(contentViewController: routineSortView, maxHeight: 192)
     }
 
@@ -370,6 +398,10 @@ final class HomeView: BaseViewController<HomeViewModel> {
     }
 
     private func toggleFloatingButton() {
+        if !tooltipView.isHidden {
+            hideTooltipView()
+        }
+
         floatingButton.toggle()
         isShowingFloatingMenu.toggle()
 
@@ -384,6 +416,26 @@ final class HomeView: BaseViewController<HomeViewModel> {
 
     @objc private func tappedDimmedView() {
         toggleFloatingButton()
+    }
+
+    @objc private func handleTap(_ gesture: UITapGestureRecognizer) {
+        let location = gesture.location(in: contentView)
+
+        // 탭한 곳이 버튼 영역인 경우
+        if informationButton.frame.contains(location) {
+            hideTooltipView()
+            return
+        }
+
+        // 탭한 곳이 tooltip 영역 밖인 경우
+        if !tooltipView.frame.contains(location) {
+            hideTooltipView()
+        }
+    }
+
+    private func hideTooltipView() {
+        informationButton.isSelected = false
+        tooltipView.hideTooltip()
     }
 }
 
