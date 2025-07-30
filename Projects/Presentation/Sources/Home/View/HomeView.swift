@@ -82,7 +82,6 @@ final class HomeView: BaseViewController<HomeViewModel> {
         configureGradientBackground()
         viewModel.action(input: .loadNickname)
         viewModel.action(input: .fetchRoutines)
-        viewModel.action(input: .fetchDailyRoutines(date: Date()))
     }
 
     override func viewDidLayoutSubviews() {
@@ -126,7 +125,12 @@ final class HomeView: BaseViewController<HomeViewModel> {
         weekView.delegate = self
 
         emptyView.didTapRegisterRoutineButton = {
-            // TODO: 감정 등록 화면으로 이동해야 합니다.
+            guard let routineCreationViewModel = DIContainer.shared.resolve(type: RoutineCreationViewModel.self) else {
+                fatalError("routineCreationViewModel 의존성이 등록되지 않았습니다.")
+            }
+            let routineCreationView = RoutineCreationView(viewModel: routineCreationViewModel)
+            routineCreationView.hidesBottomBarWhenPushed = true
+            self.navigationController?.pushViewController(routineCreationView, animated: true)
         }
 
         routineScrollView.showsVerticalScrollIndicator = false
@@ -268,6 +272,15 @@ final class HomeView: BaseViewController<HomeViewModel> {
             }
             .store(in: &cancellables)
 
+        viewModel.output.fetchRoutineReulstPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] fetchRoutineReulst in
+                if fetchRoutineReulst {
+                    self?.viewModel.action(input: .fetchDailyRoutines(date: Date()))
+                }
+            }
+            .store(in: &cancellables)
+
         viewModel.output.routinesPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] routines in
@@ -401,7 +414,7 @@ extension HomeView: SelectableItemTableViewDelegate {
 // MARK: WeekViewDelegate
 extension HomeView: WeekViewDelegate {
     func weekView(_ sender: WeekView, didMoveWeek weekStartDate: Date) {
-        // TODO: 그 전 주 혹은 다음 주 데이터 받아와야 합니다.
+        viewModel.action(input: .fetchDailyRoutines(date: weekStartDate))
     }
     
     func weekView(_ sender: WeekView, didSelectDate date: Date) {

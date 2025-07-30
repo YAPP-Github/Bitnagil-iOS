@@ -1,26 +1,28 @@
 //
-//  UserEndpoint.swift
+//  RoutineEndpoint.swift
 //  DataSource
 //
 //  Created by 최정인 on 7/30/25.
 //
 
-enum UserEndpoint {
-    case loadNickname
+enum RoutineEndpoint {
+    case fetchRoutines(startDate: String, endDate: String)
 }
 
-extension UserEndpoint: Endpoint {
+extension RoutineEndpoint: Endpoint {
     var baseURL: String {
-        return AppProperties.baseURL + "/api/v1/users/infos"
+        return AppProperties.baseURL + "/api/v1/routines"
     }
-    
+
     var path: String {
-        return baseURL
+        switch self {
+        case .fetchRoutines: baseURL
+        }
     }
     
     var method: HTTPMethod {
         switch self {
-        case .loadNickname: .get
+        case .fetchRoutines: .get
         }
     }
     
@@ -33,7 +35,12 @@ extension UserEndpoint: Endpoint {
     }
     
     var queryParameters: [String : String] {
-        return [:]
+        switch self {
+        case .fetchRoutines(let startDate, let endDate):
+            return [
+                "startDate": startDate,
+                "endDate": endDate]
+        }
     }
     
     var bodyParameters: [String : Any] {

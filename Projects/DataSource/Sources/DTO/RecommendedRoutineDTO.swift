@@ -12,7 +12,7 @@ struct RecommendedRoutineDTO: Decodable {
     let routineName: String
     let routineDescription: String
     let routineLevel: String?
-    let subRoutines: [SubRoutineDTO]
+    let subRoutines: [RecommendedSubRoutineDTO]
 
     enum CodingKeys: String, CodingKey {
         case id = "recommendedRoutineId"
@@ -21,7 +21,9 @@ struct RecommendedRoutineDTO: Decodable {
         case routineLevel = "recommendedRoutineLevel"
         case subRoutines = "recommendedSubRoutineSearchResult"
     }
+}
 
+extension RecommendedRoutineDTO {
     func toRecommendedRoutineEntity(category: String? = nil) -> RecommendedRoutineEntity {
         var routineCategory: RoutineCategoryType?
         if let category {
@@ -38,20 +40,6 @@ struct RecommendedRoutineDTO: Decodable {
             description: routineDescription,
             category: routineCategory,
             level: level,
-            subRoutines: subRoutines.compactMap({ $0.toSubRoutineEntity() }))
-    }
-}
-
-struct SubRoutineDTO: Decodable {
-    let id: Int
-    let routineName: String
-
-    enum CodingKeys: String, CodingKey {
-        case id = "recommendedSubRoutineId"
-        case routineName = "recommendedSubRoutineName"
-    }
-
-    func toSubRoutineEntity() -> SubRoutineEntity {
-        return SubRoutineEntity(id: id, title: routineName)
+            subRoutines: subRoutines.compactMap({ $0.toRecommendedSubRoutineEntity() }))
     }
 }

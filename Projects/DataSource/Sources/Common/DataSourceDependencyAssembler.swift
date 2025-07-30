@@ -32,5 +32,9 @@ public struct DataSourceDependencyAssembler: DependencyAssemblerProtocol {
         DIContainer.shared.register(type: EmotionRepositoryProtocol.self) { _ in
             return EmotionRepository()
         }
+
+        DIContainer.shared.register(type: RoutineRepositoryProtocol.self) { _ in
+            return RoutineRepository()
+        }
     }
 }

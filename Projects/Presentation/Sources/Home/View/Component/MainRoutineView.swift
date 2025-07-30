@@ -106,7 +106,6 @@ final class MainRoutineView: UIView {
             make.centerY.equalToSuperview()
             make.leading.equalToSuperview().offset(Layout.checkButtonLeadingSpacing)
             make.height.equalTo(Layout.checkButtonHeight)
-            make.width.equalTo(Layout.checkButtonWidth)
         }
 
         buttonStackView.snp.makeConstraints { make in

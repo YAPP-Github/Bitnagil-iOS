@@ -5,12 +5,26 @@
 //  Created by 최정인 on 7/18/25.
 //
 
+import Domain
 import Foundation
 
 struct MainRoutine {
-    let id: Int
-    let startTime: Date
+    let id: String
     let title: String
     var isDone: Bool
+    let startTime: Date
+    let repeatDay: [String]
     var subRoutines: [SubRoutine]
+}
+
+extension RoutineEntity {
+    func toMainRoutine() -> MainRoutine {
+        return MainRoutine(
+            id: routineId,
+            title: routineName,
+            isDone: completeYn,
+            startTime: Date.convertToDate(from: executionTime, dateType: .time) ?? Date(),
+            repeatDay: [],
+            subRoutines: subRoutineSearchResultDto.map({ $0.toSubRoutine() }))
+    }
 }

@@ -11,7 +11,7 @@ public struct RecommendedRoutineEntity {
     public let description: String
     public let category: RoutineCategoryType?
     public let level: RoutineLevelType?
-    public let subRoutines: [SubRoutineEntity]
+    public let subRoutines: [RecommendedSubRoutineEntity]
 
     public init(
         id: Int,
@@ -19,7 +19,7 @@ public struct RecommendedRoutineEntity {
         description: String,
         category: RoutineCategoryType?,
         level: RoutineLevelType?,
-        subRoutines: [SubRoutineEntity]
+        subRoutines: [RecommendedSubRoutineEntity]
     ) {
         self.id = id
         self.title = title
@@ -30,7 +30,7 @@ public struct RecommendedRoutineEntity {
     }
 }
 
-public struct SubRoutineEntity {
+public struct RecommendedSubRoutineEntity {
     public let id: Int
     public let title: String
 
