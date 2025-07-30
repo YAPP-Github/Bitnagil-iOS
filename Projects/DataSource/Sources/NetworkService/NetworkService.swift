@@ -30,7 +30,10 @@ final class NetworkService {
 
         while true {
             do {
-                return try await performRequest(endpoint: endpoint, type: type, withPlugins: withPlugins)
+                return try await performRequest(
+                    endpoint: endpoint,
+                    type: type,
+                    withPlugins: withPlugins)
             } catch let error as NetworkError {
                 guard
                     error == .needRetry,
@@ -65,7 +68,10 @@ final class NetworkService {
 
         if withPlugins {
             for plugin in plugins {
-                try await plugin.didReceive(response: response, data: data, endpoint: endpoint)
+                try await plugin.didReceive(
+                    response: response,
+                    data: data,
+                    endpoint: endpoint)
             }
         }
 
