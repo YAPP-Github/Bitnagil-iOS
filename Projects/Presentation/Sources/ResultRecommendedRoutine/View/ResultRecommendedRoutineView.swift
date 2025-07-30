@@ -8,6 +8,7 @@
 import Combine
 import Domain
 import Shared
+import SnapKit
 import UIKit
 
 final class ResultRecommendedRoutineView: BaseViewController<ResultRecommendedRoutineViewModel> {
@@ -66,6 +67,8 @@ final class ResultRecommendedRoutineView: BaseViewController<ResultRecommendedRo
 
     private enum Layout {
         static let horizontalMargin: CGFloat = 20
+        static let mainLabelMinTopSpacing: CGFloat = 12
+        static let mainLabelMaxTopSpacing: CGFloat = 32
         static let mainLabelHeight: CGFloat = 60
         static let subLabelTopSpacing: CGFloat = 10
         static let subLabelHeight: CGFloat = 40
@@ -78,12 +81,6 @@ final class ResultRecommendedRoutineView: BaseViewController<ResultRecommendedRo
         static let skipButtonLabelLineHeight: CGFloat = 20
         static let skipButtonHeight: CGFloat = 54
         static let skipButtonBottomSpacing: CGFloat = 20
-
-        static var mainLabelTopSpacing: CGFloat {
-            let height = UIScreen.main.bounds.height
-            if height <= 667 { return 12 }
-            else { return 32 }
-        }
     }
 
     private let mainLabel = UILabel()
@@ -93,8 +90,11 @@ final class ResultRecommendedRoutineView: BaseViewController<ResultRecommendedRo
     private var confirmButton = PrimaryButton(buttonState: .disabled, buttonTitle: "등록하기")
     private let skipButtonLabel = UILabel()
     private let skipButton = UIButton()
-    private var cancellables: Set<AnyCancellable>
 
+    private var isLayoutConfigured: Bool = false
+    private var mainLabelTopConstraint: Constraint?
+
+    private var cancellables: Set<AnyCancellable>
     private let entryPoint: EntryPoint
     init(entryPoint: EntryPoint, viewModel: ResultRecommendedRoutineViewModel) {
         self.entryPoint = entryPoint
@@ -114,6 +114,22 @@ final class ResultRecommendedRoutineView: BaseViewController<ResultRecommendedRo
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         settingNavigationItem()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        if !isLayoutConfigured {
+            updateMainLabelTopSpacing()
+            isLayoutConfigured = true
+        }
+    }
+
+    private func updateMainLabelTopSpacing() {
+        let height = view.bounds.height
+        let spacing: CGFloat = height <= 667 ? Layout.mainLabelMinTopSpacing : Layout.mainLabelMaxTopSpacing
+
+        mainLabelTopConstraint?.update(offset: spacing)
     }
 
     override func configureAttribute() {
@@ -161,7 +177,7 @@ final class ResultRecommendedRoutineView: BaseViewController<ResultRecommendedRo
         mainLabel.snp.makeConstraints { make in
             make.leading.equalTo(safeArea).offset(Layout.horizontalMargin)
             make.trailing.equalTo(safeArea).inset(Layout.horizontalMargin)
-            make.top.equalTo(safeArea).offset(Layout.mainLabelTopSpacing)
+            mainLabelTopConstraint = make.top.equalTo(safeArea).offset(Layout.mainLabelMinTopSpacing).constraint
             make.height.equalTo(Layout.mainLabelHeight)
         }
 

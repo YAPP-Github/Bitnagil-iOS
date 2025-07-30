@@ -7,12 +7,15 @@
 
 import Combine
 import Domain
+import SnapKit
 import UIKit
 
 final class OnboardingView: BaseViewController<OnboardingViewModel> {
 
     private enum Layout {
         static let horizontalMargin: CGFloat = 20
+        static let mainLabelMinTopSpacing: CGFloat = 12
+        static let mainLabelMaxTopSpacing: CGFloat = 32
         static let mainLabelHeight: CGFloat = 60
         static let subLabelTopSpacing: CGFloat = 10
         static let choiceButtonHeight: CGFloat = 52
@@ -21,12 +24,6 @@ final class OnboardingView: BaseViewController<OnboardingViewModel> {
         static let choiceStackViewTopSpacing: CGFloat = 28
         static let nextButtonHeight: CGFloat = 54
         static let nextButtonBottomSpacing: CGFloat = 20
-
-        static var mainLabelTopSpacing: CGFloat {
-            let height = UIScreen.main.bounds.height
-            if height <= 667 { return 12 }
-            else { return 32 }
-        }
     }
 
     private let onboarding: OnboardingType
@@ -35,6 +32,9 @@ final class OnboardingView: BaseViewController<OnboardingViewModel> {
     private let choiceStackView = UIStackView()
     private var choiceButtons: [OnboardingChoiceType: OnboardingChoiceButton] = [:]
     private let nextButton = PrimaryButton(buttonState: .disabled, buttonTitle: "다음")
+
+    private var isLayoutConfigured: Bool = false
+    private var mainLabelTopConstraint: Constraint?
 
     private let isFromMypage: Bool
     private var cancellables: Set<AnyCancellable>
@@ -64,6 +64,22 @@ final class OnboardingView: BaseViewController<OnboardingViewModel> {
         configureNavigationBar(navigationStyle: .withPrograssBar(step: onboarding.step, stepCount: stepCount))
 
         self.viewModel.action(input: .fetchOnboardingChoice(onboarding: onboarding))
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        if !isLayoutConfigured {
+            updateMainLabelTopSpacing()
+            isLayoutConfigured = true
+        }
+    }
+
+    private func updateMainLabelTopSpacing() {
+        let height = view.bounds.height
+        let spacing: CGFloat = height <= 667 ? Layout.mainLabelMinTopSpacing : Layout.mainLabelMaxTopSpacing
+
+        mainLabelTopConstraint?.update(offset: spacing)
     }
 
     override func configureAttribute() {
@@ -117,7 +133,7 @@ final class OnboardingView: BaseViewController<OnboardingViewModel> {
         mainLabel.snp.makeConstraints { make in
             make.leading.equalTo(safeArea).offset(Layout.horizontalMargin)
             make.trailing.equalTo(safeArea).inset(Layout.horizontalMargin)
-            make.top.equalTo(safeArea).offset(Layout.mainLabelTopSpacing)
+            mainLabelTopConstraint = make.top.equalTo(safeArea).offset(Layout.mainLabelMinTopSpacing).constraint
             make.height.equalTo(Layout.mainLabelHeight)
         }
 
