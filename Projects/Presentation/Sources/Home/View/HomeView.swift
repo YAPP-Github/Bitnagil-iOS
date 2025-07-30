@@ -37,6 +37,11 @@ final class HomeView: BaseViewController<HomeViewModel> {
         static let emptyViewHeight: CGFloat = 120
         static let collapsedTop: CGFloat = 225
         static let expandedTop: CGFloat = 40
+        static let floatingButtonBottomSpacing: CGFloat = 19
+        static let floatingButtonSize: CGFloat = 52
+        static let floatingMenuBottomSpacing: CGFloat = 15
+        static let floatingMenuHeight: CGFloat = 64
+        static let floatingMenuWidth: CGFloat = 144
     }
 
     private let gradientLayer = CAGradientLayer()
@@ -53,6 +58,11 @@ final class HomeView: BaseViewController<HomeViewModel> {
     private let routineSortButton = UIButton()
     private let routineSortView = SelectableItemTableView<RoutineSortType>(items: [RoutineSortType.complete, RoutineSortType.incomplete])
     private let routineStackView = UIStackView()
+
+    private var isShowingFloatingMenu: Bool = false
+    private let dimmedView = UIView()
+    private let floatingButton = FloatingButton()
+    private let floatingMenu = FloatingMenuView()
 
     private var contentViewTopConstraint: Constraint?
     private var cancellables: Set<AnyCancellable>
@@ -133,6 +143,20 @@ final class HomeView: BaseViewController<HomeViewModel> {
         routineStackView.spacing = Layout.routineStackViewSpacing
         routineStackView.alignment = .fill
         routineStackView.distribution = .fill
+
+        floatingButton.addAction(UIAction { [weak self] _ in
+            self?.toggleFloatingButton()
+        }, for: .touchUpInside)
+
+        floatingMenu.isHidden = true
+        floatingMenu.delegate = self
+
+        dimmedView.isHidden = true
+        dimmedView.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+        dimmedView.alpha = 0
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tappedDimmedView))
+        dimmedView.addGestureRecognizer(tapGesture)
     }
 
     override func configureLayout() {
@@ -150,6 +174,10 @@ final class HomeView: BaseViewController<HomeViewModel> {
         contentView.addSubview(routineScrollView)
         routineScrollView.addSubview(routineSortButton)
         routineScrollView.addSubview(routineStackView)
+
+        view.addSubview(dimmedView)
+        view.addSubview(floatingMenu)
+        view.addSubview(floatingButton)
 
         homeLabel.snp.makeConstraints { make in
             make.top.equalTo(safeArea).offset(Layout.homeLabelTopSpacing)
@@ -212,6 +240,23 @@ final class HomeView: BaseViewController<HomeViewModel> {
             make.top.equalTo(weekView.snp.bottom).offset(Layout.emptyViewTopSpacing)
             make.centerX.equalToSuperview()
             make.height.equalTo(Layout.emptyViewHeight)
+        }
+
+        floatingButton.snp.makeConstraints { make in
+            make.trailing.equalTo(safeArea).inset(Layout.horizontalMargin)
+            make.bottom.equalTo(safeArea).inset(Layout.floatingButtonBottomSpacing)
+            make.size.equalTo(Layout.floatingButtonSize)
+        }
+
+        floatingMenu.snp.makeConstraints { make in
+            make.trailing.equalTo(safeArea).inset(Layout.horizontalMargin)
+            make.bottom.equalTo(floatingButton.snp.top).offset(-Layout.floatingMenuBottomSpacing)
+            make.height.equalTo(Layout.floatingMenuHeight)
+            make.width.equalTo(Layout.floatingMenuWidth)
+        }
+
+        dimmedView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
     }
 
@@ -310,6 +355,23 @@ final class HomeView: BaseViewController<HomeViewModel> {
             self.view.layoutIfNeeded()
         }
     }
+
+    private func toggleFloatingButton() {
+        floatingButton.toggle()
+        isShowingFloatingMenu.toggle()
+
+        floatingMenu.isHidden = !isShowingFloatingMenu
+        dimmedView.isHidden = !isShowingFloatingMenu
+
+        UIView.animate(withDuration: 0.2, delay: 0, options: [.curveEaseOut]) {
+            self.dimmedView.alpha = self.isShowingFloatingMenu ? 1 : 0
+            self.floatingMenu.alpha = self.isShowingFloatingMenu ? 1 : 0
+        }
+    }
+
+    @objc private func tappedDimmedView() {
+        toggleFloatingButton()
+    }
 }
 
 // MARK: RoutineViewDelegate
@@ -344,5 +406,18 @@ extension HomeView: WeekViewDelegate {
     
     func weekView(_ sender: WeekView, didSelectDate date: Date) {
         viewModel.action(input: .fetchDailyRoutines(date: date))
+    }
+}
+
+// MARK: FloatingMenuViewDelegate
+extension HomeView: FloatingMenuViewDelegate {
+    func floatingMenuDidTapRegisterRoutineButton(_ sender: FloatingMenuView) {
+        toggleFloatingButton()
+        guard let routineCreationViewModel = DIContainer.shared.resolve(type: RoutineCreationViewModel.self) else {
+            fatalError("routineCreationViewModel 의존성이 등록되지 않았습니다.")
+        }
+        let routineCreationView = RoutineCreationView(viewModel: routineCreationViewModel)
+        routineCreationView.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(routineCreationView, animated: true)
     }
 }
