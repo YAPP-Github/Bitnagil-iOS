@@ -47,6 +47,8 @@ final class HomeView: BaseViewController<HomeViewModel> {
         static let tooltipViewBottomSpacing: CGFloat = 4
         static let tooltipViewWidth: CGFloat = 176
         static let tooltipViewHeight: CGFloat = 47
+        static let routineDetailViewDefaultHeight: CGFloat = 367
+        static let routineDetailViewSubRoutineHeight: CGFloat = 25
     }
 
     private let gradientLayer = CAGradientLayer()
@@ -70,6 +72,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
     private let dimmedView = UIView()
     private let floatingButton = FloatingButton()
     private let floatingMenu = FloatingMenuView()
+    private var bottomSheet: CustomBottomSheet?
 
     private var contentViewTopConstraint: Constraint?
     private var cancellables: Set<AnyCancellable>
@@ -447,7 +450,13 @@ extension HomeView: RoutineViewDelegate {
     }
 
     func routineView(_ sender: RoutineView, didTapMainRoutineMoreButton mainRoutine: MainRoutine) {
-        // TODO: 더보기 Bottom Sheet
+        let maxHeight = Layout.routineDetailViewDefaultHeight + CGFloat(mainRoutine.subRoutines.count - 1) * Layout.routineDetailViewSubRoutineHeight
+        let routineDetailView = RoutineDetailView(routine: mainRoutine)
+        routineDetailView.delegate = self
+        bottomSheet = CustomBottomSheet(contentViewController: routineDetailView, maxHeight: maxHeight)
+        if let bottomSheet {
+            present(bottomSheet, animated: true)
+        }
     }
 
     func routineView(_ sender: RoutineView, didTapSubRoutineCheckButton subRoutine: SubRoutine) {
@@ -484,5 +493,25 @@ extension HomeView: FloatingMenuViewDelegate {
         let routineCreationView = RoutineCreationView(viewModel: routineCreationViewModel)
         routineCreationView.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(routineCreationView, animated: true)
+    }
+}
+
+// MARK: RoutineDetailViewDelegate
+extension HomeView: RoutineDetailViewDelegate {
+    func routineDetailView(_ sender: RoutineDetailView, didEditRoutine routine: MainRoutine) {
+        if let bottomSheet {
+            bottomSheet.dismissBottomSheet()
+            self.bottomSheet = nil
+        }
+        guard let routineCreationViewModel = DIContainer.shared.resolve(type: RoutineCreationViewModel.self) else {
+            fatalError("routineCreationViewModel 의존성이 등록되지 않았습니다.")
+        }
+        let routineCreationView = RoutineCreationView(viewModel: routineCreationViewModel)
+        routineCreationView.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(routineCreationView, animated: true)
+    }
+    
+    func routineDetailView(_ sender: RoutineDetailView, didDeleteRoutine routine: MainRoutine) {
+        // TODO: 루틴 삭제
     }
 }

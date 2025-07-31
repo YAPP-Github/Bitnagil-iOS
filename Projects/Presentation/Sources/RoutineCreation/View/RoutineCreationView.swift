@@ -427,7 +427,7 @@ final class RoutineCreationView: BaseViewController<RoutineCreationViewModel> {
         viewModel.output.weekDayPublisher
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] weekDays in
-                let weekDaysIndex = weekDays.map { $0.rawValue }
+                let weekDaysIndex = weekDays.map { $0.id }
 
                 self?.weekdaysStackView
                     .subviews

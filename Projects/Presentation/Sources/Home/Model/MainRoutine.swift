@@ -13,7 +13,7 @@ struct MainRoutine {
     let title: String
     var isDone: Bool
     let startTime: Date
-    let repeatDay: [String]
+    let repeatDay: [Week]
     var subRoutines: [SubRoutine]
 }
 
@@ -24,7 +24,7 @@ extension RoutineEntity {
             title: routineName,
             isDone: completeYn,
             startTime: Date.convertToDate(from: executionTime, dateType: .time) ?? Date(),
-            repeatDay: [],
+            repeatDay: repeatDay.compactMap({ Week(rawValue: $0) }),
             subRoutines: subRoutineSearchResultDto.map({ $0.toSubRoutine() }))
     }
 }

@@ -47,6 +47,13 @@ enum BitnagilIcon {
     static let uncheckedIcon = UIImage(named: "unchecked_icon", in: bundle, with: nil)
     static let checkedIcon = UIImage(named: "checked_icon", in: bundle, with: nil)
     static let routineCreationIcon = UIImage(named: "routine_creation_icon", in: bundle, with: nil)
+
+    // MARK: - Routine Detail Icons
+    static let routineIcon = UIImage(named: "routine_icon", in: bundle, with: nil)
+    static let subRoutineIcon = UIImage(named: "subRoutine_icon", in: bundle, with: nil)
+    static let repeatIcon = UIImage(named: "repeat_icon", in: bundle, with: nil)
+    static let editIcon = UIImage(named: "edit_icon", in: bundle, with: nil)
+    static let trashIcon = UIImage(named: "trash_icon", in: bundle, with: nil)
 }
 
 enum Direction {

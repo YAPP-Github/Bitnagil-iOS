@@ -121,7 +121,7 @@ final class CustomBottomSheet: UIViewController {
         }
     }
 
-    @objc private func dismissBottomSheet() {
+    @objc func dismissBottomSheet() {
         UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseOut) {
             self.dimmedView.alpha = 0
             self.bottomSheetBottomConstraint?.update(offset: self.maxHeight)
