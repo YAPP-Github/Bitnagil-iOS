@@ -310,8 +310,13 @@ final class RoutineDetailView: UIViewController {
             make.size.equalTo(Layout.buttonHeight)
         }
 
-        updateSubRoutineView()
-        updateRepeatRoutine()
+        if !routine.subRoutines.isEmpty {
+            updateSubRoutineView()
+        }
+
+        if !routine.repeatDay.isEmpty {
+            updateRepeatRoutine()
+        }
     }
 
     private func updateSubRoutineView() {
@@ -334,8 +339,6 @@ final class RoutineDetailView: UIViewController {
     }
 
     private func updateRepeatRoutine() {
-        if !routine.repeatDay.isEmpty {
-            repeatRoutineTitleLabel.text = "\(routine.repeatDay.map({ $0.koreanValue }).joined(separator: ", "))"
-        }
+        repeatRoutineTitleLabel.text = "\(routine.repeatDay.map({ $0.koreanValue }).joined(separator: ", "))"
     }
 }

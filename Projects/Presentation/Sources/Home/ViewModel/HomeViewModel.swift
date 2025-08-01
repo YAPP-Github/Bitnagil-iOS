@@ -18,14 +18,14 @@ final class HomeViewModel: ViewModel {
 
     struct Output {
         let nicknamePublisher: AnyPublisher<String, Never>
-        let fetchRoutineReulstPublisher: AnyPublisher<Bool, Never>
+        let fetchRoutineResultPublisher: AnyPublisher<Bool, Never>
         let routinesPublisher: AnyPublisher<[MainRoutine], Never>
     }
 
     private(set) var output: Output
     private var routines: [String: [MainRoutine]] = [:]
     private let nicknameSubject = CurrentValueSubject<String, Never>("")
-    private let fetchRoutineReulstSubject = PassthroughSubject<Bool, Never>()
+    private let fetchRoutineResultSubject = PassthroughSubject<Bool, Never>()
     private let routinesSubject = CurrentValueSubject<[MainRoutine], Never>([])
 
     private let calendar = Calendar.current
@@ -38,7 +38,7 @@ final class HomeViewModel: ViewModel {
         self.userDataUseCase = userDataUseCase
         self.output = Output(
             nicknamePublisher: nicknameSubject.eraseToAnyPublisher(),
-            fetchRoutineReulstPublisher: fetchRoutineReulstSubject.eraseToAnyPublisher(),
+            fetchRoutineResultPublisher: fetchRoutineResultSubject.eraseToAnyPublisher(),
             routinesPublisher: routinesSubject.eraseToAnyPublisher()
         )
     }
@@ -86,7 +86,7 @@ final class HomeViewModel: ViewModel {
                 for (date, routineEntities) in entities {
                     routines[date] = routineEntities.map({ $0.toMainRoutine() })
                 }
-                fetchRoutineReulstSubject.send(true)
+                fetchRoutineResultSubject.send(true)
             } catch {
 
             }

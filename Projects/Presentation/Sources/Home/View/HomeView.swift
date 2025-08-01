@@ -300,10 +300,10 @@ final class HomeView: BaseViewController<HomeViewModel> {
             }
             .store(in: &cancellables)
 
-        viewModel.output.fetchRoutineReulstPublisher
+        viewModel.output.fetchRoutineResultPublisher
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] fetchRoutineReulst in
-                if fetchRoutineReulst {
+            .sink { [weak self] fetchRoutineResult in
+                if fetchRoutineResult {
                     self?.viewModel.action(input: .fetchDailyRoutines(date: Date()))
                 }
             }
