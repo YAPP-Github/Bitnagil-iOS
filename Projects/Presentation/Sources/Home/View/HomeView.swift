@@ -6,6 +6,7 @@
 //
 
 import Combine
+import Kingfisher
 import Shared
 import SnapKit
 import UIKit
@@ -23,9 +24,9 @@ final class HomeView: BaseViewController<HomeViewModel> {
         static let registerEmotionButtonTopSpacing: CGFloat = 3
         static let registerEmotionButtonHeight: CGFloat = 44
         static let registerEmotionButtonWidth: CGFloat = 136
-        static let emotionOrbViewTopSpacing: CGFloat = 81
+        static let emotionOrbViewTopSpacing: CGFloat = 46
         static let emotionOrbViewTrailingSpacing: CGFloat = 35
-        static let emotionOrbViewSize: CGFloat = 102
+        static let emotionOrbViewSize: CGFloat = 172
         static let contentViewCornerRadius: CGFloat = 20
         static let weekViewHeight: CGFloat = 127
         static let routineSortButtonTrailingSpacing: CGFloat = 8
@@ -54,7 +55,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
     private let gradientLayer = CAGradientLayer()
     private let homeLabel = UILabel()
     private let informationButton = UIButton()
-    private let emotionOrbView = UIView()
+    private let emotionOrbView = UIImageView()
     private let registerEmotionButton = HomeRegisterEmotionButton()
 
     private let contentView = UIView()
@@ -94,6 +95,11 @@ final class HomeView: BaseViewController<HomeViewModel> {
         viewModel.action(input: .fetchRoutines)
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel.action(input: .fetchEmotion)
+    }
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         gradientLayer.frame = view.bounds
@@ -114,10 +120,6 @@ final class HomeView: BaseViewController<HomeViewModel> {
                 self?.tooltipView.hideTooltip()
             }
         }, for: .touchUpInside)
-
-        emotionOrbView.backgroundColor = BitnagilColor.happy
-        emotionOrbView.layer.masksToBounds = true
-        emotionOrbView.layer.cornerRadius = Layout.emotionOrbViewSize / 2
 
         registerEmotionButton.addAction(UIAction { [weak self] _ in
             guard let emotionRegisterViewModel = DIContainer.shared.resolve(type: EmotionRegisterViewModel.self) else {
@@ -232,7 +234,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
 
         emotionOrbView.snp.makeConstraints { make in
             make.top.equalTo(safeArea).offset(Layout.emotionOrbViewTopSpacing)
-            make.trailing.equalToSuperview().inset(Layout.emotionOrbViewTrailingSpacing)
+            make.trailing.equalToSuperview()
             make.size.equalTo(Layout.emotionOrbViewSize)
         }
 
@@ -315,6 +317,14 @@ final class HomeView: BaseViewController<HomeViewModel> {
                 self?.updateRoutineView(routines: routines)
             }
             .store(in: &cancellables)
+
+        viewModel.output.emotionPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] emotion in
+                self?.updateEmotionOrbView(emotion: emotion)
+            }
+            .store(in: &cancellables)
+
     }
 
     // 홈 Graident 배경색을 설정합니다.
@@ -356,6 +366,19 @@ final class HomeView: BaseViewController<HomeViewModel> {
                 routineStackView.addArrangedSubview(routineView)
             }
         }
+    }
+
+    // 감정 구슬 View를 업데이트 합니다.
+    private func updateEmotionOrbView(emotion: Emotion?) {
+        guard
+            let emotion,
+            let emotionOrbImageUrl = emotion.emotionImageUrl else {
+            emotionOrbView.image = BitnagilGraphic.defaultEmotionGraphic
+            return
+        }
+        emotionOrbView.kf.setImage(with: emotionOrbImageUrl)
+        registerEmotionButton.isEnabled = false
+        // TODO: 토스트뷰 보여주기
     }
 
     @objc private func handlePanGesture(_ gesture: UIPanGestureRecognizer) {

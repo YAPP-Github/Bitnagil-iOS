@@ -9,9 +9,9 @@ import Domain
 import Foundation
 
 struct EmotionResponseDTO: Decodable {
-    let type: String
-    let name: String
-    let imageUrl: String
+    let type: String?
+    let name: String?
+    let imageUrl: String?
 
     enum CodingKeys: String, CodingKey {
         case type = "emotionMarbleType"
@@ -21,7 +21,13 @@ struct EmotionResponseDTO: Decodable {
 }
 
 extension EmotionResponseDTO {
-    func toEmotionEntity() -> EmotionEntity {
+    func toEmotionEntity() -> EmotionEntity? {
+        guard
+            let type,
+            let name,
+            let imageUrl
+        else { return nil }
+
         return EmotionEntity(
             emotionType: type,
             emotionName: name,

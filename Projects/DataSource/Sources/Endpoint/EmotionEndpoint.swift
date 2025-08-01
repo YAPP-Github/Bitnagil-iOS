@@ -7,6 +7,7 @@
 
 enum EmotionEndpoint {
     case fetchEmotions
+    case fetchEmotion(date: String)
     case registerEmotion(emotion: String)
 }
 
@@ -16,12 +17,20 @@ extension EmotionEndpoint: Endpoint {
     }
     
     var path: String {
-        return baseURL
+        switch self {
+        case .fetchEmotions:
+            return baseURL
+        case .fetchEmotion(let date):
+            return baseURL + "/\(date)"
+        case .registerEmotion(let emotion):
+            return baseURL
+        }
     }
     
     var method: HTTPMethod {
         switch self {
         case .fetchEmotions: .get
+        case .fetchEmotion: .get
         case .registerEmotion: .post
         }
     }
@@ -41,6 +50,8 @@ extension EmotionEndpoint: Endpoint {
     var bodyParameters: [String : Any] {
         switch self {
         case .fetchEmotions:
+            return [:]
+        case .fetchEmotion:
             return [:]
         case .registerEmotion(let emotion):
             return ["emotionMarbleType": emotion]

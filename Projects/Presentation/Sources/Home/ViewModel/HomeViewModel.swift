@@ -14,12 +14,14 @@ final class HomeViewModel: ViewModel {
         case loadNickname
         case fetchRoutines
         case fetchDailyRoutines(date: Date)
+        case fetchEmotion
     }
 
     struct Output {
         let nicknamePublisher: AnyPublisher<String, Never>
         let fetchRoutineResultPublisher: AnyPublisher<Bool, Never>
         let routinesPublisher: AnyPublisher<[MainRoutine], Never>
+        let emotionPublisher: AnyPublisher<Emotion?, Never>
     }
 
     private(set) var output: Output
@@ -27,19 +29,29 @@ final class HomeViewModel: ViewModel {
     private let nicknameSubject = CurrentValueSubject<String, Never>("")
     private let fetchRoutineResultSubject = PassthroughSubject<Bool, Never>()
     private let routinesSubject = CurrentValueSubject<[MainRoutine], Never>([])
+    private let emotionSubject = CurrentValueSubject<Emotion?, Never>(nil)
 
     private let calendar = Calendar.current
+    private let today = Date()
     private var oldestDate: Date = Date()
     private var latestDate: Date = Date()
+
     private let routineUseCase: RoutineUseCaseProtocol
     private let userDataUseCase: UserDataUseCaseProtocol
-    init(routineUseCase: RoutineUseCaseProtocol, userDataUseCase: UserDataUseCaseProtocol) {
+    private let emotionUseCase: EmotionUseCaseProtocol
+    init(
+        routineUseCase: RoutineUseCaseProtocol,
+        userDataUseCase: UserDataUseCaseProtocol,
+        emotionUseCase: EmotionUseCaseProtocol
+    ) {
         self.routineUseCase = routineUseCase
         self.userDataUseCase = userDataUseCase
+        self.emotionUseCase = emotionUseCase
         self.output = Output(
             nicknamePublisher: nicknameSubject.eraseToAnyPublisher(),
             fetchRoutineResultPublisher: fetchRoutineResultSubject.eraseToAnyPublisher(),
-            routinesPublisher: routinesSubject.eraseToAnyPublisher()
+            routinesPublisher: routinesSubject.eraseToAnyPublisher(),
+            emotionPublisher: emotionSubject.eraseToAnyPublisher()
         )
     }
 
@@ -53,6 +65,9 @@ final class HomeViewModel: ViewModel {
 
         case .fetchDailyRoutines(let date):
             fetchRoutines(for: date)
+
+        case .fetchEmotion:
+            fetchEmotion()
         }
     }
 
@@ -72,7 +87,6 @@ final class HomeViewModel: ViewModel {
         var endDate = latestDate
 
         if routines.isEmpty {
-            let today = Date()
             startDate = calculateDate(for: today, offset: -1)
             endDate = calculateDate(for: today, offset: 1)
 
@@ -108,6 +122,18 @@ final class HomeViewModel: ViewModel {
             return
         }
         routinesSubject.send(dailyRoutines)
+    }
+
+    private func fetchEmotion() {
+        Task {
+            do {
+                let emotionEntity = try await emotionUseCase.fetchEmotion(date: today)
+                let emotion = emotionEntity?.toEmotion()
+                emotionSubject.send(emotion)
+            } catch {
+
+            }
+        }
     }
 
     // 필요 시, 루틴 데이터를 불러옵니다. (+- 주)

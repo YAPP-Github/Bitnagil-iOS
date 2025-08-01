@@ -10,6 +10,11 @@ public protocol EmotionRepositoryProtocol {
     /// 감정 구슬 목록을 불러옵니다.
     /// - Returns: 조회된 감정 구슬 목록
     func fetchEmotions() async throws -> [EmotionEntity]
+    
+    /// 해당하는 날짜에 등록한 감정 구슬을 조회합니다.
+    /// - Parameter date: 조회하고 싶은 날짜 (yyyy-MM-dd)
+    /// - Returns: 등록한 감정 구슬
+    func fetchEmotion(date: String) async throws -> EmotionEntity?
 
     /// 감정 구슬을 등록합니다.
     /// - Parameter emotion: 감정 구슬 String 값
