@@ -5,6 +5,7 @@
 //  Created by 최정인 on 7/18/25.
 //
 
+import SnapKit
 import UIKit
 
 protocol RoutineViewDelegate: AnyObject {
@@ -142,6 +143,7 @@ final class RoutineView: UIView {
             }, for: .touchUpInside)
             subRoutineStackView.addArrangedSubview(subRoutineView)
             subRoutineView.snp.makeConstraints { make in
+                make.horizontalEdges.equalToSuperview()
                 make.height.equalTo(Layout.subRoutineViewHeight)
             }
         }

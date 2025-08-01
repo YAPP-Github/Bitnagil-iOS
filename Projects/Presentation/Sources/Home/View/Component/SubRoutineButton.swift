@@ -5,6 +5,7 @@
 //  Created by 최정인 on 7/18/25.
 //
 
+import SnapKit
 import UIKit
 
 final class SubRoutineButton: UIButton {
@@ -57,6 +58,7 @@ final class SubRoutineButton: UIButton {
         routineLabel.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
             make.leading.equalTo(checkButton.snp.trailing).offset(Layout.routineLabelLeadingSpacing)
+            make.trailing.equalToSuperview()
         }
     }
 
