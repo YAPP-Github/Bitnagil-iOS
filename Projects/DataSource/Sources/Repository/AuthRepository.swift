@@ -19,15 +19,12 @@ final class AuthRepository: AuthRepositoryProtocol {
     // 카카오 로그인을 진행합니다.
     func kakaoLogin() async throws -> UserEntity {
         let accessToken = try await fetchKakaoToken()
-        let (nickname, profileImageUrl) = try await fetchKakaoUserInfo()
         let user = try await requestServerLogin(
             socialType: .kakao,
             nickname: nil,
             token: accessToken)
 
-        try saveNickname(nickname: nickname)
         try saveSocialLoginType(socialLoginType: .kakao)
-        try saveUserProfileImageUrl(profileImageUrl: profileImageUrl)
         return user
     }
 
@@ -90,25 +87,6 @@ final class AuthRepository: AuthRepositoryProtocol {
                     UserApi.shared.loginWithKakaoAccount(completion: resultHandler)
                 }
             }
-        }
-    }
-
-    // 카카오 SDK를 통해 유저의 정보(카카오 닉네임, 프로필 이미지)를 받아옵니다.
-    private func fetchKakaoUserInfo() async throws -> (nickname: String, profileImageUrl: URL) {
-        try await withCheckedThrowingContinuation { continuation in
-            let resultHandler: (User?, Error?) -> Void = { user, error in
-                if let error {
-                    continuation.resume(throwing: AuthError.unknown(error))
-                } else if
-                    let nickname = user?.kakaoAccount?.profile?.nickname,
-                    let profileImageUrl = user?.kakaoAccount?.profile?.profileImageUrl {
-                    continuation.resume(returning: (nickname, profileImageUrl))
-                } else {
-                    continuation.resume(throwing: AuthError.kakaoUserInformationFetchFailed)
-                }
-            }
-
-            UserApi.shared.me(completion: resultHandler)
         }
     }
 
