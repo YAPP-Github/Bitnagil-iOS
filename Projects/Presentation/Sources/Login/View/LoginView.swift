@@ -15,14 +15,19 @@ final class LoginView: BaseViewController<LoginViewModel> {
 
     private enum Layout {
         static let horizontalMargin: CGFloat = 20
-        static let logoTopSpacing: CGFloat = 115
-        static let logoSize: CGFloat = 335
+        static let loginLabelTopSpacing: CGFloat = 54
+        static let loginLabelHeight: CGFloat = 30
+        static let logoBottomSpacing: CGFloat = 79
+        static let logoLeadingSpacing: CGFloat = 53
+        static let logoWidth: CGFloat = 257
+        static let logoHeight: CGFloat = 295
         static let loginButtonHeight: CGFloat = 54
         static let loginButtonBottomSpacing: CGFloat = 20
         static let loginButtonSpacing: CGFloat = 12
     }
 
-    private let logoView = UIView()
+    private let loginLabel = UILabel()
+    private let logoView = UIImageView()
     private let kakaoLoginButton = SocialLoginButton(socialType: .kakao)
     private let appleLoginButton = SocialLoginButton(socialType: .apple)
     private var cancellables: Set<AnyCancellable>
@@ -46,7 +51,11 @@ final class LoginView: BaseViewController<LoginViewModel> {
     }
 
     override func configureAttribute() {
-        logoView.backgroundColor = BitnagilColor.gray90
+        loginLabel.text = "빛나길에 오신걸 환영해요!"
+        loginLabel.font = BitnagilFont(style: .title2, weight: .bold).font
+        loginLabel.textColor = BitnagilColor.navy500
+
+        logoView.image = BitnagilGraphic.introGraphic
 
         kakaoLoginButton.addAction(UIAction { [weak self] _ in
             self?.viewModel.action(input: .kakaoLogin)
@@ -61,15 +70,22 @@ final class LoginView: BaseViewController<LoginViewModel> {
         let safeArea = view.safeAreaLayoutGuide
         view.backgroundColor = .systemBackground
 
+        view.addSubview(loginLabel)
         view.addSubview(logoView)
         view.addSubview(kakaoLoginButton)
         view.addSubview(appleLoginButton)
 
+        loginLabel.snp.makeConstraints { make in
+            make.top.equalTo(safeArea).offset(Layout.loginLabelTopSpacing)
+            make.height.equalTo(Layout.loginLabelHeight)
+            make.centerX.equalToSuperview()
+        }
+
         logoView.snp.makeConstraints { make in
-            make.leading.equalTo(safeArea).offset(Layout.horizontalMargin)
-            make.trailing.equalTo(safeArea).inset(Layout.horizontalMargin)
-            make.top.equalTo(safeArea).offset(Layout.logoTopSpacing)
-            make.size.equalTo(Layout.logoSize)
+            make.leading.equalTo(safeArea).offset(Layout.logoLeadingSpacing)
+            make.bottom.equalTo(kakaoLoginButton.snp.top).offset(-Layout.logoBottomSpacing)
+            make.width.equalTo(Layout.logoWidth)
+            make.height.equalTo(Layout.logoHeight)
         }
 
         kakaoLoginButton.snp.makeConstraints { make in

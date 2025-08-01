@@ -14,8 +14,9 @@ public final class IntroView: UIViewController {
     private enum Layout {
         static let horizontalMargin: CGFloat = 20
         static let labelTopSpacing: CGFloat = 54
+        static let labelHeight: CGFloat = 60
         static let graphViewTopSpacing: CGFloat = 118
-        static let graphViewBottomSpacing: CGFloat = 64
+        static let graphViewBottomSpacing: CGFloat = 53
         static let graphViewHeight: CGFloat = 295
         static let graphViewWidth: CGFloat = 257
         static let startButtonBottomSpacing: CGFloat = 20
@@ -67,14 +68,14 @@ public final class IntroView: UIViewController {
             make.leading.equalTo(safeArea).offset(Layout.horizontalMargin)
             make.trailing.equalTo(safeArea).inset(Layout.horizontalMargin)
             make.top.equalTo(safeArea).offset(Layout.labelTopSpacing)
-            make.height.equalTo(60)
+            make.height.equalTo(Layout.graphViewWidth)
         }
 
         graphView.snp.makeConstraints { make in
             make.top.equalTo(introLabel.snp.bottom).offset(Layout.graphViewTopSpacing)
-            make.bottom.equalTo(startButton.snp.top).offset(-133)
-            make.leading.equalTo(safeArea).offset(53)
-            make.trailing.equalTo(safeArea).inset(65)
+            make.leading.equalTo(safeArea).offset(Layout.graphViewWidth)
+            make.width.equalTo(Layout.graphViewWidth)
+            make.height.equalTo(Layout.graphViewHeight)
         }
 
         startButton.snp.makeConstraints { make in
