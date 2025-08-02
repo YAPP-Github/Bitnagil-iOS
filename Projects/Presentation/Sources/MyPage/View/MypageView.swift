@@ -45,6 +45,7 @@ final class MypageView: BaseViewController<MypageViewModel> {
         title = "마이페이지"
 
         settingButton.action = #selector(settingButtonTapped)
+        settingButton.target = self
         settingButton.tintColor = .black
         settingButton.image = BitnagilIcon
             .settingIcon?
@@ -60,10 +61,11 @@ final class MypageView: BaseViewController<MypageViewModel> {
 
         dividerView.backgroundColor = BitnagilColor.gray99
 
-        tableView.register(MypageTableViewCell.self, forCellReuseIdentifier: MypageTableViewCell.className)
+        tableView.register(BitnagilChevronTableViewCell.self, forCellReuseIdentifier: BitnagilChevronTableViewCell.className)
         tableView.dataSource = self
         tableView.delegate = self
         tableView.separatorStyle = .none
+        tableView.bounces = false
     }
 
     override func configureLayout() {
@@ -114,7 +116,9 @@ final class MypageView: BaseViewController<MypageViewModel> {
     }
 
     @objc private func settingButtonTapped() {
-        // TODO: - 추후 설정 페이지 연결
+        guard let settingViewModel = Shared.DIContainer.shared.resolve(type: SettingViewModel.self) else { return }
+        let settingView = SettingView(viewModel: settingViewModel)
+        navigationController?.pushViewController(settingView, animated: true)
     }
 }
 
@@ -132,7 +136,7 @@ extension MypageView: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: MypageTableViewCell.className) as? MypageTableViewCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: BitnagilChevronTableViewCell.className) as? BitnagilChevronTableViewCell else {
             return .init()
         }
 

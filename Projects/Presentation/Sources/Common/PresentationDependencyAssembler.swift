@@ -76,5 +76,9 @@ public struct PresentationDependencyAssembler: DependencyAssemblerProtocol {
 
             return ResultRecommendedRoutineViewModel(resultRecommendedRoutineUseCase: resultRecommendedRoutineUseCase)
         }
+
+        DIContainer.shared.register(type: SettingViewModel.self) { _ in
+            return SettingViewModel()
+        }
     }
 }
