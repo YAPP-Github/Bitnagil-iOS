@@ -219,24 +219,24 @@ extension SettingView: UITableViewDelegate {
             switch row {
             case .logout:
                 alert = BitnagilAlert(
-                    alertType: .plainText,
+                    alertType: .withImage,
                     title: "로그아웃 하시겠어요?",
                     content: "버튼을 누르면 로그인 페이지로 이동해요.",
                     cancelButtonTitle: "취소",
                     confirmButtonTitle: "로그아웃",
-                    cancelCompletionHandler: nil,
-                    confirmCompletionHandler: { [weak self] in
+                    cancelHandler: nil,
+                    confirmHandler: { [weak self] in
                         self?.viewModel.action(input: .logout)
                     })
             case .withdrawal:
                 alert = BitnagilAlert(
-                    alertType: .plainText,
+                    alertType: .withImage,
                     title: "정말 탈퇴하시겠어요?",
                     content: "소중한 기록들이 모두 사라져요.",
                     cancelButtonTitle: "취소",
                     confirmButtonTitle: "회원탈퇴",
-                    cancelCompletionHandler: nil,
-                    confirmCompletionHandler: { [weak self] in
+                    cancelHandler: nil,
+                    confirmHandler: { [weak self] in
                         self?.viewModel.action(input: .withdrawal)
                     })
             }

@@ -38,8 +38,8 @@ final class BitnagilAlert: UIViewController {
     private let cancelButton = UIButton()
     private let confirmButton = UIButton()
     private let alertType: AlertType
-    private var cancelCompletionHandler: (() -> Void)?
-    private var confirmCompletionHandler: (() -> Void)?
+    private var cancelHandler: (() -> Void)?
+    private var confirmHandler: (() -> Void)?
 
     init(
         alertType: AlertType,
@@ -47,14 +47,14 @@ final class BitnagilAlert: UIViewController {
         content: String,
         cancelButtonTitle: String,
         confirmButtonTitle: String,
-        cancelCompletionHandler: (() -> Void)?,
-        confirmCompletionHandler: (() -> Void)?
+        cancelHandler: (() -> Void)?,
+        confirmHandler: (() -> Void)?
     ) {
         self.alertType = alertType
         super.init(nibName: nil, bundle: nil)
 
-        self.cancelCompletionHandler = cancelCompletionHandler
-        self.confirmCompletionHandler = confirmCompletionHandler
+        self.cancelHandler = cancelHandler
+        self.confirmHandler = confirmHandler
         titleLabel.text = title
         contentLabel.text = content
         cancelButton.setTitle(cancelButtonTitle, for: .normal)
@@ -97,14 +97,14 @@ final class BitnagilAlert: UIViewController {
 
         cancelButton.addAction(
             UIAction { [weak self] _ in
-                self?.cancelCompletionHandler?()
+                self?.cancelHandler?()
                 self?.dismiss(animated: false)
             },
             for: .touchUpInside)
 
         confirmButton.addAction(
             UIAction { [weak self] _ in
-                self?.confirmCompletionHandler?()
+                self?.confirmHandler?()
                 self?.dismiss(animated: false)
             },
             for: .touchUpInside)
