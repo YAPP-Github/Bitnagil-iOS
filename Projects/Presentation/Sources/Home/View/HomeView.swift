@@ -445,7 +445,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
     }
 
     @objc private func handleTap(_ gesture: UITapGestureRecognizer) {
-        let location = gesture.location(in: contentView)
+        let location = gesture.location(in: view)
 
         // 탭한 곳이 버튼 영역인 경우
         if informationButton.frame.contains(location) {
