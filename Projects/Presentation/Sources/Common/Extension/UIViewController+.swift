@@ -10,6 +10,13 @@ import UIKit
 extension UIViewController {
     // MARK: - NavigationBar
     func configureNavigationBar(navigationStyle: NavigationBarStyle) {
+        let appearance = UINavigationBarAppearance()
+        appearance.backgroundEffect = .none
+        appearance.configureWithOpaqueBackground()
+        appearance.shadowColor = .clear
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
+
         switch navigationStyle {
         case .hidden:
             navigationController?.setNavigationBarHidden(true, animated: false)
