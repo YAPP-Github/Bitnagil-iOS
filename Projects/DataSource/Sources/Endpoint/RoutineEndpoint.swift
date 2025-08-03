@@ -6,7 +6,10 @@
 //
 
 enum RoutineEndpoint {
+    case createRoutine(routine: RoutienCreationDTO)
+    case fetchRoutine(routineId: String)
     case fetchRoutines(startDate: String, endDate: String)
+    case updateRoutine(routine: RoutineUpdateDTO)
 }
 
 extension RoutineEndpoint: Endpoint {
@@ -16,13 +19,21 @@ extension RoutineEndpoint: Endpoint {
 
     var path: String {
         switch self {
-        case .fetchRoutines: baseURL
+        case .fetchRoutine(let routineId):
+            "\(routineId)"
+        default:
+            baseURL
         }
     }
     
     var method: HTTPMethod {
         switch self {
-        case .fetchRoutines: .get
+        case .createRoutine:
+                .post
+        case .fetchRoutine, .fetchRoutines:
+                .get
+        case .updateRoutine:
+                .patch
         }
     }
     
@@ -40,11 +51,20 @@ extension RoutineEndpoint: Endpoint {
             return [
                 "startDate": startDate,
                 "endDate": endDate]
+        default:
+            return [:]
         }
     }
     
     var bodyParameters: [String : Any] {
-        return [:]
+        switch self {
+        case .createRoutine(let routine):
+            return routine.dictionary
+        case .updateRoutine(let routine):
+            return routine.dictionary
+        default:
+            return [:]
+        }
     }
     
     var isAuthorized: Bool {
