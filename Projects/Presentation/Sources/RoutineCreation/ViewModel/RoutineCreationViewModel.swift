@@ -4,7 +4,9 @@
 //
 //  Created by 이동현 on 7/20/25.
 //
+
 import Combine
+import Domain
 import Foundation
 
 final class RoutineCreationViewModel: ViewModel {
@@ -38,6 +40,7 @@ final class RoutineCreationViewModel: ViewModel {
     }
 
     enum Input {
+        case fetchRoutine(id: String)
         case configureName(name: String)
         case addSubRoutine
         case deleteSubRoutine(index: Int)
@@ -60,16 +63,23 @@ final class RoutineCreationViewModel: ViewModel {
 
     private(set) var output: Output
     private let nameSubject = CurrentValueSubject<String?, Never>("")
-    private let subRoutinesSubject = CurrentValueSubject<[String], Never>([])
+    private let subRoutinesSubject = CurrentValueSubject<[SubRoutineSummaryEntity], Never>([])
     private let repeatTypeSubject = CurrentValueSubject<RepeatType?, Never>(nil)
     private let weekDaySubject = CurrentValueSubject<Set<Week>, Never>([])
     private let executionTimeSubject = CurrentValueSubject<ExecutionType, Never>(.none)
     private let checkRoutinePublisher = PassthroughSubject<Bool, Never>()
+    private let routineUseCase: RoutineUseCaseProtocol
+    private var deletedSubroutines = Set<SubRoutineSummaryEntity>()
+    private var routineId: String?
 
-    init() {
+    init(routineUseCase: RoutineUseCaseProtocol) {
+        self.routineUseCase = routineUseCase
+
         output = Output(
             namePublisher: nameSubject.eraseToAnyPublisher(),
-            subRoutinesPublisher: subRoutinesSubject.eraseToAnyPublisher(),
+            subRoutinesPublisher: subRoutinesSubject
+                .map { $0.compactMap { $0.subRoutineName } }
+                .eraseToAnyPublisher(),
             repeatTypePublisher: repeatTypeSubject.eraseToAnyPublisher(),
             weekDayPublisher: weekDaySubject.eraseToAnyPublisher(),
             executionTimePublisher: executionTimeSubject
@@ -80,6 +90,8 @@ final class RoutineCreationViewModel: ViewModel {
 
     func action(input: Input) {
         switch input {
+        case .fetchRoutine(let id):
+            fetchRoutine(id: id)
         case .configureName(let name):
             configureName(name: name)
         case .addSubRoutine:
@@ -89,7 +101,7 @@ final class RoutineCreationViewModel: ViewModel {
         case .configureSubRoutine(let name, let index):
             configureSubroutine(name: name, index: index)
         case .configureRepeatType(let type):
-            configureRepeatType(type: type)
+            configureRepeatType(selectedType: type)
         case .toggleRepeatDay(let weekDay):
             configureWeekDay(weekDay: weekDay)
         case .toggleRepeatAllDay:
@@ -103,6 +115,43 @@ final class RoutineCreationViewModel: ViewModel {
         updateIsRoutineValid()
     }
 
+    private func fetchRoutine(id: String) {
+        Task {
+            do {
+                // TODO: - routine fetch 실패 시 처리 방안 필요 (기획과 논의~)
+                guard let routine = try await routineUseCase.fetchRoutine(routineId: id) else { return }
+
+                let subRoutines = routine.subRoutineSearchResultDto.map {
+                    SubRoutineSummaryEntity(
+                        subRoutineId: $0.subRoutineId,
+                        subRoutineName: $0.subRoutineName,
+                        sortOrder: $0.sortOrder)
+                }
+                let weekDay = routine.repeatDay.compactMap { Week(rawValue: $0.rawValue) }
+                let repeatType: RepeatType = weekDay.count == Week.allCases.count ? .daily : .week
+                let executionType: ExecutionType
+
+                if routine.executionTime == "00:00:00" {
+                    executionType = .allDay
+                } else {
+                    let time = Date.convertToDate(from: routine.executionTime, dateType: .amPmTimeShort)
+                    executionType = .time(startAt: time ?? Date())
+                }
+
+                nameSubject.send(routine.routineName)
+                subRoutinesSubject.send(subRoutines)
+                weekDaySubject.send(Set(weekDay))
+                repeatTypeSubject.send(repeatType)
+                executionTimeSubject.send(executionType)
+                routineId = id
+
+                updateIsRoutineValid()
+            } catch {
+                // TODO: - 요기도 마찬가지 (ViewModel 공통 todo)
+            }
+        }
+    }
+
     private func configureName(name: String) {
         nameSubject.send(name)
     }
@@ -111,7 +160,12 @@ final class RoutineCreationViewModel: ViewModel {
         var subRoutines = subRoutinesSubject.value
         guard subRoutines.count <= 3 else { return }
 
-        subRoutines.append("")
+        let newSubRoutine = SubRoutineSummaryEntity(
+            subRoutineId: nil,
+            subRoutineName: "",
+            sortOrder: subRoutines.count + 1)
+
+        subRoutines.append(newSubRoutine)
         subRoutinesSubject.send(subRoutines)
     }
 
@@ -121,6 +175,12 @@ final class RoutineCreationViewModel: ViewModel {
             index >= 0,
             index < subRoutines.count
         else { return }
+
+        let targetSubRoutine = subRoutines[index]
+
+        if targetSubRoutine.subRoutineId != nil {
+            deletedSubroutines.insert(targetSubRoutine)
+        }
 
         subRoutines.remove(at: index)
         subRoutinesSubject.send(subRoutines)
@@ -133,21 +193,29 @@ final class RoutineCreationViewModel: ViewModel {
             index < subRoutines.count
         else { return }
 
-        subRoutines[index] = name
+        let originalSubRoutine = subRoutines[index]
+        let newSubRoutine = SubRoutineSummaryEntity(
+            subRoutineId: originalSubRoutine.subRoutineId,
+            subRoutineName: name,
+            sortOrder: originalSubRoutine.sortOrder)
+        subRoutines[index] = newSubRoutine
+
         subRoutinesSubject.send(subRoutines)
     }
 
-    private func configureRepeatType(type: RepeatType) {
-        var repeatType = repeatTypeSubject.value
+    private func configureRepeatType(selectedType: RepeatType) {
+        let repeatType = repeatTypeSubject.value
 
-        repeatType = repeatType == type
-            ? nil
-            : type
-
-        if repeatType != .week {
-            weekDaySubject.send([])
+        switch selectedType {
+        case .daily:
+            weekDaySubject.send(Set(Week.allCases))
+        case .week:
+            if repeatType == .daily {
+                weekDaySubject.send([])
+            }
         }
-        repeatTypeSubject.send(repeatType)
+
+        repeatTypeSubject.send(selectedType)
     }
 
     private func configureWeekDay(weekDay: Week) {
@@ -178,7 +246,12 @@ final class RoutineCreationViewModel: ViewModel {
         guard
             let name = nameSubject.value,
             !name.isEmpty,
-            executionTimeSubject.value != .none
+            executionTimeSubject.value != .none,
+            weekDaySubject.value.count > 0,
+            subRoutinesSubject
+                .value
+                .map({$0.subRoutineName})
+                .allSatisfy({$0?.isEmpty == false })
         else {
             checkRoutinePublisher.send(false)
             return
@@ -188,6 +261,37 @@ final class RoutineCreationViewModel: ViewModel {
     }
 
     private func registerRoutine() {
-        // API 호출
+        Task {
+            do {
+                let repeatDay = weekDaySubject
+                    .value
+                    .sorted(by: { $0.id < $1.id })
+                    .map { $0.rawValue }
+
+                let executionTime: String
+
+                switch executionTimeSubject.value {
+                case .time(let startAt):
+                    executionTime = startAt.convertToString(dateType: .time)
+                case .allDay:
+                    executionTime = "00:00:00"
+                case .none:
+                    return
+                }
+
+                let routineSummary = RoutineSummaryEntity(
+                    routineId: routineId,
+                    routineName: nameSubject.value ?? "",
+                    repeatDay: repeatDay,
+                    executionTime: executionTime)
+
+                try await routineUseCase.saveRoutine(
+                    routineSummary: routineSummary,
+                    subRoutineSummaries: subRoutinesSubject.value,
+                    deletedSubRoutineSummaries: Array(deletedSubroutines))
+            } catch {
+
+            }
+        }
     }
 }

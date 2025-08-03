@@ -24,7 +24,7 @@ public final class RoutineUseCase: RoutineUseCaseProtocol {
         let start = startDate.convertToString(dateType: .yearMonthDate)
         let end = endDate.convertToString(dateType: .yearMonthDate)
 
-        var routineEntities = try await routineRepository.fetchRoutines(from: start, to: end)
+        let routineEntities = try await routineRepository.fetchRoutines(from: start, to: end)
         return routineEntities
     }
 
@@ -33,7 +33,7 @@ public final class RoutineUseCase: RoutineUseCaseProtocol {
         subRoutineSummaries: [SubRoutineSummaryEntity],
         deletedSubRoutineSummaries: [SubRoutineSummaryEntity]
     ) async throws {
-        if let routineId = routineSummary.routineId { // 루틴 아이디가 있으면 수정, 없으면 생성
+        if routineSummary.routineId == nil { // 루틴 아이디가 있으면 수정, 없으면 생성
             try await createRoutine(routineSummary: routineSummary, subRoutinesSummaries: subRoutineSummaries)
         } else {
             try await updateRoutine(

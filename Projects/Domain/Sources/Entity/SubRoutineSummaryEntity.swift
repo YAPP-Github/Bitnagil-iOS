@@ -5,7 +5,7 @@
 //  Created by 이동현 on 8/3/25.
 //
 
-public struct SubRoutineSummaryEntity: Decodable {
+public struct SubRoutineSummaryEntity: Decodable, Hashable {
     public let subRoutineId: String?
     public let subRoutineName: String?
     public let sortOrder: Int?

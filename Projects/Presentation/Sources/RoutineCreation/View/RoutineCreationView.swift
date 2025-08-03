@@ -77,26 +77,30 @@ final class RoutineCreationView: BaseViewController<RoutineCreationViewModel> {
 
     private let registerButton = UIButton()
 
+    private let navigationTitle: String
+    private let registerButtonTitle: String
     private var repeatRoutineTitleTopConstraint: Constraint?
     private var startTimeTitleTopConstraint: Constraint?
 
     private var cancellables = Set<AnyCancellable>()
 
-    override init(viewModel: RoutineCreationViewModel) {
+    init(viewModel: RoutineCreationViewModel, routineId: String? = nil) {
+        navigationTitle = routineId == nil ? "루틴 등록" : "루틴 수정"
+        registerButtonTitle = routineId == nil ? "등록하기" : "수정하기"
+
         super.init(viewModel: viewModel)
+        if let routineId {
+            viewModel.action(input: .fetchRoutine(id: routineId))
+        }
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        configureNavigationBar(navigationStyle: .withBackButton(title: "루틴 등록"))
+        configureNavigationBar(navigationStyle: .withBackButton(title: navigationTitle))
     }
 
     override func configureAttribute() {
@@ -171,7 +175,7 @@ final class RoutineCreationView: BaseViewController<RoutineCreationViewModel> {
 
         registerButton.layer.cornerRadius = 12
         registerButton.layer.masksToBounds = true
-        registerButton.setTitle("등록하기", for: .normal)
+        registerButton.setTitle(registerButtonTitle, for: .normal)
         registerButton.isEnabled = false
         registerButton.titleLabel?.font = BitnagilFont.init(style: .body1, weight: .semiBold).font
     }
@@ -517,6 +521,12 @@ final class RoutineCreationView: BaseViewController<RoutineCreationViewModel> {
                 let datePickerView = DatePickerView()
                 datePickerView.delegate = self
                 self?.presentCustomBottomSheet(contentViewController: datePickerView, maxHeight: Layout.datePickerBottomSheetHeight)
+            },
+            for: .touchUpInside)
+
+        registerButton.addAction(
+            UIAction { [weak self] _ in
+                self?.viewModel.action(input: .registerRoutine)
             },
             for: .touchUpInside)
     }

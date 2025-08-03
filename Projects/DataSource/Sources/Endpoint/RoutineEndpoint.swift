@@ -20,7 +20,7 @@ extension RoutineEndpoint: Endpoint {
     var path: String {
         switch self {
         case .fetchRoutine(let routineId):
-            "\(routineId)"
+            "\(baseURL)/\(routineId)"
         default:
             baseURL
         }

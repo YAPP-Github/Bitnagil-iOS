@@ -26,13 +26,15 @@ struct RoutineResponseDTO: Decodable {
 
 extension RoutineResponseDTO {
     func toRoutineEntity() -> RoutineEntity {
+        let sortedSubRoutinesDTO = subRoutineSearchResultDto.sorted { $0.sortOrder < $1.sortOrder }
+
         return RoutineEntity(
             routineId: routineId,
             historySeq: historySeq,
             routineName: routineName,
             repeatDay: repeatDay,
             executionTime: executionTime,
-            subRoutineSearchResultDto: subRoutineSearchResultDto.map({ $0.toSubRoutineEntity() }),
+            subRoutineSearchResultDto: sortedSubRoutinesDTO.map({ $0.toSubRoutineEntity() }),
             modifiedYn: modifiedYn,
             routineCompletionId: routineCompletionId,
             completeYn: completeYn,

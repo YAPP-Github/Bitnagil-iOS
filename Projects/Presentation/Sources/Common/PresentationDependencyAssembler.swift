@@ -66,8 +66,11 @@ public struct PresentationDependencyAssembler: DependencyAssemblerProtocol {
             return EmotionRegisterViewModel(emotionUseCase: emotionUseCase)
         }
 
-        DIContainer.shared.register(type: RoutineCreationViewModel.self) { _ in
-            return RoutineCreationViewModel()
+        DIContainer.shared.register(type: RoutineCreationViewModel.self) { container in
+            guard let routineUseCase = container.resolve(type: RoutineUseCaseProtocol.self)
+            else { fatalError("routineUseCase 의존성이 등록되지 않았습니다.") }
+
+            return RoutineCreationViewModel(routineUseCase: routineUseCase)
         }
 
         DIContainer.shared.register(type: ResultRecommendedRoutineViewModel.self) { container in
