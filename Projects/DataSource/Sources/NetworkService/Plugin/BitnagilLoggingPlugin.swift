@@ -8,7 +8,6 @@
 import Foundation
 import Shared
 
-
 struct BitnagilLoggingPlugin: NetworkPlugin {
     func willSend(request: URLRequest, endpoint: Endpoint) async throws -> URLRequest {
         let urlString = request.url?.absoluteString ?? ""
@@ -43,7 +42,6 @@ struct BitnagilLoggingPlugin: NetworkPlugin {
         }
 
         let statusCode = httpResponse.statusCode
-        let headers = httpResponse.allHeaderFields
 
         // code/message 추출
         var code: String = ""
