@@ -30,7 +30,7 @@ extension RoutineEntity {
             title: routineName,
             isDone: completeYn,
             startTime: Date.convertToDate(from: executionTime, dateType: .time) ?? Date(),
-            repeatDay: repeatDay.compactMap({ Week(rawValue: $0) }),
+            repeatDay: repeatDay.compactMap({ Week(rawValue: $0.rawValue) }),
             subRoutines: subRoutines)
     }
 }

@@ -6,7 +6,7 @@
 //
 
 enum RoutineEndpoint {
-    case createRoutine(routine: RoutienCreationDTO)
+    case createRoutine(routine: RoutineCreationDTO)
     case fetchRoutine(routineId: String)
     case fetchRoutines(startDate: String, endDate: String)
     case updateRoutine(routine: RoutineUpdateDTO)
