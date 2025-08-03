@@ -346,7 +346,7 @@ extension SettingView: BitnagilButtonTableViewCellDelegate {
             let row = InformationSection.allCases[indexPath.row]
             switch row {
             case .version:
-                viewModel.action(input: .udpate)
+                viewModel.action(input: .update)
             default: break
             }
         default:

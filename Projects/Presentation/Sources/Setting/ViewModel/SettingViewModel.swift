@@ -31,7 +31,7 @@ final class SettingViewModel: ViewModel {
     enum Input {
         case toggleGeneralNotification
         case togglePushNotification
-        case udpate
+        case update
         case openURL(type: URLType)
         case logout
         case withdrawal
@@ -67,8 +67,8 @@ final class SettingViewModel: ViewModel {
         case .toggleGeneralNotification:
             toggleGeneralNotification()
         case .togglePushNotification:
-            togglelPushNotification()
-        case .udpate:
+            togglePushNotification()
+        case .update:
             updateBitnagil()
         case .openURL(type: let type):
             externalURLSubject.send(type.url)
@@ -85,7 +85,7 @@ final class SettingViewModel: ViewModel {
         generalNoticeEnabledSubject.send(generalNotificationEnabled)
     }
 
-    private func togglelPushNotification() {
+    private func togglePushNotification() {
         var pushNotificationEnabled = pushNoticeEnabledSubject.value
         pushNotificationEnabled.toggle()
         pushNoticeEnabledSubject.send(pushNotificationEnabled)
