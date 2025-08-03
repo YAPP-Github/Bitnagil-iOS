@@ -15,7 +15,9 @@ struct SubRoutine: Hashable {
 }
 
 extension SubRoutineEntity {
-    func toSubRoutine() -> SubRoutine {
+    func toSubRoutine() -> SubRoutine? {
+        guard let subRoutineId else { return nil }
+
         return SubRoutine(
             id: subRoutineId,
             title: subRoutineName,

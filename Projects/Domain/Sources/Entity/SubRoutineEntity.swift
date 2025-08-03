@@ -6,7 +6,7 @@
 //
 
 public struct SubRoutineEntity: Decodable {
-    public let subRoutineId: String
+    public let subRoutineId: String?
     public let historySeq: Int
     public let subRoutineName: String
     public let modifiedYn: Bool

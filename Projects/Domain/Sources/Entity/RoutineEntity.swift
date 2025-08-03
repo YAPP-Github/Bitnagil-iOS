@@ -6,7 +6,7 @@
 //
 
 public struct RoutineEntity {
-    public let routineId: String
+    public let routineId: String?
     public let historySeq: Int
     public let routineName: String
     public let repeatDay: [String]

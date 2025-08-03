@@ -98,7 +98,7 @@ final class HomeViewModel: ViewModel {
             do {
                 let entities = try await routineUseCase.fetchRoutines(startDate: startDate, endDate: endDate)
                 for (date, routineEntities) in entities {
-                    routines[date] = routineEntities.map({ $0.toMainRoutine() })
+                    routines[date] = routineEntities.compactMap({ $0.toMainRoutine() })
                 }
                 fetchRoutineResultSubject.send(true)
             } catch {
