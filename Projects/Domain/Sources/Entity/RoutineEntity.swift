@@ -18,7 +18,7 @@ public struct RoutineEntity {
     public let routineType: String
 
     public init(
-        routineId: String,
+        routineId: String?,
         historySeq: Int,
         routineName: String,
         repeatDay: [String]?,

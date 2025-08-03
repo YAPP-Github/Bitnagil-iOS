@@ -6,7 +6,7 @@
 //
 
 struct SubRoutineUpdateDTO: Codable {
-    let subRoutineId: String
+    let subRoutineId: String?
     let subRoutineName: String?
     let sortOrder: Int?
 }

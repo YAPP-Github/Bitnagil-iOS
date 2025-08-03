@@ -10,12 +10,14 @@ import Domain
 final class RoutineRepository: RoutineRepositoryProtocol {
     private let networkService = NetworkService.shared
 
-    func createRoutine(routine: RoutineEntity) async throws {
+    func createRoutine(routineSummary: RoutineSummaryEntity, subRoutineSummaries: [SubRoutineSummaryEntity]) async throws {
+        let subRoutineNames = subRoutineSummaries.compactMap { $0.subRoutineName }
+
         let routineCreationDTO = RoutineCreationDTO(
-            routineName: routine.routineName,
-            repeatDay: routine.repeatDay.map { $0.rawValue },
-            executionTime: routine.executionTime,
-            subRoutineName: routine.subRoutineSearchResultDto.map { $0.subRoutineName })
+            routineName: routineSummary.routineName,
+            repeatDay: routineSummary.repeatDay.map { $0.rawValue },
+            executionTime: routineSummary.executionTime,
+            subRoutineName: subRoutineNames)
         let endpoint = RoutineEndpoint.createRoutine(routine: routineCreationDTO)
 
         _ = try await networkService.request(endpoint: endpoint, type: EmptyResponseDTO.self)
@@ -40,24 +42,24 @@ final class RoutineRepository: RoutineRepositoryProtocol {
         return result
     }
 
-    func updateRoutine(routine: Domain.RoutineEntity) async throws {
-        guard let routineId = routine.routineId else { return }
-        
-        let subRoutines = routine
-            .subRoutineSearchResultDto
-            .map {
-                SubRoutineUpdateDTO(
-                    subRoutineId: $0.subRoutineId ?? "",
-                    subRoutineName: $0.subRoutineName,
-                    sortOrder: $0.sortOrder)}
+    func updateRoutine(routineSummary: RoutineSummaryEntity, subRoutineSummaries: [SubRoutineSummaryEntity]) async throws {
+        guard let routineId = routineSummary.routineId else { return }
+
+        let subRoutineDTO = subRoutineSummaries.map {
+            SubRoutineUpdateDTO(
+                subRoutineId: $0.subRoutineId,
+                subRoutineName: $0.subRoutineName,
+                sortOrder: $0.sortOrder)
+        }
+
         let routineUpdateDTO = RoutineUpdateDTO(
             routineId: routineId,
-            routineName: routine.routineName,
-            repeatDay: routine.repeatDay.map { $0.rawValue },
-            executionTime: routine.executionTime,
-            subRoutineInfos: subRoutines)
+            routineName: routineSummary.routineName,
+            repeatDay: routineSummary.repeatDay.map { $0.rawValue },
+            executionTime: routineSummary.executionTime,
+            subRoutineInfos: subRoutineDTO)
         let endpoint = RoutineEndpoint.updateRoutine(routine: routineUpdateDTO)
-        
+
         _ = try await networkService.request(endpoint: endpoint, type: EmptyResponseDTO.self)
     }
 }

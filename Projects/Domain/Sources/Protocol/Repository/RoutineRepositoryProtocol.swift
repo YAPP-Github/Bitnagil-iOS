@@ -8,8 +8,10 @@
 // 루틴 관련 로직(조회, 완료, 등록, 삭제 등)을 수행하는 Repository
 public protocol RoutineRepositoryProtocol {
     /// 루틴을 생성합니다.
-    /// - Parameter routine: 생성할 루틴
-    func createRoutine(routine: RoutineEntity) async throws
+    /// - Parameters:
+    ///   - routineSummary: 루틴 요약 정보
+    ///   - subRoutineSummaries: 서브 루틴 요약 정보 배열
+    func createRoutine(routineSummary: RoutineSummaryEntity, subRoutineSummaries: [SubRoutineSummaryEntity]) async throws
 
     /// 루틴을 조회합니다.
     /// - Parameter routineId: 조회할 루틴 id
@@ -22,7 +24,10 @@ public protocol RoutineRepositoryProtocol {
     ///   - endDate: 조회 종료 날짜
     func fetchRoutines(from startDate: String, to endDate: String) async throws -> [String: [RoutineEntity]]
 
+
     /// 루틴을 수정합니다.
-    /// - Parameter routine: 수정할 루틴
-    func updateRoutine(routine: RoutineEntity) async throws
+    /// - Parameters:
+    ///   - routineSummary: 루틴 요약 정보
+    ///   - subRoutineSummaries: 서브 루틴 요약 정보 배열
+    func updateRoutine(routineSummary: RoutineSummaryEntity, subRoutineSummaries: [SubRoutineSummaryEntity]) async throws
 }
