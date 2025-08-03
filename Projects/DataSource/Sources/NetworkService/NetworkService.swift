@@ -18,7 +18,8 @@ final class NetworkService {
         plugins = [
             TokenInjectionPlugin(),
             RefreshTokenPlugin(),
-            RetryPlugin()]
+            RetryPlugin(),
+            BitnagilLoggingPlugin()]
     }
 
     func request<T: Decodable>(
@@ -61,11 +62,6 @@ final class NetworkService {
 
         let (data, response) = try await URLSession.shared.data(for: request)
 
-        // TODO: - 로깅 로직 수정
-        if let httpResponse = response as? HTTPURLResponse {
-            BitnagilLogger.log(logType: .info, message: "응답 코드: \(httpResponse.statusCode)")
-        }
-
         if withPlugins {
             for plugin in plugins {
                 try await plugin.didReceive(
@@ -79,19 +75,15 @@ final class NetworkService {
         else { throw NetworkError.invalidResponse }
 
         guard 200..<300 ~= httpResponse.statusCode else {
-            BitnagilLogger.log(logType: .error, message: "응답 코드: \(httpResponse.statusCode)")
             throw NetworkError.invalidStatusCode(statusCode: httpResponse.statusCode)
         }
 
-        guard !data.isEmpty
-        else { throw NetworkError.emptyData }
+        guard !data.isEmpty else { throw NetworkError.emptyData }
 
         do {
             let baseResponse = try decoder.decode(BaseResponse<T>.self, from: data)
-            BitnagilLogger.log(logType: .info, message: "Server Message: \(baseResponse.message)")
 
-            guard let responseDTO = baseResponse.data
-            else { return nil }
+            guard let responseDTO = baseResponse.data else { return nil }
 
             return responseDTO
         } catch {
