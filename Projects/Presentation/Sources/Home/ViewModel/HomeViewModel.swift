@@ -25,6 +25,7 @@ final class HomeViewModel: ViewModel {
         let fetchRoutineResultPublisher: AnyPublisher<Bool, Never>
         let routinesPublisher: AnyPublisher<[MainRoutine], Never>
         let emotionPublisher: AnyPublisher<Emotion?, Never>
+        let deleteRoutineResultPublisher: AnyPublisher<Bool, Never>
     }
 
     private(set) var output: Output
@@ -34,6 +35,7 @@ final class HomeViewModel: ViewModel {
     private let routinesSubject = CurrentValueSubject<[MainRoutine], Never>([])
     private let selectedRoutineSubject = CurrentValueSubject<MainRoutine?, Never>(nil)
     private let emotionSubject = CurrentValueSubject<Emotion?, Never>(nil)
+    private let deleteRoutineResultSubject = PassthroughSubject<Bool, Never>()
 
     private let calendar = Calendar.current
     private let today = Date()
@@ -55,7 +57,8 @@ final class HomeViewModel: ViewModel {
             nicknamePublisher: nicknameSubject.eraseToAnyPublisher(),
             fetchRoutineResultPublisher: fetchRoutineResultSubject.eraseToAnyPublisher(),
             routinesPublisher: routinesSubject.eraseToAnyPublisher(),
-            emotionPublisher: emotionSubject.eraseToAnyPublisher()
+            emotionPublisher: emotionSubject.eraseToAnyPublisher(),
+            deleteRoutineResultPublisher: deleteRoutineResultSubject.eraseToAnyPublisher()
         )
     }
 
@@ -81,8 +84,7 @@ final class HomeViewModel: ViewModel {
             print("\(selectedRoutineSubject.value?.title)")
 
         case .deleteAllRoutine:
-            // TODO: 전체 루틴 삭제 로직 구현
-            print("\(selectedRoutineSubject.value?.title)")
+            deleteAllRoutine()
         }
     }
 
@@ -155,5 +157,20 @@ final class HomeViewModel: ViewModel {
     private func calculateDate(for date: Date, offset week: Int) -> Date {
         let endDate = calendar.date(byAdding: .weekOfYear, value: week, to: date) ?? date
         return endDate
+    }
+
+    private func deleteAllRoutine() {
+        guard let routineId = selectedRoutineSubject.value?.id
+        else { return }
+
+        Task {
+            do {
+                try await routineUseCase.deleteAllRoutine(routineId: routineId)
+                selectedRoutineSubject.send(nil)
+                deleteRoutineResultSubject.send(true)
+            } catch {
+                deleteRoutineResultSubject.send(false)
+            }
+        }
     }
 }

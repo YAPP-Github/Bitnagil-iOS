@@ -339,6 +339,14 @@ final class HomeView: BaseViewController<HomeViewModel> {
             }
             .store(in: &cancellables)
 
+        viewModel.output.deleteRoutineResultPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isDeleteRoutine in
+                if isDeleteRoutine {
+                    self?.toggleDeleteAlertView()
+                }
+            }
+            .store(in: &cancellables)
     }
 
     // 홈 Graident 배경색을 설정합니다.
@@ -576,13 +584,12 @@ extension HomeView: RoutineDetailViewDelegate {
             bottomSheet.dismissBottomSheet()
             self.bottomSheet = nil
         }
-        isShowingDeleteAlertView = true
 
-        deleteAlertView.isHidden = false
-        deleteAlertView.alpha = 1.0
-
-        dimmedView.isHidden = false
-        dimmedView.alpha = 1.0
+        if routine.repeatDay.isEmpty {
+            viewModel.action(input: .deleteDailyRoutine)
+        } else {
+            toggleDeleteAlertView()
+        }
     }
 }
 
@@ -590,11 +597,9 @@ extension HomeView: RoutineDetailViewDelegate {
 extension HomeView: RoutineDeleteAlertViewDelegate {
     func routineDeleteAlertViewDidTapDeleteAllRoutine(_ sender: RoutineDeleteAlertView) {
         viewModel.action(input: .deleteAllRoutine)
-        toggleDeleteAlertView()
     }
     
     func routineDeleteAlertViewDidTapDeleteDailiyRoutine(_ sender: RoutineDeleteAlertView) {
         viewModel.action(input: .deleteDailyRoutine)
-        toggleDeleteAlertView()
     }
 }

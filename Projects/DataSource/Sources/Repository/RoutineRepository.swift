@@ -62,4 +62,9 @@ final class RoutineRepository: RoutineRepositoryProtocol {
 
         _ = try await networkService.request(endpoint: endpoint, type: EmptyResponseDTO.self)
     }
+
+    func deleteAllRoutine(routineId: String) async throws {
+        let endpoint = RoutineEndpoint.deleteAllRoutine(routineId: routineId)
+        _ = try await networkService.request(endpoint: endpoint, type: EmptyResponseDTO.self)
+    }
 }

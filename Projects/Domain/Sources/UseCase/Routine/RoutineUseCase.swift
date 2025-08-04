@@ -70,4 +70,8 @@ public final class RoutineUseCase: RoutineUseCaseProtocol {
 
         try await routineRepository.updateRoutine(routineSummary: routineSummary, subRoutineSummaries: finalSubRoutines)
     }
+
+    public func deleteAllRoutine(routineId: String) async throws {
+        try await routineRepository.deleteAllRoutine(routineId: routineId)
+    }
 }

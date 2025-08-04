@@ -24,10 +24,13 @@ public protocol RoutineRepositoryProtocol {
     ///   - endDate: 조회 종료 날짜
     func fetchRoutines(from startDate: String, to endDate: String) async throws -> [String: [RoutineEntity]]
 
-
     /// 루틴을 수정합니다.
     /// - Parameters:
     ///   - routineSummary: 루틴 요약 정보
     ///   - subRoutineSummaries: 서브 루틴 요약 정보 배열
     func updateRoutine(routineSummary: RoutineSummaryEntity, subRoutineSummaries: [SubRoutineSummaryEntity]) async throws
+
+    /// 반복되는 루틴을 모두 제거합니다.
+    /// - Parameter routineId: 삭제할 루틴 id
+    func deleteAllRoutine(routineId: String) async throws
 }

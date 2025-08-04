@@ -10,6 +10,7 @@ enum RoutineEndpoint {
     case fetchRoutine(routineId: String)
     case fetchRoutines(startDate: String, endDate: String)
     case updateRoutine(routine: RoutineUpdateDTO)
+    case deleteAllRoutine(routineId: String)
 }
 
 extension RoutineEndpoint: Endpoint {
@@ -20,6 +21,8 @@ extension RoutineEndpoint: Endpoint {
     var path: String {
         switch self {
         case .fetchRoutine(let routineId):
+            "\(baseURL)/\(routineId)"
+        case .deleteAllRoutine(let routineId):
             "\(baseURL)/\(routineId)"
         default:
             baseURL
@@ -34,6 +37,8 @@ extension RoutineEndpoint: Endpoint {
                 .get
         case .updateRoutine:
                 .patch
+        case .deleteAllRoutine:
+                .delete
         }
     }
     
