@@ -132,7 +132,7 @@ final class LoginView: BaseViewController<LoginViewModel> {
     private func appleLogin() {
         let provider = ASAuthorizationAppleIDProvider()
         let request = provider.createRequest()
-        request.requestedScopes = [.fullName]
+        request.requestedScopes = [.fullName, .email]
 
         let controller = ASAuthorizationController(authorizationRequests: [request])
         controller.delegate = self

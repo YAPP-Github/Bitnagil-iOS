@@ -74,4 +74,8 @@ public final class RoutineUseCase: RoutineUseCaseProtocol {
     public func deleteAllRoutine(routineId: String) async throws {
         try await routineRepository.deleteAllRoutine(routineId: routineId)
     }
+
+    public func deleteDailyRoutine(routine: DeleteRoutineEntity) async throws {
+        try await routineRepository.deleteDailyRoutine(routine: routine)
+    }
 }

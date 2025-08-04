@@ -12,6 +12,7 @@ struct SubRoutine: Hashable {
     let title: String
     var isDone: Bool
     let sortIndex: Int
+    let completionId: Int?
 }
 
 extension SubRoutineEntity {
@@ -22,6 +23,7 @@ extension SubRoutineEntity {
             id: subRoutineId,
             title: subRoutineName,
             isDone: completeYn,
-            sortIndex: sortOrder)
+            sortIndex: sortOrder,
+            completionId: routineCompletionId)
     }
 }

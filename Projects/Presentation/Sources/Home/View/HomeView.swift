@@ -342,8 +342,12 @@ final class HomeView: BaseViewController<HomeViewModel> {
         viewModel.output.deleteRoutineResultPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isDeleteRoutine in
+                guard let self else { return }
                 if isDeleteRoutine {
-                    self?.toggleDeleteAlertView()
+                    if self.isShowingDeleteAlertView {
+                        self.toggleDeleteAlertView()
+                    }
+                    viewModel.action(input: .fetchRoutines)
                 }
             }
             .store(in: &cancellables)

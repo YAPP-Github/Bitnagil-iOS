@@ -33,4 +33,8 @@ public protocol RoutineRepositoryProtocol {
     /// 반복되는 루틴을 모두 제거합니다.
     /// - Parameter routineId: 삭제할 루틴 id
     func deleteAllRoutine(routineId: String) async throws
+
+    /// 당일 루틴을 삭제합니다.
+    /// - Parameter routine: 삭제할 루틴 정보
+    func deleteDailyRoutine(routine: DeleteRoutineEntity) async throws
 }

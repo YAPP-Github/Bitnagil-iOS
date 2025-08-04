@@ -22,7 +22,7 @@ extension EmotionEndpoint: Endpoint {
             return baseURL
         case .fetchEmotion(let date):
             return baseURL + "/\(date)"
-        case .registerEmotion(let emotion):
+        case .registerEmotion:
             return baseURL
         }
     }

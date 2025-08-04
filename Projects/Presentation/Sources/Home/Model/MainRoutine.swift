@@ -15,6 +15,8 @@ struct MainRoutine {
     let startTime: Date
     let repeatDay: [Week]
     var subRoutines: [SubRoutine]
+    let historySeq: Int
+    let completionId: Int?
 }
 
 extension RoutineEntity {
@@ -31,6 +33,8 @@ extension RoutineEntity {
             isDone: completeYn,
             startTime: Date.convertToDate(from: executionTime, dateType: .time) ?? Date(),
             repeatDay: repeatDay.compactMap({ Week(rawValue: $0.rawValue) }),
-            subRoutines: subRoutines)
+            subRoutines: subRoutines,
+            historySeq: historySeq,
+            completionId: routineCompletionId)
     }
 }

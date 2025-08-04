@@ -80,8 +80,7 @@ final class HomeViewModel: ViewModel {
             selectedRoutineSubject.send(routine)
 
         case .deleteDailyRoutine:
-            // TODO: 당일 삭제 로직 구현
-            print("\(selectedRoutineSubject.value?.title)")
+            deleteDailyRoutine()
 
         case .deleteAllRoutine:
             deleteAllRoutine()
@@ -167,6 +166,29 @@ final class HomeViewModel: ViewModel {
             do {
                 try await routineUseCase.deleteAllRoutine(routineId: routineId)
                 selectedRoutineSubject.send(nil)
+                deleteRoutineResultSubject.send(true)
+            } catch {
+                deleteRoutineResultSubject.send(false)
+            }
+        }
+    }
+
+    private func deleteDailyRoutine() {
+        guard let routine = selectedRoutineSubject.value
+        else { return }
+
+        let deleteSubRoutineEntity = routine.subRoutines.map({
+            DeleteSubRoutineEntity(subRoutineId: $0.id, routineCompletionId: $0.completionId) })
+        let deleteRoutinEntity = DeleteRoutineEntity(
+            routineId: routine.id,
+            routineCompletionId: routine.completionId,
+            historySeq: routine.historySeq,
+            performedDate: today.convertToString(dateType: .yearMonthDate),
+            subRoutineInfosForDelete: deleteSubRoutineEntity)
+
+        Task {
+            do {
+                try await routineUseCase.deleteDailyRoutine(routine: deleteRoutinEntity)
                 deleteRoutineResultSubject.send(true)
             } catch {
                 deleteRoutineResultSubject.send(false)
