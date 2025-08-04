@@ -75,6 +75,9 @@ final class HomeView: BaseViewController<HomeViewModel> {
     private let floatingMenu = FloatingMenuView()
     private var bottomSheet: CustomBottomSheet?
 
+    private var isShowingDeleteAlertView: Bool = false
+    private let deleteAlertView = RoutineDeleteAlertView()
+
     private var contentViewTopConstraint: Constraint?
     private var cancellables: Set<AnyCancellable>
 
@@ -183,6 +186,9 @@ final class HomeView: BaseViewController<HomeViewModel> {
 
         let dimmedViewTapGesture = UITapGestureRecognizer(target: self, action: #selector(tappedDimmedView))
         dimmedView.addGestureRecognizer(dimmedViewTapGesture)
+
+        deleteAlertView.delegate = self
+        deleteAlertView.isHidden = true
     }
 
     override func configureLayout() {
@@ -205,6 +211,8 @@ final class HomeView: BaseViewController<HomeViewModel> {
         view.addSubview(dimmedView)
         view.addSubview(floatingMenu)
         view.addSubview(floatingButton)
+
+        view.addSubview(deleteAlertView)
 
         homeLabel.snp.makeConstraints { make in
             make.top.equalTo(safeArea).offset(Layout.homeLabelTopSpacing)
@@ -291,6 +299,12 @@ final class HomeView: BaseViewController<HomeViewModel> {
 
         dimmedView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+        }
+
+        deleteAlertView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.height.equalTo(214)
+            make.width.equalTo(298)
         }
     }
 
@@ -440,8 +454,30 @@ final class HomeView: BaseViewController<HomeViewModel> {
         }
     }
 
+    private func toggleDeleteAlertView() {
+        isShowingDeleteAlertView.toggle()
+
+        deleteAlertView.isHidden = !isShowingDeleteAlertView
+        dimmedView.isHidden = !isShowingDeleteAlertView
+
+        if !isShowingDeleteAlertView {
+            viewModel.action(input: .selectRoutine(routine: nil))
+        }
+
+        UIView.animate(withDuration: 0.2, delay: 0, options: [.curveEaseOut]) {
+            self.dimmedView.alpha = self.isShowingDeleteAlertView ? 1 : 0
+            self.deleteAlertView.alpha = self.isShowingDeleteAlertView ? 1 : 0
+        }
+    }
+
     @objc private func tappedDimmedView() {
-        toggleFloatingButton()
+        if isShowingFloatingMenu {
+            toggleFloatingButton()
+        }
+
+        if isShowingDeleteAlertView {
+            toggleDeleteAlertView()
+        }
     }
 
     @objc private func handleTap(_ gesture: UITapGestureRecognizer) {
@@ -479,6 +515,7 @@ extension HomeView: RoutineViewDelegate {
         bottomSheet = CustomBottomSheet(contentViewController: routineDetailView, maxHeight: maxHeight)
         if let bottomSheet {
             present(bottomSheet, animated: true)
+            viewModel.action(input: .selectRoutine(routine: mainRoutine))
         }
     }
 
@@ -535,6 +572,29 @@ extension HomeView: RoutineDetailViewDelegate {
     }
     
     func routineDetailView(_ sender: RoutineDetailView, didDeleteRoutine routine: MainRoutine) {
-        // TODO: 루틴 삭제
+        if let bottomSheet {
+            bottomSheet.dismissBottomSheet()
+            self.bottomSheet = nil
+        }
+        isShowingDeleteAlertView = true
+
+        deleteAlertView.isHidden = false
+        deleteAlertView.alpha = 1.0
+
+        dimmedView.isHidden = false
+        dimmedView.alpha = 1.0
+    }
+}
+
+// MARK: RoutineDeleteAlertViewDelegate
+extension HomeView: RoutineDeleteAlertViewDelegate {
+    func routineDeleteAlertViewDidTapDeleteAllRoutine(_ sender: RoutineDeleteAlertView) {
+        viewModel.action(input: .deleteAllRoutine)
+        toggleDeleteAlertView()
+    }
+    
+    func routineDeleteAlertViewDidTapDeleteDailiyRoutine(_ sender: RoutineDeleteAlertView) {
+        viewModel.action(input: .deleteDailyRoutine)
+        toggleDeleteAlertView()
     }
 }

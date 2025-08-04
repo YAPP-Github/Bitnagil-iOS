@@ -15,6 +15,9 @@ final class HomeViewModel: ViewModel {
         case fetchRoutines
         case fetchDailyRoutines(date: Date)
         case fetchEmotion
+        case selectRoutine(routine: MainRoutine?)
+        case deleteDailyRoutine
+        case deleteAllRoutine
     }
 
     struct Output {
@@ -29,6 +32,7 @@ final class HomeViewModel: ViewModel {
     private let nicknameSubject = CurrentValueSubject<String, Never>("")
     private let fetchRoutineResultSubject = PassthroughSubject<Bool, Never>()
     private let routinesSubject = CurrentValueSubject<[MainRoutine], Never>([])
+    private let selectedRoutineSubject = CurrentValueSubject<MainRoutine?, Never>(nil)
     private let emotionSubject = CurrentValueSubject<Emotion?, Never>(nil)
 
     private let calendar = Calendar.current
@@ -68,6 +72,17 @@ final class HomeViewModel: ViewModel {
 
         case .fetchEmotion:
             fetchEmotion()
+
+        case .selectRoutine(let routine):
+            selectedRoutineSubject.send(routine)
+
+        case .deleteDailyRoutine:
+            // TODO: 당일 삭제 로직 구현
+            print("\(selectedRoutineSubject.value?.title)")
+
+        case .deleteAllRoutine:
+            // TODO: 전체 루틴 삭제 로직 구현
+            print("\(selectedRoutineSubject.value?.title)")
         }
     }
 
