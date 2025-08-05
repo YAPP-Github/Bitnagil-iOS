@@ -15,34 +15,8 @@
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PLm-O2-pYg">
-                                <rect key="frame" x="20" y="259" width="353" height="334"/>
-                                <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Bitnagil" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dEo-10-Cez">
-                                        <rect key="frame" x="123" y="149" width="107" height="36"/>
-                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="30"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                </subviews>
-                                <color key="backgroundColor" red="0.76078431372549016" green="0.76862745098039209" blue="0.78431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <constraints>
-                                    <constraint firstItem="dEo-10-Cez" firstAttribute="centerX" secondItem="PLm-O2-pYg" secondAttribute="centerX" id="Tfr-eg-2qd"/>
-                                    <constraint firstItem="dEo-10-Cez" firstAttribute="centerY" secondItem="PLm-O2-pYg" secondAttribute="centerY" id="dWo-st-RGp"/>
-                                </constraints>
-                            </view>
-                        </subviews>
                         <viewLayoutGuide key="safeArea" id="Bcu-3y-fUS"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <constraints>
-                            <constraint firstItem="PLm-O2-pYg" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="9cn-j0-5Zm"/>
-                            <constraint firstItem="Bcu-3y-fUS" firstAttribute="trailing" secondItem="PLm-O2-pYg" secondAttribute="trailing" constant="20" id="Buq-td-Lm2"/>
-                            <constraint firstItem="PLm-O2-pYg" firstAttribute="leading" secondItem="Bcu-3y-fUS" secondAttribute="leading" constant="20" id="E9P-56-2M2"/>
-                            <constraint firstItem="PLm-O2-pYg" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="SbZ-Sq-Opn"/>
-                            <constraint firstItem="PLm-O2-pYg" firstAttribute="top" secondItem="Bcu-3y-fUS" secondAttribute="top" constant="200" id="dic-7N-u8I"/>
-                            <constraint firstItem="PLm-O2-pYg" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="hlQ-mO-iXo"/>
-                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>

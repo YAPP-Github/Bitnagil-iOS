@@ -5,29 +5,54 @@
 //  Created by 최정인 on 7/27/25.
 //
 
+import Lottie
 import SnapKit
 import UIKit
 
 public final class SplashView: UIViewController {
 
-    private let splashGraphicView = UIImageView()
+    private enum Layout {
+        static let splashAnimationViewVerticalOffset: CGFloat = -20
+        static let splashAnimationViewSize: CGFloat = 205
+        static let logoImageTopSpacing: CGFloat = -10
+    }
+
+    private var splashAnimationView = LottieAnimationView()
+    private let logoImage = UIImageView()
 
     override public func viewDidLoad() {
         super.viewDidLoad()
         configureAttribute()
         configureLayout()
+        splashAnimationView.play()
     }
 
     private func configureAttribute() {
-        splashGraphicView.image = BitnagilGraphic.introGraphic
+        let presentationBundle = Bundle(for: SplashView.self)
+        guard let filePath = presentationBundle.path(forResource: "splash", ofType: "json")
+        else { return }
+        splashAnimationView =  LottieAnimationView(filePath: filePath)
+        splashAnimationView.contentMode = .scaleAspectFit
+        splashAnimationView.loopMode = .playOnce
+
+        logoImage.image = BitnagilGraphic.logoGraphic
+        logoImage.contentMode = .scaleAspectFit
     }
 
     private func configureLayout() {
-        view.backgroundColor = .systemBackground
-        view.addSubview(splashGraphicView)
+        view.backgroundColor = .white
+        view.addSubview(splashAnimationView)
+        view.addSubview(logoImage)
 
-        splashGraphicView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
+        splashAnimationView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview().offset(Layout.splashAnimationViewVerticalOffset)
+            make.size.equalTo(Layout.splashAnimationViewSize)
+        }
+
+        logoImage.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(splashAnimationView.snp.bottom).offset(Layout.logoImageTopSpacing)
         }
     }
 }
