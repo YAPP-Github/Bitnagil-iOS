@@ -14,6 +14,7 @@ let project = Project(
             dependencies: [
                 .external(name: "SnapKit"),
                 .external(name: "Kingfisher"),
+                .external(name: "Lottie"),
                 .project(target: "Domain", path: "../Domain"),
                 .project(target: "Shared", path: "../Shared")
             ]
