@@ -605,7 +605,7 @@ extension HomeView: RoutineDeleteAlertViewDelegate {
         viewModel.action(input: .deleteAllRoutine)
     }
     
-    func routineDeleteAlertViewDidTapDeleteDailiyRoutine(_ sender: RoutineDeleteAlertView) {
+    func routineDeleteAlertViewDidTapDeleteDailyRoutine(_ sender: RoutineDeleteAlertView) {
         viewModel.action(input: .deleteDailyRoutine)
     }
 }

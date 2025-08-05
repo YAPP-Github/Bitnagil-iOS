@@ -10,7 +10,7 @@ import UIKit
 
 protocol RoutineDeleteAlertViewDelegate: AnyObject {
     func routineDeleteAlertViewDidTapDeleteAllRoutine(_ sender: RoutineDeleteAlertView)
-    func routineDeleteAlertViewDidTapDeleteDailiyRoutine(_ sender: RoutineDeleteAlertView)
+    func routineDeleteAlertViewDidTapDeleteDailyRoutine(_ sender: RoutineDeleteAlertView)
 }
 
 final class RoutineDeleteAlertView: UIView {
@@ -61,10 +61,12 @@ final class RoutineDeleteAlertView: UIView {
         deleteDailyRoutineButtonConfiguration.background.strokeColor = BitnagilColor.navy500
         deleteDailyRoutineButtonConfiguration.background.strokeWidth = 1
         deleteDailyRoutineButton.configuration = deleteDailyRoutineButtonConfiguration
-        deleteDailyRoutineButton.addAction(UIAction { [weak self] _ in
-            guard let self else { return }
-            self.delegate?.routineDeleteAlertViewDidTapDeleteDailiyRoutine(self)
-        }, for: .touchUpInside)
+        deleteDailyRoutineButton.addAction(
+            UIAction { [weak self] _ in
+                guard let self else { return }
+                self.delegate?.routineDeleteAlertViewDidTapDeleteDailyRoutine(self)
+            },
+            for: .touchUpInside)
 
         var deleteAllRoutineButtonConfiguration = UIButton.Configuration.filled()
         deleteAllRoutineButtonConfiguration.baseBackgroundColor = .white
@@ -76,10 +78,12 @@ final class RoutineDeleteAlertView: UIView {
         deleteAllRoutineButtonConfiguration.background.strokeColor = BitnagilColor.navy500
         deleteAllRoutineButtonConfiguration.background.strokeWidth = 1
         deleteAllRoutineButton.configuration = deleteAllRoutineButtonConfiguration
-        deleteAllRoutineButton.addAction(UIAction { [weak self] _ in
-            guard let self else { return }
-            self.delegate?.routineDeleteAlertViewDidTapDeleteAllRoutine(self)
-        }, for: .touchUpInside)
+        deleteAllRoutineButton.addAction(
+            UIAction { [weak self] _ in
+                guard let self else { return }
+                self.delegate?.routineDeleteAlertViewDidTapDeleteAllRoutine(self)
+            },
+            for: .touchUpInside)
     }
 
     private func configureLayout() {
