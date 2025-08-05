@@ -10,6 +10,7 @@ public struct DeleteRoutineEntity: Encodable {
     public let routineCompletionId: Int?
     public let historySeq: Int
     public let performedDate: String
+    public let routineType: String
     public let subRoutineInfosForDelete: [DeleteSubRoutineEntity]
 
     public init(
@@ -17,12 +18,14 @@ public struct DeleteRoutineEntity: Encodable {
         routineCompletionId: Int?,
         historySeq: Int,
         performedDate: String,
+        routineType: String,
         subRoutineInfosForDelete: [DeleteSubRoutineEntity]
     ) {
         self.routineId = routineId
         self.routineCompletionId = routineCompletionId
         self.historySeq = historySeq
         self.performedDate = performedDate
+        self.routineType = routineType
         self.subRoutineInfosForDelete = subRoutineInfosForDelete
     }
 }

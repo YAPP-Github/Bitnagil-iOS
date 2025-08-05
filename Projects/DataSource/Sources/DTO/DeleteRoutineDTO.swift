@@ -9,6 +9,7 @@ struct DeleteRoutineDTO: Encodable {
     let routineId: String
     let routineCompletionId: Int?
     let historySeq: Int
+    let routineType: String
     let performedDate: String
     let subRoutineInfosForDelete: [DeleteSubRoutineDTO]
 }

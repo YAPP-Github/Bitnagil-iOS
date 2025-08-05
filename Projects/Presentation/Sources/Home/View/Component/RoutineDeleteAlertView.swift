@@ -16,7 +16,12 @@ protocol RoutineDeleteAlertViewDelegate: AnyObject {
 final class RoutineDeleteAlertView: UIView {
 
     private enum Layout {
-
+        static let deleteLabelHeight: CGFloat = 48
+        static let deleteLabelTopSpacing: CGFloat = 23
+        static let buttonHorizontalMargin: CGFloat = 23
+        static let buttonHeight: CGFloat = 44
+        static let deleteDailyRoutineButtonTopSpacing: CGFloat = 22
+        static let deleteAllRoutineButtonTopSpacing: CGFloat = 10
     }
 
     private let contentView = UIView()
@@ -89,23 +94,23 @@ final class RoutineDeleteAlertView: UIView {
         }
 
         deleteLabel.snp.makeConstraints { make in
-            make.height.equalTo(48)
+            make.height.equalTo(Layout.deleteLabelHeight)
             make.centerX.equalToSuperview()
-            make.top.equalToSuperview().offset(23)
+            make.top.equalToSuperview().offset(Layout.deleteLabelTopSpacing)
         }
 
         deleteDailyRoutineButton.snp.makeConstraints { make in
-            make.top.equalTo(deleteLabel.snp.bottom).offset(22)
-            make.leading.equalToSuperview().offset(23)
-            make.trailing.equalToSuperview().inset(23)
-            make.height.equalTo(44)
+            make.top.equalTo(deleteLabel.snp.bottom).offset(Layout.deleteDailyRoutineButtonTopSpacing)
+            make.leading.equalToSuperview().offset(Layout.buttonHorizontalMargin)
+            make.trailing.equalToSuperview().inset(Layout.buttonHorizontalMargin)
+            make.height.equalTo(Layout.buttonHeight)
         }
 
         deleteAllRoutineButton.snp.makeConstraints { make in
-            make.top.equalTo(deleteDailyRoutineButton.snp.bottom).offset(10)
-            make.leading.equalToSuperview().offset(23)
-            make.trailing.equalToSuperview().inset(23)
-            make.height.equalTo(44)
+            make.top.equalTo(deleteDailyRoutineButton.snp.bottom).offset(Layout.deleteAllRoutineButtonTopSpacing)
+            make.leading.equalToSuperview().offset(Layout.buttonHorizontalMargin)
+            make.trailing.equalToSuperview().inset(Layout.buttonHorizontalMargin)
+            make.height.equalTo(Layout.buttonHeight)
         }
     }
 }

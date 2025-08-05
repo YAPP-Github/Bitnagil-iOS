@@ -50,6 +50,8 @@ final class HomeView: BaseViewController<HomeViewModel> {
         static let tooltipViewHeight: CGFloat = 47
         static let routineDetailViewDefaultHeight: CGFloat = 367
         static let routineDetailViewSubRoutineHeight: CGFloat = 25
+        static let deleteAlertViewWidth: CGFloat = 298
+        static let deleteAlertViewHeight: CGFloat = 214
     }
 
     private let gradientLayer = CAGradientLayer()
@@ -303,8 +305,8 @@ final class HomeView: BaseViewController<HomeViewModel> {
 
         deleteAlertView.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.height.equalTo(214)
-            make.width.equalTo(298)
+            make.width.equalTo(Layout.deleteAlertViewWidth)
+            make.height.equalTo(Layout.deleteAlertViewHeight)
         }
     }
 

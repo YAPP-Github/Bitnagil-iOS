@@ -77,6 +77,7 @@ final class RoutineRepository: RoutineRepositoryProtocol {
             routineId: routine.routineId,
             routineCompletionId: routine.routineCompletionId,
             historySeq: routine.historySeq,
+            routineType: routine.routineType,
             performedDate: routine.performedDate,
             subRoutineInfosForDelete: deleteSubRoutineDTO)
 

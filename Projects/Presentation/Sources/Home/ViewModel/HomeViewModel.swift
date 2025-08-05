@@ -184,6 +184,7 @@ final class HomeViewModel: ViewModel {
             routineCompletionId: routine.completionId,
             historySeq: routine.historySeq,
             performedDate: today.convertToString(dateType: .yearMonthDate),
+            routineType: routine.routineType,
             subRoutineInfosForDelete: deleteSubRoutineEntity)
 
         Task {
