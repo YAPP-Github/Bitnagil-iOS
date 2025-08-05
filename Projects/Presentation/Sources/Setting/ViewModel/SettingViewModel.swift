@@ -6,6 +6,7 @@
 //
 
 import Combine
+import Domain
 import Foundation
 
 final class SettingViewModel: ViewModel {
@@ -35,6 +36,7 @@ final class SettingViewModel: ViewModel {
         case openURL(type: URLType)
         case logout
         case withdrawal
+        case fetchVersion
     }
 
     struct Output {
@@ -46,12 +48,13 @@ final class SettingViewModel: ViewModel {
     }
 
     private(set) var output: Output
-    private let versionSubject = CurrentValueSubject<VersionType, Never>(.latest(version: "1.0.0"))
+    private let versionSubject = PassthroughSubject<VersionType, Never>()
     private let generalNoticeEnabledSubject = CurrentValueSubject<Bool, Never>(false)
     private let pushNoticeEnabledSubject = CurrentValueSubject<Bool, Never>(true)
     private let externalURLSubject = PassthroughSubject<URL?, Never>()
     private let authenticatedSubject = PassthroughSubject<Bool, Never>()
-    
+    private var authRepository: AuthRepositoryProtocol?
+    private var appConfigRepository: AppConfigRepositoryProtocol?
 
     init() {
         output = .init(
@@ -76,7 +79,14 @@ final class SettingViewModel: ViewModel {
             logout()
         case .withdrawal:
             withdrawal()
+        case .fetchVersion:
+            fetchVersion()
         }
+    }
+
+    func configure(authRepository: AuthRepositoryProtocol, appConfigRepository: AppConfigRepositoryProtocol) {
+        self.authRepository = authRepository
+        self.appConfigRepository = appConfigRepository
     }
 
     private func toggleGeneralNotification() {
@@ -96,10 +106,42 @@ final class SettingViewModel: ViewModel {
     }
 
     private func logout() {
-        // TODO: - 로그아웃 api
+        Task {
+            do {
+                try await authRepository?.logout()
+                authenticatedSubject.send(false)
+            } catch {
+                // TODO: - 토스트 팝업 구현 시 + 디자인 추가 시 네트워크 불안정 알림
+            }
+        }
     }
 
     private func withdrawal() {
-        // TODO: - 회원탈퇴 api
+        Task {
+            do {
+                try await authRepository?.withdraw()
+                authenticatedSubject.send(false)
+            } catch {
+                // TODO: - 토스트 팝업 구현 시 + 디자인 추가 시 네트워크 불안정 알림
+            }
+        }
+    }
+
+    private func fetchVersion() {
+        let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
+
+        Task {
+            do {
+                let appStoreAppVersion = try await appConfigRepository?.fetchAppVersion()
+
+                if currentVersion != appStoreAppVersion {
+                    versionSubject.send(.needUpdate(version: currentVersion ?? ""))
+                } else {
+                    versionSubject.send(.latest(version: currentVersion ?? ""))
+                }
+            } catch {
+
+            }
+        }
     }
 }

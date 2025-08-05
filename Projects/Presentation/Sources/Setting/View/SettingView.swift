@@ -6,7 +6,9 @@
 //
 
 import Combine
+import Domain
 import SafariServices
+import Shared
 import SnapKit
 import UIKit
 
@@ -114,6 +116,11 @@ final class SettingView: BaseViewController<SettingViewModel> {
     override func configureAttribute() {
         view.backgroundColor = .white
 
+        guard
+            let authRepository = DIContainer.shared.resolve(type: AuthRepositoryProtocol.self),
+            let appConfigRepository = DIContainer.shared.resolve(type: AppConfigRepositoryProtocol.self)
+        else { fatalError("authRepository, appConfigRepository 의존성이 등록되지 않았습니다.") }
+
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
@@ -122,6 +129,8 @@ final class SettingView: BaseViewController<SettingViewModel> {
         tableView.register(BitnagilButtonTableViewCell.self, forCellReuseIdentifier: BitnagilButtonTableViewCell.className)
         tableView.register(BitnagilChevronTableViewCell.self, forCellReuseIdentifier: BitnagilChevronTableViewCell.className)
         tableView.register(SettingHeaderView.self, forHeaderFooterViewReuseIdentifier: SettingHeaderView.className)
+        viewModel.configure(authRepository: authRepository, appConfigRepository: appConfigRepository)
+        viewModel.action(input: .fetchVersion)
     }
 
     override func configureLayout() {
@@ -180,9 +189,9 @@ final class SettingView: BaseViewController<SettingViewModel> {
 
                 switch versionType {
                 case .needUpdate(let version):
-                    cell.configure(title: "버전\(version)", buttonTitle: "업데이트", isButtonEnabled: true)
+                    cell.configure(title: "버전 \(version)", buttonTitle: "업데이트", isButtonEnabled: true)
                 case .latest(let version):
-                    cell.configure(title: "버전\(version)", buttonTitle: "최신", isButtonEnabled: false)
+                    cell.configure(title: "버전 \(version)", buttonTitle: "최신", isButtonEnabled: false)
                 }
             })
             .store(in: &cancellables)
@@ -190,7 +199,16 @@ final class SettingView: BaseViewController<SettingViewModel> {
         viewModel.output.isAuthenticatedPublisher
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { isAuthenticated in
-            // 로그아웃 완료 후 홈 화면으로
+                guard
+                    let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                    let sceneDelegate = windowScene.delegate as? UIWindowSceneDelegate,
+                    let window = sceneDelegate.window
+                else { return }
+
+                let introView = IntroView()
+                let navigationController = UINavigationController(rootViewController: introView)
+                window?.rootViewController = navigationController
+                window?.makeKeyAndVisible()
             })
             .store(in: &cancellables)
     }
@@ -310,6 +328,10 @@ extension SettingView: UITableViewDataSource {
 //            let view = UIView()
 //            view.backgroundColor = .white
 //            return view
+        case .information:
+            let view = UIView()
+            view.backgroundColor = .white
+            return view
         default:
             headerView.configure(shouldShowDivider: true, title: section.title)
             return headerView
