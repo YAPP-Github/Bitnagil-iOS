@@ -9,6 +9,10 @@ import Lottie
 import SnapKit
 import UIKit
 
+public protocol SplashViewDelegate: AnyObject {
+    func splashView(_ sender: SplashView, isCompletedAnimated: Bool)
+}
+
 public final class SplashView: UIViewController {
 
     private enum Layout {
@@ -19,12 +23,16 @@ public final class SplashView: UIViewController {
 
     private var splashAnimationView = LottieAnimationView()
     private let logoImage = UIImageView()
+    public weak var delegate: SplashViewDelegate?
 
     override public func viewDidLoad() {
         super.viewDidLoad()
         configureAttribute()
         configureLayout()
-        splashAnimationView.play()
+        splashAnimationView.play { [weak self] completed in
+            guard let self else { return }
+            self.delegate?.splashView(self, isCompletedAnimated: completed)
+        }
     }
 
     private func configureAttribute() {

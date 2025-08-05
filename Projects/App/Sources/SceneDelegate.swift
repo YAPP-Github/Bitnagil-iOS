@@ -20,23 +20,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         DIContainer.shared.dependencyInjection()
 
-        guard let userDataRepository = DIContainer.shared.resolve(type: UserDataRepositoryProtocol.self)
-        else { fatalError("userDataRepository 의존성이 등록되지 않았습니다.") }
+        let splashView = SplashView()
+        splashView.delegate = self
 
-        window.rootViewController = SplashView()
+        window.rootViewController = splashView
         window.makeKeyAndVisible()
         self.window = window
-
-        Task { @MainActor in
-            let isLogined = await userDataRepository.reissueToken()
-            if isLogined {
-                window.rootViewController = TabBarView()
-            } else {
-                let introView = IntroView()
-                let navigationController = UINavigationController(rootViewController: introView)
-                window.rootViewController = navigationController
-            }
-        }
     }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
@@ -47,20 +36,33 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
 
-    func sceneDidDisconnect(_ scene: UIScene) {
+    func sceneDidDisconnect(_ scene: UIScene) { }
+
+    func sceneDidBecomeActive(_ scene: UIScene) { }
+
+    func sceneWillResignActive(_ scene: UIScene) { }
+
+    func sceneWillEnterForeground(_ scene: UIScene) { }
+
+    func sceneDidEnterBackground(_ scene: UIScene) { }
+}
+
+extension SceneDelegate: SplashViewDelegate {
+    func splashView(_ sender: Presentation.SplashView, isCompletedAnimated: Bool) {
+        guard isCompletedAnimated else { return }
+
+        guard let userDataRepository = DIContainer.shared.resolve(type: UserDataRepositoryProtocol.self)
+        else { fatalError("userDataRepository 의존성이 등록되지 않았습니다.") }
+
+        Task { @MainActor in
+            let isLogined = await userDataRepository.reissueToken()
+            if isLogined {
+                window?.rootViewController = TabBarView()
+            } else {
+                let introView = IntroView()
+                let navigationController = UINavigationController(rootViewController: introView)
+                window?.rootViewController = navigationController
+            }
+        }
     }
-
-    func sceneDidBecomeActive(_ scene: UIScene) {
-    }
-
-    func sceneWillResignActive(_ scene: UIScene) {
-    }
-
-    func sceneWillEnterForeground(_ scene: UIScene) {
-    }
-
-    func sceneDidEnterBackground(_ scene: UIScene) {
-    }
-
-
 }
