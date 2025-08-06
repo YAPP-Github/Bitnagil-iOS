@@ -102,6 +102,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        configureNavigationBar(navigationStyle: .hidden)
         viewModel.action(input: .fetchEmotion)
     }
 
