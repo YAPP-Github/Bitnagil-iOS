@@ -7,11 +7,13 @@
 
 import Combine
 import Domain
+import Foundation
 import Shared
 
 final class RecommendedRoutineViewModel: ViewModel {
     enum Input {
         case fetchRecommendedRoutines
+        case loadEmotion
         case selectCategory(selectedCategory: RoutineCategoryType)
         case selectLevel(selectedLevel: RoutineLevelType?)
     }
@@ -20,6 +22,7 @@ final class RecommendedRoutineViewModel: ViewModel {
         let selectedCategoryPublisher: AnyPublisher<RoutineCategoryType, Never>
         let selectedRoutineLevelPublisher: AnyPublisher<RoutineLevelType?, Never>
         let recommendedRoutinePublisher: AnyPublisher<[RecommendedRoutine], Never>
+        let emotionExistPublisher: AnyPublisher<Bool, Never>
     }
 
     private(set) var output: Output
@@ -27,14 +30,18 @@ final class RecommendedRoutineViewModel: ViewModel {
     private let selectedCategorySubject = CurrentValueSubject<RoutineCategoryType, Never>(.recommendation)
     private let selectedRoutineLevelSubject = CurrentValueSubject<RoutineLevelType?, Never>(nil)
     private let recommendedRoutineSubject = CurrentValueSubject<[RecommendedRoutine], Never>([])
+    private let emotionExistSubject = CurrentValueSubject<Bool, Never>(false)
 
     private let recommendedRoutineUseCase: RecommendedRoutineUseCaseProtocol
-    init(recommendedRoutineUseCase: RecommendedRoutineUseCaseProtocol) {
+    private let emotionRepository: EmotionRepositoryProtocol
+    init(recommendedRoutineUseCase: RecommendedRoutineUseCaseProtocol, emotionRepository: EmotionRepositoryProtocol) {
         self.recommendedRoutineUseCase = recommendedRoutineUseCase
+        self.emotionRepository = emotionRepository
         self.output = Output(
             selectedCategoryPublisher: selectedCategorySubject.eraseToAnyPublisher(),
             selectedRoutineLevelPublisher: selectedRoutineLevelSubject.eraseToAnyPublisher(),
-            recommendedRoutinePublisher: recommendedRoutineSubject.eraseToAnyPublisher()
+            recommendedRoutinePublisher: recommendedRoutineSubject.eraseToAnyPublisher(),
+            emotionExistPublisher: emotionExistSubject.eraseToAnyPublisher()
         )
     }
 
@@ -43,6 +50,9 @@ final class RecommendedRoutineViewModel: ViewModel {
         case .fetchRecommendedRoutines:
             fetchRecommendedRoutines()
 
+        case .loadEmotion:
+            loadEmotion()
+            
         case .selectCategory(let selectedCategory):
             selectCategory(selectedCategory: selectedCategory)
 
@@ -95,6 +105,22 @@ final class RecommendedRoutineViewModel: ViewModel {
             recommendedRoutineSubject.send(filteredByLevel)
         } else {
             recommendedRoutineSubject.send(filteredByCategory)
+        }
+    }
+
+    // 감정 구슬을 불러옵니다.
+    private func loadEmotion() {
+        Task {
+            do {
+                let emotionEntity = try await emotionRepository.fetchEmotion(date: Date().convertToString(dateType: .yearMonthDate))
+                if emotionEntity == nil {
+                    emotionExistSubject.send(false)
+                } else {
+                    emotionExistSubject.send(true)
+                }
+            } catch {
+
+            }
         }
     }
 }

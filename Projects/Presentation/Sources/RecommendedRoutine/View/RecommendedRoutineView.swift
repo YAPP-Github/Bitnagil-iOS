@@ -45,6 +45,7 @@ final class RecommendedRoutineView: BaseViewController<RecommendedRoutineViewMod
     private var recommendedRoutineCards: [Int: RecommendedRoutineCardView] = [:]
     private let registerEmotionButton = RegisterEmotionButton()
 
+    private var isExistEmotion: Bool = false
     private var isShowingFloatingMenu: Bool = false
     private let dimmedView = UIView()
     private let floatingButton = FloatingButton()
@@ -60,12 +61,13 @@ final class RecommendedRoutineView: BaseViewController<RecommendedRoutineViewMod
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override func viewDidLoad() {
-        super.viewDidLoad()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         viewModel.action(input: .fetchRecommendedRoutines)
+        viewModel.action(input: .loadEmotion)
     }
 
-    public override func configureAttribute() {
+    override func configureAttribute() {
         title = "추천 루틴"
         categoryView.delegate = self
 
@@ -110,7 +112,7 @@ final class RecommendedRoutineView: BaseViewController<RecommendedRoutineViewMod
         dimmedView.addGestureRecognizer(tapGesture)
     }
 
-    public override func configureLayout() {
+    override func configureLayout() {
         let safeArea = view.safeAreaLayoutGuide
         view.backgroundColor = .systemBackground
 
@@ -179,7 +181,7 @@ final class RecommendedRoutineView: BaseViewController<RecommendedRoutineViewMod
         }
     }
 
-    public override func bind() {
+    override func bind() {
         viewModel.output.selectedCategoryPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] selectedCategory in
@@ -194,8 +196,19 @@ final class RecommendedRoutineView: BaseViewController<RecommendedRoutineViewMod
                 self?.fetchRecommendedRoutines(recommendedRoutines: recommendedRoutines)
             }
             .store(in: &cancellables)
+
+        viewModel.output.emotionExistPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isExistEmotion in
+                if isExistEmotion {
+                    self?.isExistEmotion = isExistEmotion
+                    self?.registerEmotionButton.isHidden = true
+                }
+            }
+            .store(in: &cancellables)
     }
 
+    // 추천 루틴 카드 View
     private func fetchRecommendedRoutines(recommendedRoutines: [RecommendedRoutine]) {
         recommendedRoutineStackView.arrangedSubviews.forEach { view in
             if view != registerEmotionButton {
@@ -216,6 +229,7 @@ final class RecommendedRoutineView: BaseViewController<RecommendedRoutineViewMod
         }
     }
 
+    // Bottom Sheet(난이도 필터링)를 보여줍니다.
     private func showBottomSheet() {
         if isShowingFloatingMenu {
             toggleFloatingButton()
@@ -223,7 +237,13 @@ final class RecommendedRoutineView: BaseViewController<RecommendedRoutineViewMod
         presentCustomBottomSheet(contentViewController: levelView, maxHeight: Layout.bottomSheetHeight)
     }
 
+    // 감정 등록 버튼을 보이거나 숨겨줍니다.
     private func showEmotionButton(isShowEmotionButton: Bool) {
+        guard !isExistEmotion else {
+            registerEmotionButton.isHidden = true
+            return
+        }
+        
         guard isShowEmotionButton else {
             registerEmotionButton.isHidden = true
             return
@@ -240,6 +260,7 @@ final class RecommendedRoutineView: BaseViewController<RecommendedRoutineViewMod
         }
     }
 
+    // 플로팅 버튼을 토글합니다. (플로팅 버튼 동작 및 플로팅 메뉴 등장)
     private func toggleFloatingButton() {
         floatingButton.toggle()
         isShowingFloatingMenu.toggle()

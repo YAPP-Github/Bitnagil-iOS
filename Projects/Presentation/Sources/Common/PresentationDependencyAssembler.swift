@@ -49,7 +49,10 @@ public struct PresentationDependencyAssembler: DependencyAssemblerProtocol {
             guard let recommendedRoutineUseCase = container.resolve(type: RecommendedRoutineUseCaseProtocol.self)
             else { fatalError("recommendedRoutineUseCase 의존성이 등록되지 않았습니다.") }
 
-            return RecommendedRoutineViewModel(recommendedRoutineUseCase: recommendedRoutineUseCase)
+            guard let emotionRepository = container.resolve(type: EmotionRepositoryProtocol.self)
+            else { fatalError("emotionRepository 의존성이 등록되지 않았습니다.") }
+
+            return RecommendedRoutineViewModel(recommendedRoutineUseCase: recommendedRoutineUseCase, emotionRepository: emotionRepository)
         }
 
         DIContainer.shared.register(type: MypageViewModel.self) { container in
