@@ -31,6 +31,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
         static let weekViewHeight: CGFloat = 127
         static let routineSortButtonTrailingSpacing: CGFloat = 8
         static let routineSortButtonSize: CGFloat = 40
+        static let routineSortViewHeight: CGFloat = 192
         static let routineStackViewSpacing: CGFloat = 21
         static let routineStackViewTopSpacing: CGFloat = 23
         static let routineStackViewBottomSpacing: CGFloat = 100
@@ -323,7 +324,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] fetchRoutineResult in
                 if fetchRoutineResult {
-                    self?.viewModel.action(input: .selectDate(date: Date()))
+                    self?.viewModel.action(input: .refreshSelectedDateRoutine)
                 }
             }
             .store(in: &cancellables)
@@ -354,6 +355,15 @@ final class HomeView: BaseViewController<HomeViewModel> {
                 }
             }
             .store(in: &cancellables)
+
+        viewModel.output.updateRoutineCompletionResultPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isUpdateRoutineCompletion in
+                if isUpdateRoutineCompletion {
+                    self?.viewModel.action(input: .refreshSelectedDateRoutine)
+                }
+            }
+            .store(in: &cancellables)
     }
 
     // 홈 Graident 배경색을 설정합니다.
@@ -371,7 +381,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
         if !tooltipView.isHidden {
             hideTooltipView()
         }
-        presentCustomBottomSheet(contentViewController: routineSortView, maxHeight: 192)
+        presentCustomBottomSheet(contentViewController: routineSortView, maxHeight: Layout.routineSortViewHeight)
     }
 
     // 해당 날짜의 Routine View를 설정합니다. (없다면 EmptyView)
@@ -519,8 +529,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
 // MARK: RoutineViewDelegate
 extension HomeView: RoutineViewDelegate {
     func routineView(_ sender: RoutineView, didTapMainRoutineCheckButton mainRoutine: MainRoutine) {
-        sender.updateMainRoutineState(isDone: !mainRoutine.isDone)
-        // TODO: 메인 루틴 완료 버튼 체크의 서버 통신을 수행해야 합니다. (viewModel에 action 정의)
+        viewModel.action(input: .updateRoutineCompletion(routines: [mainRoutine]))
     }
 
     func routineView(_ sender: RoutineView, didTapMainRoutineMoreButton mainRoutine: MainRoutine) {
@@ -535,8 +544,7 @@ extension HomeView: RoutineViewDelegate {
     }
 
     func routineView(_ sender: RoutineView, didTapSubRoutineCheckButton subRoutine: SubRoutine) {
-        sender.updateSubRoutineState(subRoutine: subRoutine, isDone: !subRoutine.isDone)
-        // TODO: 서브 루틴 완료 버튼 체크의 서버 통신을 수행해야 합니다. (viewModel에 action 정의)
+        viewModel.action(input: .updateRoutineCompletion(routines: [subRoutine]))
     }
 }
 

@@ -12,6 +12,7 @@ enum RoutineEndpoint {
     case updateRoutine(routine: RoutineUpdateDTO)
     case deleteAllRoutine(routineId: String)
     case deleteDailyRoutine(routine: DeleteRoutineDTO)
+    case updateRoutineCompletion(routines: RoutineCompletionListDTO)
 }
 
 extension RoutineEndpoint: Endpoint {
@@ -27,6 +28,8 @@ extension RoutineEndpoint: Endpoint {
             "\(baseURL)/\(routineId)"
         case .deleteDailyRoutine:
             "\(baseURL)/day"
+        case .updateRoutineCompletion:
+            "\(baseURL)/completions"
         default:
             baseURL
         }
@@ -34,7 +37,7 @@ extension RoutineEndpoint: Endpoint {
     
     var method: HTTPMethod {
         switch self {
-        case .createRoutine:
+        case .createRoutine, .updateRoutineCompletion:
                 .post
         case .fetchRoutine, .fetchRoutines:
                 .get
@@ -72,6 +75,8 @@ extension RoutineEndpoint: Endpoint {
             return routine.dictionary
         case .deleteDailyRoutine(let routine):
             return routine.dictionary
+        case .updateRoutineCompletion(let routines):
+            return routines.dictionary
         default:
             return [:]
         }

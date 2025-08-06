@@ -7,12 +7,14 @@
 
 import Domain
 
-struct SubRoutine: Hashable {
+struct SubRoutine: Hashable, Routine {
     let id: String
     let title: String
     var isDone: Bool
     let sortIndex: Int
     let completionId: Int?
+    let routineType: String
+    let historySeq: Int
 }
 
 extension SubRoutineEntity {
@@ -24,6 +26,8 @@ extension SubRoutineEntity {
             title: subRoutineName,
             isDone: completeYn,
             sortIndex: sortOrder,
-            completionId: routineCompletionId)
+            completionId: routineCompletionId,
+            routineType: routineType,
+            historySeq: historySeq)
     }
 }

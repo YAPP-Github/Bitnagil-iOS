@@ -37,4 +37,8 @@ public protocol RoutineRepositoryProtocol {
     /// 당일 루틴을 삭제합니다.
     /// - Parameter routine: 삭제할 루틴 정보
     func deleteDailyRoutine(routine: DeleteRoutineEntity) async throws
+
+    /// 루틴 완료 여부를 업데이트 합니다.
+    /// - Parameter routines: 완료 여부를 업데이트할 루틴 배열
+    func updateRoutineCompletions(routines: [RoutineCompletionEntity]) async throws
 }

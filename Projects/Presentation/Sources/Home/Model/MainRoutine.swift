@@ -8,7 +8,7 @@
 import Domain
 import Foundation
 
-struct MainRoutine {
+struct MainRoutine: Routine {
     let id: String
     let title: String
     var isDone: Bool

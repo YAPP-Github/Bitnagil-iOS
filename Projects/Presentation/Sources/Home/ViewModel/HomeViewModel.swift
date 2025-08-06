@@ -18,6 +18,7 @@ final class HomeViewModel: ViewModel {
         case selectRoutine(routine: MainRoutine?)
         case deleteDailyRoutine
         case deleteAllRoutine
+        case updateRoutineCompletion(routines: [Routine])
         case refreshSelectedDateRoutine
     }
 
@@ -28,6 +29,7 @@ final class HomeViewModel: ViewModel {
         let fetchRoutineResultPublisher: AnyPublisher<Bool, Never>
         let routinesPublisher: AnyPublisher<[MainRoutine], Never>
         let deleteRoutineResultPublisher: AnyPublisher<Bool, Never>
+        let updateRoutineCompletionResultPublisher: AnyPublisher<Bool, Never>
     }
 
     private(set) var output: Output
@@ -39,6 +41,7 @@ final class HomeViewModel: ViewModel {
     private let routinesSubject = CurrentValueSubject<[MainRoutine], Never>([])
     private let selectedRoutineSubject = CurrentValueSubject<MainRoutine?, Never>(nil)
     private let deleteRoutineResultSubject = PassthroughSubject<Bool, Never>()
+    private let updateRoutineCompletionResultSubject = PassthroughSubject<Bool, Never>()
 
     private let calendar = Calendar.current
     private let today = Date()
@@ -62,7 +65,8 @@ final class HomeViewModel: ViewModel {
             selectedDatePublisher: selectedDateSubject.eraseToAnyPublisher(),
             fetchRoutineResultPublisher: fetchRoutineResultSubject.eraseToAnyPublisher(),
             routinesPublisher: routinesSubject.eraseToAnyPublisher(),
-            deleteRoutineResultPublisher: deleteRoutineResultSubject.eraseToAnyPublisher()
+            deleteRoutineResultPublisher: deleteRoutineResultSubject.eraseToAnyPublisher(),
+            updateRoutineCompletionResultPublisher: updateRoutineCompletionResultSubject.eraseToAnyPublisher()
         )
     }
 
@@ -89,8 +93,10 @@ final class HomeViewModel: ViewModel {
         case .deleteAllRoutine:
             deleteAllRoutine()
 
+        case .updateRoutineCompletion(let routines):
+            updateRoutineCompletion(routines: routines)
+
         case .refreshSelectedDateRoutine:
-            fetchRoutines()
             fetchRoutines(for: selectedDateSubject.value)
         }
     }
@@ -182,6 +188,7 @@ final class HomeViewModel: ViewModel {
                 try await routineUseCase.deleteAllRoutine(routineId: routineId)
                 selectedRoutineSubject.send(nil)
                 deleteRoutineResultSubject.send(true)
+                fetchRoutines()
             } catch {
                 deleteRoutineResultSubject.send(false)
             }
@@ -207,8 +214,72 @@ final class HomeViewModel: ViewModel {
             do {
                 try await routineUseCase.deleteDailyRoutine(routine: deleteRoutinEntity)
                 deleteRoutineResultSubject.send(true)
+                fetchRoutines()
             } catch {
                 deleteRoutineResultSubject.send(false)
+            }
+        }
+    }
+
+    private func updateRoutineCompletion(routines: [Routine]) {
+        let performedDate = selectedDateSubject.value.convertToString(dateType: .yearMonthDate)
+        var routineCompletionEntities: [RoutineCompletionEntity] = []
+
+        for routine in routines {
+            let isDone = !routine.isDone
+            let routineCompletionEntity = RoutineCompletionEntity(
+                performedDate: performedDate,
+                routineId: routine.id,
+                completeYn: isDone,
+                historySeq: routine.historySeq,
+                routineType: routine.routineType)
+            routineCompletionEntities.append(routineCompletionEntity)
+
+            // 메인 루틴이라면, 그 안의 세부 루틴 값도 업데이트
+            if let mainRoutine = routine as? MainRoutine {
+                for subRoutine in mainRoutine.subRoutines {
+                    guard subRoutine.isDone != isDone else { continue }
+                    let subRoutineCompletionEntity = RoutineCompletionEntity(
+                        performedDate: performedDate,
+                        routineId: subRoutine.id,
+                        completeYn: isDone,
+                        historySeq: subRoutine.historySeq,
+                        routineType: subRoutine.routineType)
+                    routineCompletionEntities.append(subRoutineCompletionEntity)
+                }
+            } else if let subRoutine = routine as? SubRoutine {
+                // 세부 루틴이라면, 세부 루틴의 완료 값을 확인하여 메인 루틴도 업데이트
+                let mainRoutines = routinesSubject.value
+                for mainRoutine in mainRoutines {
+                    if mainRoutine.subRoutines.contains(subRoutine) {
+                        let mainRoutineIsDone = mainRoutine.isDone
+                        var subRoutineCompleted: Bool
+                        if subRoutine.isDone {
+                            subRoutineCompleted = mainRoutine.subRoutines.filter({ $0.isDone }).count - 1 == mainRoutine.subRoutines.count
+                        } else {
+                            subRoutineCompleted = mainRoutine.subRoutines.filter({ $0.isDone }).count + 1 == mainRoutine.subRoutines.count
+                        }
+                        if subRoutineCompleted != mainRoutineIsDone {
+                            let mainRoutineCompletionEntity = RoutineCompletionEntity(
+                                performedDate: performedDate,
+                                routineId: mainRoutine.id,
+                                completeYn: subRoutineCompleted,
+                                historySeq: mainRoutine.historySeq,
+                                routineType: mainRoutine.routineType)
+                            routineCompletionEntities.append(mainRoutineCompletionEntity)
+                        }
+                    }
+                }
+            }
+        }
+
+        Task {
+            do {
+                try await routineUseCase.updateRoutineCompletion(routines: routineCompletionEntities)
+                updateRoutineCompletionResultSubject.send(true)
+                fetchRoutines()
+            } catch {
+                updateRoutineCompletionResultSubject.send(false)
             }
         }
     }

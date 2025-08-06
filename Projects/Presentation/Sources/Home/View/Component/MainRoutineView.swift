@@ -75,7 +75,7 @@ final class MainRoutineView: UIView {
         checkBackgroundView.layer.cornerRadius = Layout.checkBoxCornerRadius
 
         checkIcon.image = BitnagilIcon.checkIcon
-        checkIcon.tintColor = BitnagilColor.navy50
+        checkIcon.tintColor = mainRoutine.isDone ? BitnagilColor.navy500 : BitnagilColor.navy50
 
         moreButton.setImage(BitnagilIcon.ellipsisIcon, for: .normal)
         moreButton.addAction(UIAction { [weak self] _ in
