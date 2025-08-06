@@ -14,4 +14,8 @@ public protocol OnboardingRepositoryProtocol {
     /// 선택한 추천 루틴을 등록합니다.
     /// - Parameter selectedRoutines: 선택한 추천 루틴 ID 목록
     func registerRecommendedRoutines(selectedRoutines: [Int]) async throws
+
+    /// 온보딩 여부를 반환합니다.
+    /// - Returns: 온보딩 여부
+    func isOnboardingDone() -> Bool
 }

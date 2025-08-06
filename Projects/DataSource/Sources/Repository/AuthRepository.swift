@@ -138,13 +138,6 @@ final class AuthRepository: AuthRepositoryProtocol {
         }
     }
 
-    // UserDefaults에 프로필 이미지를 저장합니다.
-    private func saveUserProfileImageUrl(profileImageUrl: URL) throws {
-        guard userDefaultsStorage.save(profileImageUrl.absoluteString, forKey: UserDefaultsKey.profileImageUrl.rawValue) else {
-            throw UserError.profileImageUrlSaveFailed
-        }
-    }
-
     // UserDefaults에 저장된 유저 정보(닉네임, 소셜 로그인 타입, 프로필 이미지)를 삭제합니다.
     private func removeUserInfo() throws {
         guard userDefaultsStorage.remove(forKey: UserDefaultsKey.nickname.rawValue) else {
@@ -155,8 +148,9 @@ final class AuthRepository: AuthRepositoryProtocol {
             throw UserError.socialLoginTypeRemoveFailed
         }
 
-        guard userDefaultsStorage.remove(forKey: UserDefaultsKey.profileImageUrl.rawValue) else {
-            throw UserError.profileImageUrlRemoveFailed
+        guard userDefaultsStorage.remove(forKey: UserDefaultsKey.onboarding.rawValue) else {
+            throw UserError.onboardingRemoveFailed
         }
+
     }
 }
