@@ -156,6 +156,9 @@ final class RoutineView: UIView {
 
     func updateMainRoutineState(isDone: Bool) {
         mainRoutineView.updateState(isDone: isDone)
+        for subRoutine in routine.subRoutines {
+            updateSubRoutineState(subRoutine: subRoutine, isDone: isDone)
+        }
     }
 
     func updateSubRoutineState(subRoutine: SubRoutine, isDone: Bool) {
@@ -167,6 +170,12 @@ final class RoutineView: UIView {
         if let subRoutineView = subRoutineButtons[subRoutine.id] {
             subRoutineView.updateState(isDone: isDone)
         }
+        checkSubRoutines()
+    }
+
+    func checkSubRoutines() {
+        let isDoneAllSubRoutines = routine.subRoutines.filter({ $0.isDone }).count == routine.subRoutines.count
+        mainRoutineView.updateState(isDone: isDoneAllSubRoutines)
     }
 }
 
