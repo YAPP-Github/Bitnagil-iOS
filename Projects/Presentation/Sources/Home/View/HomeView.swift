@@ -103,7 +103,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         configureNavigationBar(navigationStyle: .hidden)
-        viewModel.action(input: .fetchEmotion)
+        viewModel.action(input: .loadEmotion)
     }
 
     override func viewDidLayoutSubviews() {
@@ -323,7 +323,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] fetchRoutineResult in
                 if fetchRoutineResult {
-                    self?.viewModel.action(input: .fetchDailyRoutines(date: Date()))
+                    self?.viewModel.action(input: .selectDate(date: Date()))
                 }
             }
             .store(in: &cancellables)
@@ -350,7 +350,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
                     if self.isShowingDeleteAlertView {
                         self.toggleDeleteAlertView()
                     }
-                    viewModel.action(input: .fetchRoutines)
+                    viewModel.action(input: .refreshSelectedDateRoutine)
                 }
             }
             .store(in: &cancellables)
@@ -550,11 +550,11 @@ extension HomeView: SelectableItemTableViewDelegate {
 // MARK: WeekViewDelegate
 extension HomeView: WeekViewDelegate {
     func weekView(_ sender: WeekView, didMoveWeek weekStartDate: Date) {
-        viewModel.action(input: .fetchDailyRoutines(date: weekStartDate))
+        viewModel.action(input: .selectDate(date: weekStartDate))
     }
     
     func weekView(_ sender: WeekView, didSelectDate date: Date) {
-        viewModel.action(input: .fetchDailyRoutines(date: date))
+        viewModel.action(input: .selectDate(date: date))
     }
 }
 

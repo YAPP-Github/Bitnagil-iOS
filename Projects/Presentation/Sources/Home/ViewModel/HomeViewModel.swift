@@ -12,29 +12,32 @@ import Foundation
 final class HomeViewModel: ViewModel {
     enum Input {
         case loadNickname
+        case loadEmotion
+        case selectDate(date: Date)
         case fetchRoutines
-        case fetchDailyRoutines(date: Date)
-        case fetchEmotion
         case selectRoutine(routine: MainRoutine?)
         case deleteDailyRoutine
         case deleteAllRoutine
+        case refreshSelectedDateRoutine
     }
 
     struct Output {
         let nicknamePublisher: AnyPublisher<String, Never>
+        let emotionPublisher: AnyPublisher<Emotion?, Never>
+        let selectedDatePublisher: AnyPublisher<Date, Never>
         let fetchRoutineResultPublisher: AnyPublisher<Bool, Never>
         let routinesPublisher: AnyPublisher<[MainRoutine], Never>
-        let emotionPublisher: AnyPublisher<Emotion?, Never>
         let deleteRoutineResultPublisher: AnyPublisher<Bool, Never>
     }
 
     private(set) var output: Output
     private var routines: [String: [MainRoutine]] = [:]
     private let nicknameSubject = CurrentValueSubject<String, Never>("")
+    private let emotionSubject = CurrentValueSubject<Emotion?, Never>(nil)
+    private let selectedDateSubject = CurrentValueSubject<Date, Never>(.now)
     private let fetchRoutineResultSubject = PassthroughSubject<Bool, Never>()
     private let routinesSubject = CurrentValueSubject<[MainRoutine], Never>([])
     private let selectedRoutineSubject = CurrentValueSubject<MainRoutine?, Never>(nil)
-    private let emotionSubject = CurrentValueSubject<Emotion?, Never>(nil)
     private let deleteRoutineResultSubject = PassthroughSubject<Bool, Never>()
 
     private let calendar = Calendar.current
@@ -55,9 +58,10 @@ final class HomeViewModel: ViewModel {
         self.emotionUseCase = emotionUseCase
         self.output = Output(
             nicknamePublisher: nicknameSubject.eraseToAnyPublisher(),
+            emotionPublisher: emotionSubject.eraseToAnyPublisher(),
+            selectedDatePublisher: selectedDateSubject.eraseToAnyPublisher(),
             fetchRoutineResultPublisher: fetchRoutineResultSubject.eraseToAnyPublisher(),
             routinesPublisher: routinesSubject.eraseToAnyPublisher(),
-            emotionPublisher: emotionSubject.eraseToAnyPublisher(),
             deleteRoutineResultPublisher: deleteRoutineResultSubject.eraseToAnyPublisher()
         )
     }
@@ -67,14 +71,14 @@ final class HomeViewModel: ViewModel {
         case .loadNickname:
             loadNickname()
 
+        case .loadEmotion:
+            fetchEmotion()
+
+        case .selectDate(let date):
+            selectDate(date: date)
+
         case .fetchRoutines:
             fetchRoutines()
-
-        case .fetchDailyRoutines(let date):
-            fetchRoutines(for: date)
-
-        case .fetchEmotion:
-            fetchEmotion()
 
         case .selectRoutine(let routine):
             selectedRoutineSubject.send(routine)
@@ -84,9 +88,15 @@ final class HomeViewModel: ViewModel {
 
         case .deleteAllRoutine:
             deleteAllRoutine()
+
+        case .refreshSelectedDateRoutine:
+            fetchRoutines()
+            fetchRoutines(for: selectedDateSubject.value)
         }
     }
 
+    // MARK: - User 정보
+    // 유저 닉네임을 불러옵니다.
     private func loadNickname() {
         Task {
             do {
@@ -98,13 +108,28 @@ final class HomeViewModel: ViewModel {
         }
     }
 
+    // 감정 구슬을 불러옵니다.
+    private func fetchEmotion() {
+        Task {
+            do {
+                let emotionEntity = try await emotionUseCase.fetchEmotion(date: today)
+                let emotion = emotionEntity?.toEmotion()
+                emotionSubject.send(emotion)
+            } catch {
+
+            }
+        }
+    }
+
+    // MARK: - 루틴
+    // 루틴들을 불러옵니다. (처음에는 +-1 주, 그 이후에는 1주씩)
     private func fetchRoutines() {
         var startDate = oldestDate
         var endDate = latestDate
 
         if routines.isEmpty {
-            startDate = calculateDate(for: today, offset: -1)
-            endDate = calculateDate(for: today, offset: 1)
+            startDate = calendar.date(byAdding: .weekOfYear, value: -1, to: today) ?? today
+            endDate = calendar.date(byAdding: .weekOfYear, value: 1, to: today) ?? today
 
             oldestDate = startDate
             latestDate = endDate
@@ -123,6 +148,13 @@ final class HomeViewModel: ViewModel {
         }
     }
 
+    // 날짜를 선택하고 그 날에 해당하는 루틴을 불러옵니다.
+    private func selectDate(date: Date) {
+        selectedDateSubject.send(date)
+        fetchRoutines(for: date)
+    }
+
+    // 선택한 날의 루틴을 필터링하여 보여줍니다. (oldestDate, latestDate 업데이트)
     private func fetchRoutines(for date: Date) {
         if date <= oldestDate {
             oldestDate = calendar.date(byAdding: .weekOfYear, value: -1, to: date) ?? date
@@ -140,24 +172,7 @@ final class HomeViewModel: ViewModel {
         routinesSubject.send(dailyRoutines)
     }
 
-    private func fetchEmotion() {
-        Task {
-            do {
-                let emotionEntity = try await emotionUseCase.fetchEmotion(date: today)
-                let emotion = emotionEntity?.toEmotion()
-                emotionSubject.send(emotion)
-            } catch {
-
-            }
-        }
-    }
-
-    // 필요 시, 루틴 데이터를 불러옵니다. (+- 주)
-    private func calculateDate(for date: Date, offset week: Int) -> Date {
-        let endDate = calendar.date(byAdding: .weekOfYear, value: week, to: date) ?? date
-        return endDate
-    }
-
+    // 반복 루틴을 삭제합니다.
     private func deleteAllRoutine() {
         guard let routineId = selectedRoutineSubject.value?.id
         else { return }
@@ -173,6 +188,7 @@ final class HomeViewModel: ViewModel {
         }
     }
 
+    // 당일 루틴을 삭제합니다.
     private func deleteDailyRoutine() {
         guard let routine = selectedRoutineSubject.value
         else { return }
@@ -183,7 +199,7 @@ final class HomeViewModel: ViewModel {
             routineId: routine.id,
             routineCompletionId: routine.completionId,
             historySeq: routine.historySeq,
-            performedDate: today.convertToString(dateType: .yearMonthDate),
+            performedDate: selectedDateSubject.value.convertToString(dateType: .yearMonthDate),
             routineType: routine.routineType,
             subRoutineInfosForDelete: deleteSubRoutineEntity)
 

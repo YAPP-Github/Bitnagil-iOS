@@ -137,12 +137,15 @@ final class WeekView: UIView {
             let isSelected = calendar.isDate(date, inSameDayAs: selectedDate)
             let isToday = calendar.isDate(date, inSameDayAs: today)
 
-            let dateView = DateView(date: date,
-                                    isSelected: isSelected,
-                                    isToday: isToday)
+            let dateView = DateView(
+                date: date,
+                isSelected: isSelected,
+                isToday: isToday)
+
             dateView.didTappedDateButton = { [weak self] date in
                 self?.selectDate(date: date)
             }
+            
             dateViews[date] = dateView
             dateStackView.addArrangedSubview(dateView)
             dateView.snp.makeConstraints { make in
