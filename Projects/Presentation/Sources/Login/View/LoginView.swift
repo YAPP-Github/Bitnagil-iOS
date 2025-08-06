@@ -7,6 +7,7 @@
 
 import AuthenticationServices
 import Combine
+import Domain
 import Shared
 import SnapKit
 import UIKit
@@ -31,8 +32,10 @@ final class LoginView: BaseViewController<LoginViewModel> {
     private let kakaoLoginButton = SocialLoginButton(socialType: .kakao)
     private let appleLoginButton = SocialLoginButton(socialType: .apple)
     private var cancellables: Set<AnyCancellable>
+    private let onboardingRepository: OnboardingRepositoryProtocol
 
-    override init(viewModel: LoginViewModel) {
+    init(onboardingRepository: OnboardingRepositoryProtocol, viewModel: LoginViewModel) {
+        self.onboardingRepository = onboardingRepository
         cancellables = []
         super.init(viewModel: viewModel)
     }
@@ -119,11 +122,18 @@ final class LoginView: BaseViewController<LoginViewModel> {
                     let agreementView = TermsAgreementView(viewModel: self.viewModel)
                     self.navigationController?.pushViewController(agreementView, animated: true)
                 } else {
-                    guard let onboardingViewModel = DIContainer.shared.resolve(type: OnboardingViewModel.self) else {
-                        fatalError("onboardingViewModel 의존성이 등록되지 않았습니다.")
+                    if onboardingRepository.isOnboardingDone() {
+                        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                           let window = windowScene.windows.first(where: { $0.isKeyWindow }) {
+                            window.rootViewController = TabBarView()
+                        }
+                    } else {
+                        guard let onboardingViewModel = DIContainer.shared.resolve(type: OnboardingViewModel.self) else {
+                            fatalError("onboardingViewModel 의존성이 등록되지 않았습니다.")
+                        }
+                        let onboardingView = OnboardingView(viewModel: onboardingViewModel, onboarding: .time)
+                        self.navigationController?.pushViewController(onboardingView, animated: true)
                     }
-                    let onboardingView = OnboardingView(viewModel: onboardingViewModel, onboarding: .time)
-                    self.navigationController?.pushViewController(onboardingView, animated: true)
                 }
             }
             .store(in: &cancellables)

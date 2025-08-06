@@ -5,6 +5,7 @@
 //  Created by 최정인 on 7/6/25.
 //
 
+import Domain
 import Shared
 import SnapKit
 import UIKit
@@ -48,10 +49,13 @@ public final class IntroView: UIViewController {
         graphView.image = BitnagilGraphic.introGraphic
 
         startButton.addAction(UIAction { [weak self] _ in
-            guard let loginViewModel = DIContainer.shared.resolve(type: LoginViewModel.self) else {
-                fatalError("loginViewModel 의존성이 등록되지 않았습니다.")
-            }
-            let loginView = LoginView(viewModel: loginViewModel)
+            guard let onboardingRepository = DIContainer.shared.resolve(type: OnboardingRepositoryProtocol.self)
+            else { fatalError("onboardingRepository 의존성이 등록되지 않았습니다.") }
+
+            guard let loginViewModel = DIContainer.shared.resolve(type: LoginViewModel.self)
+            else { fatalError("loginViewModel 의존성이 등록되지 않았습니다.") }
+
+            let loginView = LoginView(onboardingRepository: onboardingRepository, viewModel: loginViewModel)
             self?.navigationController?.pushViewController(loginView, animated: true)
         }, for: .touchUpInside)
     }

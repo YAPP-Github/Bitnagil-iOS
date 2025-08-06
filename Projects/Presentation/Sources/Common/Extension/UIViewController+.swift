@@ -46,6 +46,7 @@ extension UIViewController {
             action: #selector(popViewController))
         backButton.tintColor = .black
         navigationItem.leftBarButtonItem = backButton
+        changeNavigationBackground(color: .white)
     }
 
     private func configureCustomBackButton() {
@@ -56,12 +57,14 @@ extension UIViewController {
             action: #selector(popTwoViewControllers))
         backButton.tintColor = .black
         navigationItem.leftBarButtonItem = backButton
+        changeNavigationBackground(color: .white)
     }
 
     private func configureProgressNavigationBar(step: Int, stepCount: Int) {
         self.title = ""
         let progressView = ProgressBarView(step: step, stepCount: stepCount)
         navigationItem.titleView = progressView
+        changeNavigationBackground(color: BitnagilColor.gray99)
     }
 
     @objc private func popViewController() {
@@ -80,6 +83,17 @@ extension UIViewController {
 
         let targetViewController = viewControllers[viewControllers.count - 3]
         navigationController.popToViewController(targetViewController, animated: true)
+    }
+
+    private func changeNavigationBackground(color: UIColor?) {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = color
+        appearance.shadowColor = .clear
+
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        navigationController?.navigationBar.compactAppearance = appearance
     }
 
     // MARK: - BottomSheet
