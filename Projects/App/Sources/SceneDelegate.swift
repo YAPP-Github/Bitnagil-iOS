@@ -54,10 +54,22 @@ extension SceneDelegate: SplashViewDelegate {
         guard let userDataRepository = DIContainer.shared.resolve(type: UserDataRepositoryProtocol.self)
         else { fatalError("userDataRepository 의존성이 등록되지 않았습니다.") }
 
+        guard let onboardingRepository = DIContainer.shared.resolve(type: OnboardingRepositoryProtocol.self)
+        else { fatalError("onboardingRepository 의존성이 등록되지 않았습니다.") }
+
         Task { @MainActor in
             let isLogined = await userDataRepository.reissueToken()
             if isLogined {
-                window?.rootViewController = TabBarView()
+                if onboardingRepository.isOnboardingDone() {
+                    window?.rootViewController = TabBarView()
+                } else {
+                    guard let onboardingViewModel = DIContainer.shared.resolve(type: OnboardingViewModel.self) else {
+                        fatalError("onboardingViewModel 의존성이 등록되지 않았습니다.")
+                    }
+                    let onboardingView = OnboardingView(viewModel: onboardingViewModel, onboarding: .time)
+                    let navigationController = UINavigationController(rootViewController: onboardingView)
+                    window?.rootViewController = navigationController
+                }
             } else {
                 let introView = IntroView()
                 let navigationController = UINavigationController(rootViewController: introView)

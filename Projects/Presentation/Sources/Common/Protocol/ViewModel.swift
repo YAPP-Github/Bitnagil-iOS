@@ -5,7 +5,7 @@
 //  Created by 최정인 on 6/26/25.
 //
 
-protocol ViewModel {
+public protocol ViewModel {
     associatedtype Input
     associatedtype Output
 

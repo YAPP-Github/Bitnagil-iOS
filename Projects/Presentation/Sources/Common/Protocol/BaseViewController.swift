@@ -7,7 +7,7 @@
 
 import UIKit
 
-class BaseViewController<T: ViewModel>: UIViewController {
+public class BaseViewController<T: ViewModel>: UIViewController {
     let viewModel: T
 
     init(viewModel: T) {
@@ -19,7 +19,7 @@ class BaseViewController<T: ViewModel>: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
 
         configureAttribute()
