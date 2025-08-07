@@ -70,10 +70,12 @@ public struct PresentationDependencyAssembler: DependencyAssemblerProtocol {
         }
 
         DIContainer.shared.register(type: RoutineCreationViewModel.self) { container in
-            guard let routineUseCase = container.resolve(type: RoutineUseCaseProtocol.self)
-            else { fatalError("routineUseCase 의존성이 등록되지 않았습니다.") }
+            guard
+                let routineUseCase = container.resolve(type: RoutineUseCaseProtocol.self),
+                let recommendedRoutineUseCase = container.resolve(type: RecommendedRoutineUseCaseProtocol.self)
+            else { fatalError("routineUseCase, resultRecommendedRoutineUseCase 의존성이 등록되지 않았습니다.") }
 
-            return RoutineCreationViewModel(routineUseCase: routineUseCase)
+            return RoutineCreationViewModel(routineUseCase: routineUseCase, recommenedRoutineUseCase: recommendedRoutineUseCase)
         }
 
         DIContainer.shared.register(type: ResultRecommendedRoutineViewModel.self) { container in

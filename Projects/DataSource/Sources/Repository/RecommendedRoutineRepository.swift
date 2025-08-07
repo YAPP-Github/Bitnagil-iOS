@@ -10,6 +10,15 @@ import Domain
 final class RecommendedRoutineRepository: RecommendedRoutineRepositoryProtocol {
     private let networkService = NetworkService.shared
 
+    func fetchRecommendedRoutine(id: Int) async throws -> RecommendedRoutineEntity? {
+        let endpoint = RecommendedRoutineEndpoint.fetchRecommendedRoutine(id: id)
+
+        guard let recommendedRoutineDTO = try await networkService.request(endpoint: endpoint, type: RecommendedRoutineDTO.self)
+        else { return nil }
+
+        return recommendedRoutineDTO.toRecommendedRoutineEntity()
+    }
+
     func fetchRecommendedRoutines() async throws -> [RecommendedRoutineEntity] {
         let endpoint = RecommendedRoutineEndpoint.fetchRecommendedRoutines
         guard let response = try await networkService.request(endpoint: endpoint, type: RecommendedRoutineDictionaryResponseDTO.self)

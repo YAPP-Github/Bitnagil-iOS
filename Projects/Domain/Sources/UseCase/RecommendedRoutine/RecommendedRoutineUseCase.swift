@@ -12,6 +12,11 @@ public final class RecommendedRoutineUseCase: RecommendedRoutineUseCaseProtocol 
         self.recommendedRoutineRepository = recommendedRoutineRepository
     }
 
+    public func fetchRecommendedRoutine(id: Int) async throws -> RecommendedRoutineEntity? {
+        let recommendedRoutine = try await recommendedRoutineRepository.fetchRecommendedRoutine(id: id)
+        return recommendedRoutine
+    }
+
     public func fetchRecommendedRoutines() async throws -> [RecommendedRoutineEntity] {
         let recommendedRoutines = try await recommendedRoutineRepository.fetchRecommendedRoutines()
         return recommendedRoutines

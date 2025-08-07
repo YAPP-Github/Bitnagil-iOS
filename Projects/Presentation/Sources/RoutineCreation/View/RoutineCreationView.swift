@@ -93,7 +93,15 @@ final class RoutineCreationView: BaseViewController<RoutineCreationViewModel> {
             viewModel.action(input: .fetchRoutine(id: routineId))
         }
     }
-    
+
+    init(viewModel: RoutineCreationViewModel, recommendRoutineId: Int) {
+        navigationTitle = "루틴 등록"
+        registerButtonTitle = "등록하기"
+
+        super.init(viewModel: viewModel)
+        viewModel.action(input: .fetchRecommendedRoutine(id: recommendRoutineId))
+    }
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -527,6 +535,7 @@ final class RoutineCreationView: BaseViewController<RoutineCreationViewModel> {
         registerButton.addAction(
             UIAction { [weak self] _ in
                 self?.viewModel.action(input: .registerRoutine)
+                self?.navigationController?.popViewController(animated: true)
             },
             for: .touchUpInside)
     }

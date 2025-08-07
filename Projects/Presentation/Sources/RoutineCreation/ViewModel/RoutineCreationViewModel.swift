@@ -41,6 +41,7 @@ final class RoutineCreationViewModel: ViewModel {
 
     enum Input {
         case fetchRoutine(id: String)
+        case fetchRecommendedRoutine(id: Int)
         case configureName(name: String)
         case addSubRoutine
         case deleteSubRoutine(index: Int)
@@ -69,11 +70,13 @@ final class RoutineCreationViewModel: ViewModel {
     private let executionTimeSubject = CurrentValueSubject<ExecutionType, Never>(.none)
     private let checkRoutinePublisher = PassthroughSubject<Bool, Never>()
     private let routineUseCase: RoutineUseCaseProtocol
+    private let recommenedRoutineUseCase: RecommendedRoutineUseCaseProtocol
     private var deletedSubroutines = Set<SubRoutineSummaryEntity>()
     private var routineId: String?
 
-    init(routineUseCase: RoutineUseCaseProtocol) {
+    init(routineUseCase: RoutineUseCaseProtocol, recommenedRoutineUseCase: RecommendedRoutineUseCaseProtocol) {
         self.routineUseCase = routineUseCase
+        self.recommenedRoutineUseCase = recommenedRoutineUseCase
 
         output = Output(
             namePublisher: nameSubject.eraseToAnyPublisher(),
@@ -92,6 +95,8 @@ final class RoutineCreationViewModel: ViewModel {
         switch input {
         case .fetchRoutine(let id):
             fetchRoutine(id: id)
+        case .fetchRecommendedRoutine(let id):
+            fetchRecommenedRoutine(id: id)
         case .configureName(let name):
             configureName(name: name)
         case .addSubRoutine:
@@ -148,6 +153,27 @@ final class RoutineCreationViewModel: ViewModel {
                 updateIsRoutineValid()
             } catch {
                 // TODO: - 요기도 마찬가지 (ViewModel 공통 todo)
+            }
+        }
+    }
+
+    private func fetchRecommenedRoutine(id: Int) {
+        Task {
+            do {
+                guard let routine = try await recommenedRoutineUseCase.fetchRecommendedRoutine(id: id) else { return }
+
+                let subRoutines = routine.subRoutines.map {
+                    SubRoutineSummaryEntity(
+                        subRoutineId: nil,
+                        subRoutineName: $0.title,
+                        sortOrder: nil)
+                }
+
+                nameSubject.send(routine.title)
+                subRoutinesSubject.send(subRoutines)
+
+                updateIsRoutineValid()
+            } catch {
             }
         }
     }

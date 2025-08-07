@@ -6,6 +6,7 @@
 //
 
 enum RecommendedRoutineEndpoint {
+    case fetchRecommendedRoutine(id: Int)
     case fetchRecommendedRoutines
 }
 
@@ -16,7 +17,10 @@ extension RecommendedRoutineEndpoint: Endpoint {
     
     var path: String {
         switch self {
-        case .fetchRecommendedRoutines: baseURL
+        case .fetchRecommendedRoutines:
+            return baseURL
+        case .fetchRecommendedRoutine(let id):
+            return "\(baseURL)/\(id)"
         }
     }
     

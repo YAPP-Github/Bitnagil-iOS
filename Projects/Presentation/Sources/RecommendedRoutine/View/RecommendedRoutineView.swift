@@ -289,7 +289,13 @@ extension RecommendedRoutineView: RoutineCategoryViewDelegate {
 // MARK: RecommendedRoutineCardViewDelegate
 extension RecommendedRoutineView: RecommendedRoutineCardViewDelegate {
     func recommendedRoutineCardView(_ sender: RecommendedRoutineCardView, didTapRecommendedRoutine routine: RecommendedRoutine) {
-        // TODO: 루틴 등록하기 화면으로 이동해야 함 + 추천 루틴 들고
+        guard let routineCreationViewModel = DIContainer.shared.resolve(type: RoutineCreationViewModel.self) else {
+            fatalError("routineCreationViewModel 의존성이 등록되지 않았습니다.")
+        }
+
+        let routineCreationView = RoutineCreationView(viewModel: routineCreationViewModel, recommendRoutineId: routine.id)
+        routineCreationView.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(routineCreationView, animated: true)
     }
 }
 
