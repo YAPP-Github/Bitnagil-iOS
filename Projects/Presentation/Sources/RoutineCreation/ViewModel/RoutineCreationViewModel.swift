@@ -70,13 +70,13 @@ final class RoutineCreationViewModel: ViewModel {
     private let executionTimeSubject = CurrentValueSubject<ExecutionType, Never>(.none)
     private let checkRoutinePublisher = PassthroughSubject<Bool, Never>()
     private let routineUseCase: RoutineUseCaseProtocol
-    private let recommenedRoutineUseCase: RecommendedRoutineUseCaseProtocol
+    private let recommenededRoutineUseCase: RecommendedRoutineUseCaseProtocol
     private var deletedSubroutines = Set<SubRoutineSummaryEntity>()
     private var routineId: String?
 
-    init(routineUseCase: RoutineUseCaseProtocol, recommenedRoutineUseCase: RecommendedRoutineUseCaseProtocol) {
+    init(routineUseCase: RoutineUseCaseProtocol, recommenededRoutineUseCase: RecommendedRoutineUseCaseProtocol) {
         self.routineUseCase = routineUseCase
-        self.recommenedRoutineUseCase = recommenedRoutineUseCase
+        self.recommenededRoutineUseCase = recommenededRoutineUseCase
 
         output = Output(
             namePublisher: nameSubject.eraseToAnyPublisher(),
@@ -96,7 +96,7 @@ final class RoutineCreationViewModel: ViewModel {
         case .fetchRoutine(let id):
             fetchRoutine(id: id)
         case .fetchRecommendedRoutine(let id):
-            fetchRecommenedRoutine(id: id)
+            fetchRecommendedRoutine(id: id)
         case .configureName(let name):
             configureName(name: name)
         case .addSubRoutine:
@@ -157,10 +157,10 @@ final class RoutineCreationViewModel: ViewModel {
         }
     }
 
-    private func fetchRecommenedRoutine(id: Int) {
+    private func fetchRecommendedRoutine(id: Int) {
         Task {
             do {
-                guard let routine = try await recommenedRoutineUseCase.fetchRecommendedRoutine(id: id) else { return }
+                guard let routine = try await recommenededRoutineUseCase.fetchRecommendedRoutine(id: id) else { return }
 
                 let subRoutines = routine.subRoutines.map {
                     SubRoutineSummaryEntity(

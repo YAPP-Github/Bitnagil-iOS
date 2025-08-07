@@ -75,7 +75,7 @@ public struct PresentationDependencyAssembler: DependencyAssemblerProtocol {
                 let recommendedRoutineUseCase = container.resolve(type: RecommendedRoutineUseCaseProtocol.self)
             else { fatalError("routineUseCase, resultRecommendedRoutineUseCase 의존성이 등록되지 않았습니다.") }
 
-            return RoutineCreationViewModel(routineUseCase: routineUseCase, recommenedRoutineUseCase: recommendedRoutineUseCase)
+            return RoutineCreationViewModel(routineUseCase: routineUseCase, recommenededRoutineUseCase: recommendedRoutineUseCase)
         }
 
         DIContainer.shared.register(type: ResultRecommendedRoutineViewModel.self) { container in

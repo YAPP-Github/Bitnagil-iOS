@@ -22,5 +22,5 @@ public protocol RoutineUseCaseProtocol {
 
     func deleteDailyRoutine(routine: DeleteRoutineEntity) async throws
 
-    func updateRoutineCompletion(routines: [RoutineCompletionEntity]) async throws
+    func updateRoutineCompletions(routines: [RoutineCompletionEntity]) async throws
 }

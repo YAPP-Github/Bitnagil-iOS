@@ -279,7 +279,7 @@ final class HomeViewModel: ViewModel {
 
         Task {
             do {
-                try await routineUseCase.updateRoutineCompletion(routines: routineCompletionEntities)
+                try await routineUseCase.updateRoutineCompletions(routines: routineCompletionEntities)
                 updateRoutineCompletionResultSubject.send(true)
                 fetchRoutines()
             } catch {
