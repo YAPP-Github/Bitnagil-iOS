@@ -18,7 +18,7 @@ final class HomeViewModel: ViewModel {
         case selectRoutine(routine: MainRoutine?)
         case deleteDailyRoutine
         case deleteAllRoutine
-        case updateRoutineCompletion(routines: [Routine])
+        case updateRoutineCompletion(updatedRoutine: Routine)
         case refreshSelectedDateRoutine
         case selectRoutineSortType(routineSortType: RoutineSortType?)
     }
@@ -95,8 +95,8 @@ final class HomeViewModel: ViewModel {
         case .deleteAllRoutine:
             deleteAllRoutine()
 
-        case .updateRoutineCompletion(let routines):
-            updateRoutineCompletion(routines: routines)
+        case .updateRoutineCompletion(let updatedRoutine):
+            updateRoutineCompletion(updatedRoutine: updatedRoutine)
 
         case .refreshSelectedDateRoutine:
             fetchRoutines(for: selectedDateSubject.value)
@@ -227,53 +227,51 @@ final class HomeViewModel: ViewModel {
     }
 
     // 루틴의 완료 여부를 업데이트 합니다.
-    private func updateRoutineCompletion(routines: [Routine]) {
+    private func updateRoutineCompletion(updatedRoutine: Routine) {
         let performedDate = selectedDateSubject.value.convertToString(dateType: .yearMonthDate)
         var routineCompletionEntities: [RoutineCompletionEntity] = []
 
-        for routine in routines {
-            let isDone = !routine.isDone
-            let routineCompletionEntity = RoutineCompletionEntity(
-                performedDate: performedDate,
-                routineId: routine.id,
-                completeYn: isDone,
-                historySeq: routine.historySeq,
-                routineType: routine.routineType)
-            routineCompletionEntities.append(routineCompletionEntity)
+        let isDone = !updatedRoutine.isDone
+        let routineCompletionEntity = RoutineCompletionEntity(
+            performedDate: performedDate,
+            routineId: updatedRoutine.id,
+            completeYn: isDone,
+            historySeq: updatedRoutine.historySeq,
+            routineType: updatedRoutine.routineType)
+        routineCompletionEntities.append(routineCompletionEntity)
 
-            // 메인 루틴이라면, 그 안의 세부 루틴 값도 업데이트
-            if let mainRoutine = routine as? MainRoutine {
-                for subRoutine in mainRoutine.subRoutines {
-                    guard subRoutine.isDone != isDone else { continue }
-                    let subRoutineCompletionEntity = RoutineCompletionEntity(
-                        performedDate: performedDate,
-                        routineId: subRoutine.id,
-                        completeYn: isDone,
-                        historySeq: subRoutine.historySeq,
-                        routineType: subRoutine.routineType)
-                    routineCompletionEntities.append(subRoutineCompletionEntity)
-                }
-            } else if let subRoutine = routine as? SubRoutine {
-                // 세부 루틴이라면, 세부 루틴의 완료 값을 확인하여 메인 루틴도 업데이트
-                let mainRoutines = routinesSubject.value
-                for mainRoutine in mainRoutines {
-                    if mainRoutine.subRoutines.contains(subRoutine) {
-                        let mainRoutineIsDone = mainRoutine.isDone
-                        var subRoutineCompleted: Bool
-                        if subRoutine.isDone {
-                            subRoutineCompleted = mainRoutine.subRoutines.filter({ $0.isDone }).count - 1 == mainRoutine.subRoutines.count
-                        } else {
-                            subRoutineCompleted = mainRoutine.subRoutines.filter({ $0.isDone }).count + 1 == mainRoutine.subRoutines.count
-                        }
-                        if subRoutineCompleted != mainRoutineIsDone {
-                            let mainRoutineCompletionEntity = RoutineCompletionEntity(
-                                performedDate: performedDate,
-                                routineId: mainRoutine.id,
-                                completeYn: subRoutineCompleted,
-                                historySeq: mainRoutine.historySeq,
-                                routineType: mainRoutine.routineType)
-                            routineCompletionEntities.append(mainRoutineCompletionEntity)
-                        }
+        // 메인 루틴이라면, 그 안의 세부 루틴 값도 업데이트
+        if let mainRoutine = updatedRoutine as? MainRoutine {
+            for subRoutine in mainRoutine.subRoutines {
+                guard subRoutine.isDone != isDone else { continue }
+                let subRoutineCompletionEntity = RoutineCompletionEntity(
+                    performedDate: performedDate,
+                    routineId: subRoutine.id,
+                    completeYn: isDone,
+                    historySeq: subRoutine.historySeq,
+                    routineType: subRoutine.routineType)
+                routineCompletionEntities.append(subRoutineCompletionEntity)
+            }
+        } else if let subRoutine = updatedRoutine as? SubRoutine {
+            // 세부 루틴이라면, 세부 루틴의 완료 값을 확인하여 메인 루틴도 업데이트
+            let mainRoutines = routinesSubject.value
+            for mainRoutine in mainRoutines {
+                if mainRoutine.subRoutines.contains(subRoutine) {
+                    let mainRoutineIsDone = mainRoutine.isDone
+                    var subRoutineCompleted: Bool
+                    if subRoutine.isDone {
+                        subRoutineCompleted = mainRoutine.subRoutines.filter({ $0.isDone }).count - 1 == mainRoutine.subRoutines.count
+                    } else {
+                        subRoutineCompleted = mainRoutine.subRoutines.filter({ $0.isDone }).count + 1 == mainRoutine.subRoutines.count
+                    }
+                    if subRoutineCompleted != mainRoutineIsDone {
+                        let mainRoutineCompletionEntity = RoutineCompletionEntity(
+                            performedDate: performedDate,
+                            routineId: mainRoutine.id,
+                            completeYn: subRoutineCompleted,
+                            historySeq: mainRoutine.historySeq,
+                            routineType: mainRoutine.routineType)
+                        routineCompletionEntities.append(mainRoutineCompletionEntity)
                     }
                 }
             }

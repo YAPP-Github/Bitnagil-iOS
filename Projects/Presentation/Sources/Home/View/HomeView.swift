@@ -554,7 +554,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
 extension HomeView: RoutineViewDelegate {
     func routineView(_ sender: RoutineView, didTapMainRoutineCheckButton mainRoutine: MainRoutine) {
         showIndicatorView()
-        viewModel.action(input: .updateRoutineCompletion(routines: [mainRoutine]))
+        viewModel.action(input: .updateRoutineCompletion(updatedRoutine: mainRoutine))
     }
 
     func routineView(_ sender: RoutineView, didTapMainRoutineMoreButton mainRoutine: MainRoutine) {
@@ -570,7 +570,7 @@ extension HomeView: RoutineViewDelegate {
 
     func routineView(_ sender: RoutineView, didTapSubRoutineCheckButton subRoutine: SubRoutine) {
         showIndicatorView()
-        viewModel.action(input: .updateRoutineCompletion(routines: [subRoutine]))
+        viewModel.action(input: .updateRoutineCompletion(updatedRoutine: subRoutine))
     }
 }
 
