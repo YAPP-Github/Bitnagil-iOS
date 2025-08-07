@@ -20,6 +20,7 @@ final class HomeViewModel: ViewModel {
         case deleteAllRoutine
         case updateRoutineCompletion(routines: [Routine])
         case refreshSelectedDateRoutine
+        case selectRoutineSortType(routineSortType: RoutineSortType?)
     }
 
     struct Output {
@@ -42,6 +43,7 @@ final class HomeViewModel: ViewModel {
     private let selectedRoutineSubject = CurrentValueSubject<MainRoutine?, Never>(nil)
     private let deleteRoutineResultSubject = PassthroughSubject<Bool, Never>()
     private let updateRoutineCompletionResultSubject = PassthroughSubject<Bool, Never>()
+    private let routineSortTypeSubject = CurrentValueSubject<RoutineSortType?, Never>(nil)
 
     private let calendar = Calendar.current
     private let today = Date()
@@ -98,6 +100,9 @@ final class HomeViewModel: ViewModel {
 
         case .refreshSelectedDateRoutine:
             fetchRoutines(for: selectedDateSubject.value)
+
+        case .selectRoutineSortType(let routineSortType):
+            sortRoutine(routineSortType: routineSortType)
         }
     }
 
@@ -221,6 +226,7 @@ final class HomeViewModel: ViewModel {
         }
     }
 
+    // 루틴의 완료 여부를 업데이트 합니다.
     private func updateRoutineCompletion(routines: [Routine]) {
         let performedDate = selectedDateSubject.value.convertToString(dateType: .yearMonthDate)
         var routineCompletionEntities: [RoutineCompletionEntity] = []
@@ -282,5 +288,20 @@ final class HomeViewModel: ViewModel {
                 updateRoutineCompletionResultSubject.send(false)
             }
         }
+    }
+
+    private func sortRoutine(routineSortType: RoutineSortType?) {
+        let dailyRoutines = routinesSubject.value
+        var sortedRoutines: [MainRoutine]
+        switch routineSortType {
+        case .complete:
+            sortedRoutines = dailyRoutines.sorted(by: { $0.isDone && !$1.isDone})
+        case .incomplete:
+            sortedRoutines = dailyRoutines.sorted(by: { !$0.isDone && $1.isDone})
+        case nil:
+            let dateKey = selectedDateSubject.value.convertToString(dateType: .yearMonthDate)
+            sortedRoutines = self.routines[dateKey] ?? []
+        }
+        routinesSubject.send(sortedRoutines)
     }
 }

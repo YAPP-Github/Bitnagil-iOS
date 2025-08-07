@@ -577,7 +577,10 @@ extension HomeView: RoutineViewDelegate {
 // MARK: SelectableItemTableViewDelegate
 extension HomeView: SelectableItemTableViewDelegate {
     func selectableItemTableView<T: SelectableItem & CaseIterable & Equatable>(_ sender: SelectableItemTableView<T>, didSelectItem: T?) {
-        // TODO: 완료 · 미완료 루틴을 정렬해야 합니다.
+        guard let sortType = didSelectItem as? RoutineSortType?
+        else { return }
+
+        viewModel.action(input: .selectRoutineSortType(routineSortType: sortType))
     }
 }
 
