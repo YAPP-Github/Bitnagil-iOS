@@ -81,6 +81,8 @@ final class HomeView: BaseViewController<HomeViewModel> {
     private var isShowingDeleteAlertView: Bool = false
     private let deleteAlertView = RoutineDeleteAlertView()
 
+    private let loadingIndicatorView = UIActivityIndicatorView(style: .large)
+
     private var contentViewTopConstraint: Constraint?
     private var cancellables: Set<AnyCancellable>
 
@@ -97,6 +99,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
         super.viewDidLoad()
         configureNavigationBar(navigationStyle: .hidden)
         configureGradientBackground()
+        showIndicatorView()
         viewModel.action(input: .loadNickname)
         viewModel.action(input: .fetchRoutines)
     }
@@ -193,6 +196,9 @@ final class HomeView: BaseViewController<HomeViewModel> {
 
         deleteAlertView.delegate = self
         deleteAlertView.isHidden = true
+
+        loadingIndicatorView.hidesWhenStopped = true
+        loadingIndicatorView.color = BitnagilColor.gray40
     }
 
     override func configureLayout() {
@@ -211,6 +217,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
         contentView.addSubview(routineScrollView)
         routineScrollView.addSubview(routineSortButton)
         routineScrollView.addSubview(routineStackView)
+        contentView.addSubview(loadingIndicatorView)
 
         view.addSubview(dimmedView)
         view.addSubview(floatingMenu)
@@ -310,6 +317,10 @@ final class HomeView: BaseViewController<HomeViewModel> {
             make.width.equalTo(Layout.deleteAlertViewWidth)
             make.height.equalTo(Layout.deleteAlertViewHeight)
         }
+
+        loadingIndicatorView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
     }
 
     override func bind() {
@@ -325,6 +336,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
             .sink { [weak self] fetchRoutineResult in
                 if fetchRoutineResult {
                     self?.viewModel.action(input: .refreshSelectedDateRoutine)
+                    self?.hideIndicatorView()
                 }
             }
             .store(in: &cancellables)
@@ -352,6 +364,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
                         self.toggleDeleteAlertView()
                     }
                     viewModel.action(input: .refreshSelectedDateRoutine)
+                    hideIndicatorView()
                 }
             }
             .store(in: &cancellables)
@@ -361,6 +374,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
             .sink { [weak self] isUpdateRoutineCompletion in
                 if isUpdateRoutineCompletion {
                     self?.viewModel.action(input: .refreshSelectedDateRoutine)
+                    self?.hideIndicatorView()
                 }
             }
             .store(in: &cancellables)
@@ -524,11 +538,22 @@ final class HomeView: BaseViewController<HomeViewModel> {
         informationButton.isSelected = false
         tooltipView.hideTooltip()
     }
+
+    private func showIndicatorView() {
+        loadingIndicatorView.startAnimating()
+        contentView.isUserInteractionEnabled = false
+    }
+
+    private func hideIndicatorView() {
+        loadingIndicatorView.stopAnimating()
+        contentView.isUserInteractionEnabled = true
+    }
 }
 
 // MARK: RoutineViewDelegate
 extension HomeView: RoutineViewDelegate {
     func routineView(_ sender: RoutineView, didTapMainRoutineCheckButton mainRoutine: MainRoutine) {
+        showIndicatorView()
         viewModel.action(input: .updateRoutineCompletion(routines: [mainRoutine]))
     }
 
@@ -544,6 +569,7 @@ extension HomeView: RoutineViewDelegate {
     }
 
     func routineView(_ sender: RoutineView, didTapSubRoutineCheckButton subRoutine: SubRoutine) {
+        showIndicatorView()
         viewModel.action(input: .updateRoutineCompletion(routines: [subRoutine]))
     }
 }
@@ -611,10 +637,12 @@ extension HomeView: RoutineDetailViewDelegate {
 // MARK: RoutineDeleteAlertViewDelegate
 extension HomeView: RoutineDeleteAlertViewDelegate {
     func routineDeleteAlertViewDidTapDeleteAllRoutine(_ sender: RoutineDeleteAlertView) {
+        showIndicatorView()
         viewModel.action(input: .deleteAllRoutine)
     }
     
     func routineDeleteAlertViewDidTapDeleteDailyRoutine(_ sender: RoutineDeleteAlertView) {
+        showIndicatorView()
         viewModel.action(input: .deleteDailyRoutine)
     }
 }
