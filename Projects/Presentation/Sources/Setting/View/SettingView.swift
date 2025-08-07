@@ -170,11 +170,14 @@ final class SettingView: BaseViewController<SettingViewModel> {
 
         viewModel.output.urlPublisher
             .receive(on: DispatchQueue.main)
-            .sink(receiveValue: { [weak self] url in
-                guard let url else { return }
-
-                let safariView = SFSafariViewController(url: url)
-                self?.present(safariView, animated: true)
+            .sink(receiveValue: { [weak self] urlType in
+                switch urlType {
+                case .internal(let url):
+                    let safariView = SFSafariViewController(url: url)
+                    self?.present(safariView, animated: true)
+                case .external(let url):
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                }
             })
             .store(in: &cancellables)
 

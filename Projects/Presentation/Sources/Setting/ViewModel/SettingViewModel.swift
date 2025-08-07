@@ -11,17 +11,25 @@ import Foundation
 
 final class SettingViewModel: ViewModel {
     enum URLType {
+        case update
         case terms
         case privacy
 
         fileprivate var url: URL? {
             switch self {
+            case .update:
+                return URL(string: "itms-apps://itunes.apple.com/app/{빛나길 id}")
             case .terms:
                 return URL(string: "https://complex-wombat-99f.notion.site/2025-7-20-236f4587491d8071833adfaf8115bce2")
             case .privacy:
                 return URL(string: "https://complex-wombat-99f.notion.site/2025-07-20-236f4587491d80308016eb810692d18b")
             }
         }
+    }
+
+    enum OpenURLType {
+        case `internal`(url: URL)
+        case external(url: URL)
     }
 
     enum VersionType {
@@ -43,7 +51,7 @@ final class SettingViewModel: ViewModel {
         let generalNotificationEnabled: AnyPublisher<Bool, Never>
         let pushNotificationEnabled: AnyPublisher<Bool, Never>
         let versionPublisher: AnyPublisher<VersionType, Never>
-        let urlPublisher: AnyPublisher<URL?, Never>
+        let urlPublisher: AnyPublisher<OpenURLType, Never>
         let isAuthenticatedPublisher: AnyPublisher<Bool, Never>
     }
 
@@ -51,7 +59,7 @@ final class SettingViewModel: ViewModel {
     private let versionSubject = PassthroughSubject<VersionType, Never>()
     private let generalNoticeEnabledSubject = CurrentValueSubject<Bool, Never>(false)
     private let pushNoticeEnabledSubject = CurrentValueSubject<Bool, Never>(true)
-    private let externalURLSubject = PassthroughSubject<URL?, Never>()
+    private let urlSubject = PassthroughSubject<OpenURLType, Never>()
     private let authenticatedSubject = PassthroughSubject<Bool, Never>()
     private var authRepository: AuthRepositoryProtocol?
     private var appConfigRepository: AppConfigRepositoryProtocol?
@@ -61,7 +69,7 @@ final class SettingViewModel: ViewModel {
             generalNotificationEnabled: generalNoticeEnabledSubject.eraseToAnyPublisher(),
             pushNotificationEnabled: pushNoticeEnabledSubject.eraseToAnyPublisher(),
             versionPublisher: versionSubject.eraseToAnyPublisher(),
-            urlPublisher: externalURLSubject.eraseToAnyPublisher(),
+            urlPublisher: urlSubject.eraseToAnyPublisher(),
             isAuthenticatedPublisher: authenticatedSubject.eraseToAnyPublisher())
     }
 
@@ -73,8 +81,8 @@ final class SettingViewModel: ViewModel {
             togglePushNotification()
         case .update:
             updateBitnagil()
-        case .openURL(type: let type):
-            externalURLSubject.send(type.url)
+        case .openURL(let type):
+            handleURL(type: type)
         case .logout:
             logout()
         case .withdrawal:
@@ -102,7 +110,8 @@ final class SettingViewModel: ViewModel {
     }
 
     private func updateBitnagil() {
-        // TODO: - 앱스토어 열기
+        guard let url = URLType.update.url else { return }
+        urlSubject.send(.external(url: url))
     }
 
     private func logout() {
@@ -143,5 +152,11 @@ final class SettingViewModel: ViewModel {
 
             }
         }
+    }
+
+    private func handleURL(type: URLType) {
+        guard let url = type.url else { return }
+
+        urlSubject.send(.internal(url: url))
     }
 }
