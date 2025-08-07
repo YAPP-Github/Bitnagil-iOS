@@ -202,16 +202,18 @@ final class SettingView: BaseViewController<SettingViewModel> {
         viewModel.output.isAuthenticatedPublisher
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { isAuthenticated in
-                guard
-                    let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                    let sceneDelegate = windowScene.delegate as? UIWindowSceneDelegate,
-                    let window = sceneDelegate.window
-                else { return }
+                if !isAuthenticated {
+                    guard
+                        let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                        let sceneDelegate = windowScene.delegate as? UIWindowSceneDelegate,
+                        let window = sceneDelegate.window
+                    else { return }
 
-                let introView = IntroView()
-                let navigationController = UINavigationController(rootViewController: introView)
-                window?.rootViewController = navigationController
-                window?.makeKeyAndVisible()
+                    let introView = IntroView()
+                    let navigationController = UINavigationController(rootViewController: introView)
+                    window?.rootViewController = navigationController
+                    window?.makeKeyAndVisible()
+                }
             })
             .store(in: &cancellables)
     }

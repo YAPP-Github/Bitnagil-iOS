@@ -31,7 +31,7 @@ extension UIViewController {
 
         case .withPrograssBarWithoutBackButton(let step, let stepCount):
             navigationController?.setNavigationBarHidden(false, animated: false)
-            navigationController?.navigationItem.setHidesBackButton(true, animated: false)
+            navigationItem.setHidesBackButton(true, animated: false)
             configureProgressNavigationBar(step: step, stepCount: stepCount)
         }
     }
