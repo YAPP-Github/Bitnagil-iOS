@@ -32,6 +32,7 @@ final class RecommendedRoutineView: BaseViewController<RecommendedRoutineViewMod
         static let floatingMenuBottomSpacing: CGFloat = 15
         static let floatingMenuHeight: CGFloat = 64
         static let floatingMenuWidth: CGFloat = 144
+        static let toastMessageBottomSpacing: CGFloat = 19
     }
 
     private let categoryView = RoutineCategoryView()
@@ -50,6 +51,8 @@ final class RecommendedRoutineView: BaseViewController<RecommendedRoutineViewMod
     private let dimmedView = UIView()
     private let floatingButton = FloatingButton()
     private let floatingMenu = FloatingMenuView()
+
+    private let toastMessageView = ToastMessageView()
 
     private var cancellables: Set<AnyCancellable>
     public override init(viewModel: RecommendedRoutineViewModel) {
@@ -128,6 +131,8 @@ final class RecommendedRoutineView: BaseViewController<RecommendedRoutineViewMod
         view.addSubview(floatingMenu)
         view.addSubview(floatingButton)
 
+        view.addSubview(toastMessageView)
+
         categoryView.snp.makeConstraints { make in
             make.leading.equalTo(safeArea)
             make.trailing.equalTo(safeArea)
@@ -178,6 +183,11 @@ final class RecommendedRoutineView: BaseViewController<RecommendedRoutineViewMod
 
         dimmedView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+        }
+
+        toastMessageView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(safeArea.snp.bottom).offset(-Layout.toastMessageBottomSpacing)
         }
     }
 

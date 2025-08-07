@@ -53,6 +53,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
         static let routineDetailViewSubRoutineHeight: CGFloat = 25
         static let deleteAlertViewWidth: CGFloat = 298
         static let deleteAlertViewHeight: CGFloat = 214
+        static let toastMessageBottomSpacing: CGFloat = 19
     }
 
     private let gradientLayer = CAGradientLayer()
@@ -70,6 +71,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
     private let routineSortView = SelectableItemTableView<RoutineSortType>(items: [RoutineSortType.complete, RoutineSortType.incomplete])
     private let routineStackView = UIStackView()
 
+    private let toastMessageView = ToastMessageView()
     private let tooltipView = TooltipView(tailPosition: .offsetFromLeading(Layout.tooltipViewTailLeadingSpacing))
 
     private var isShowingFloatingMenu: Bool = false
@@ -224,6 +226,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
         view.addSubview(floatingButton)
 
         view.addSubview(deleteAlertView)
+        view.addSubview(toastMessageView)
 
         homeLabel.snp.makeConstraints { make in
             make.top.equalTo(safeArea).offset(Layout.homeLabelTopSpacing)
@@ -320,6 +323,11 @@ final class HomeView: BaseViewController<HomeViewModel> {
 
         loadingIndicatorView.snp.makeConstraints { make in
             make.center.equalToSuperview()
+        }
+
+        toastMessageView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(safeArea.snp.bottom).offset(-Layout.toastMessageBottomSpacing)
         }
     }
 
@@ -431,7 +439,12 @@ final class HomeView: BaseViewController<HomeViewModel> {
         }
         emotionOrbView.kf.setImage(with: emotionOrbImageUrl)
         registerEmotionButton.isEnabled = false
-        // TODO: 토스트뷰 보여주기
+
+        toastMessageView.showToast(
+            withCheckImage: true,
+            message: "선택한 감정 구슬이 이미 반영되었어요.",
+            width: 265,
+            height: 44)
     }
 
     @objc private func handlePanGesture(_ gesture: UIPanGestureRecognizer) {

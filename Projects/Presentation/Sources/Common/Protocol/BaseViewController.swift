@@ -5,6 +5,7 @@
 //  Created by 최정인 on 6/26/25.
 //
 
+import SnapKit
 import UIKit
 
 public class BaseViewController<T: ViewModel>: UIViewController {
