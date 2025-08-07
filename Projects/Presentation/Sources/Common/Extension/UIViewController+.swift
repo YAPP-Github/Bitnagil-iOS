@@ -28,6 +28,11 @@ extension UIViewController {
             navigationController?.setNavigationBarHidden(false, animated: false)
             configureCustomBackButton()
             configureProgressNavigationBar(step: step, stepCount: stepCount)
+
+        case .withPrograssBarWithoutBackButton(let step, let stepCount):
+            navigationController?.setNavigationBarHidden(false, animated: false)
+            navigationController?.navigationItem.setHidesBackButton(true, animated: false)
+            configureProgressNavigationBar(step: step, stepCount: stepCount)
         }
     }
 
@@ -101,4 +106,5 @@ enum NavigationBarStyle {
     case withBackButton(title: String)
     case withPrograssBar(step: Int, stepCount: Int)
     case withPrograssBarWithCustomBackButton(step: Int, stepCount: Int)
+    case withPrograssBarWithoutBackButton(step: Int, stepCount: Int)
 }

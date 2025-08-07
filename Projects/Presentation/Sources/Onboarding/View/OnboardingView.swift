@@ -57,7 +57,11 @@ public final class OnboardingView: BaseViewController<OnboardingViewModel> {
         super.viewWillAppear(animated)
 
         let stepCount = OnboardingType.allCases.count + 1
-        configureNavigationBar(navigationStyle: .withPrograssBar(step: onboarding.step, stepCount: stepCount))
+        if !isFromMypage && onboarding == .time {
+            configureNavigationBar(navigationStyle: .withPrograssBarWithoutBackButton(step: onboarding.step, stepCount: stepCount))
+        } else {
+            configureNavigationBar(navigationStyle: .withPrograssBar(step: onboarding.step, stepCount: stepCount))
+        }
 
         self.viewModel.action(input: .fetchOnboardingChoice(onboarding: onboarding))
     }
