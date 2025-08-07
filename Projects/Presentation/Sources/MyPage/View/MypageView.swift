@@ -63,9 +63,7 @@ final class MypageView: BaseViewController<MypageViewModel> {
             .settingIcon?
             .withRenderingMode(.alwaysTemplate)
 
-        profileImageView.layer.cornerRadius = Layout.profileImageViewCornerRadius
-        profileImageView.layer.masksToBounds = true
-        profileImageView.backgroundColor = BitnagilColor.gray40 // 임시
+        profileImageView.image = BitnagilGraphic.profileGraphic
 
         nicknameLabel.font = BitnagilFont(style: .title3, weight: .semiBold).font
         nicknameLabel.textColor = .black
