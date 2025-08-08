@@ -49,6 +49,7 @@ final class RoutineCreationInputView: UIView {
         textField.textColor = .black
         textField.font = BitnagilFont.init(style: .body2, weight: .semiBold).font
         textField.returnKeyType = .done
+        textField.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
 
         deleteButton.setImage(BitnagilIcon.deleteIcon, for: .normal)
         deleteButton.addAction(
@@ -94,16 +95,13 @@ final class RoutineCreationInputView: UIView {
     func configure(title: String) {
         textField.text = title
     }
+
+    @objc private func textFieldEditingChanged(_ sender: UITextField) {
+        delegate?.routineCreationInputView(self, didChangeText: sender.text ?? "")
+    }
 }
 
 extension RoutineCreationInputView: UITextFieldDelegate {
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if let text = textField.text {
-            delegate?.routineCreationInputView(self, didChangeText: text)
-        }
-        return true
-    }
-
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true

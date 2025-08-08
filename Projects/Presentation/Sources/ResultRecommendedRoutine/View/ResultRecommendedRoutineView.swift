@@ -368,6 +368,7 @@ final class ResultRecommendedRoutineView: BaseViewController<ResultRecommendedRo
         guard let routineCreationViewModel = DIContainer.shared.resolve(type: RoutineCreationViewModel.self)
         else { fatalError("routineCreationViewModel 의존성이 등록되지 않았습니다.") }
         let routineCreationView = RoutineCreationView(viewModel: routineCreationViewModel, recommendRoutineId: routineId)
+        routineCreationView.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(routineCreationView, animated: true)
     }
 }

@@ -272,12 +272,7 @@ final class RoutineCreationViewModel: ViewModel {
         guard
             let name = nameSubject.value,
             !name.isEmpty,
-            executionTimeSubject.value != .none,
-            weekDaySubject.value.count > 0,
-            subRoutinesSubject
-                .value
-                .map({$0.subRoutineName})
-                .allSatisfy({$0?.isEmpty == false })
+            executionTimeSubject.value != .none
         else {
             checkRoutinePublisher.send(false)
             return

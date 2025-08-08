@@ -327,6 +327,7 @@ extension RecommendedRoutineView: FloatingMenuViewDelegate {
             fatalError("routineCreationViewModel 의존성이 등록되지 않았습니다.")
         }
         let routineCreationView = RoutineCreationView(viewModel: routineCreationViewModel)
+        routineCreationView.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(routineCreationView, animated: true)
     }
 }
