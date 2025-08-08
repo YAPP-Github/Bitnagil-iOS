@@ -99,7 +99,7 @@ final class HomeViewModel: ViewModel {
             updateRoutineCompletion(updatedRoutine: updatedRoutine)
 
         case .refreshSelectedDateRoutine:
-            fetchRoutines(for: selectedDateSubject.value)
+            fetchDailyRoutine(for: selectedDateSubject.value)
 
         case .selectRoutineSortType(let routineSortType):
             sortRoutine(routineSortType: routineSortType)
@@ -135,17 +135,51 @@ final class HomeViewModel: ViewModel {
     // MARK: - 루틴
     // 루틴들을 불러옵니다. (처음에는 +-1 주, 그 이후에는 1주씩)
     private func fetchRoutines() {
-        var startDate = oldestDate
-        var endDate = latestDate
-
         if routines.isEmpty {
-            startDate = calendar.date(byAdding: .weekOfYear, value: -1, to: today) ?? today
-            endDate = calendar.date(byAdding: .weekOfYear, value: 1, to: today) ?? today
+            oldestDate = calendar.date(byAdding: .weekOfYear, value: -1, to: today) ?? today
+            latestDate = calendar.date(byAdding: .weekOfYear, value: 1, to: today) ?? today
+        }
+        fetchRoutines(startDate: oldestDate, endDate: latestDate)
+    }
 
-            oldestDate = startDate
-            latestDate = endDate
+    // 날짜를 선택하고 그 날에 해당하는 루틴을 불러옵니다.
+    private func selectDate(date: Date) {
+        selectedDateSubject.send(date)
+        fetchRoutines()
+        fetchDailyRoutine(for: date)
+    }
+
+    private func fetchDailyRoutine(for date: Date) {
+        if let dailyRoutines = routines[date.convertToString(dateType: .yearMonthDate)] {
+            routinesSubject.send(dailyRoutines)
+            return
         }
 
+        var startDate: Date = Date()
+        var endDate: Date = Date()
+        if date < oldestDate {
+            // 캐싱된 데이터보다 이전의 날짜 조회 시,
+            startDate = calendar.date(byAdding: .weekOfYear, value: -1, to: oldestDate) ?? oldestDate
+            endDate = calendar.date(byAdding: .day, value: -1, to: oldestDate) ?? oldestDate
+            oldestDate = startDate
+        } else if date > latestDate {
+            // 캐싱된 데이터보다 이후의 날짜 조회 시,
+            startDate = calendar.date(byAdding: .day, value: 1, to: latestDate) ?? latestDate
+            endDate = calendar.date(byAdding: .weekOfYear, value: 1, to: latestDate) ?? latestDate
+            latestDate = endDate
+        }
+        fetchRoutines(startDate: startDate, endDate: endDate)
+
+        if let dailyRoutines = routines[date.convertToString(dateType: .yearMonthDate)] {
+            routinesSubject.send(dailyRoutines)
+            return
+        } else {
+            routinesSubject.send([])
+        }
+    }
+
+    // 서버로부터 루틴들을 불러옵니다.. (루틴 조회 시작 날짜 ~ 루틴 조회 종료 날짜)
+    private func fetchRoutines(startDate: Date, endDate: Date) {
         Task {
             do {
                 let entities = try await routineUseCase.fetchRoutines(startDate: startDate, endDate: endDate)
@@ -154,33 +188,9 @@ final class HomeViewModel: ViewModel {
                 }
                 fetchRoutineResultSubject.send(true)
             } catch {
-
+                // TODO: 에러 처리
             }
         }
-    }
-
-    // 날짜를 선택하고 그 날에 해당하는 루틴을 불러옵니다.
-    private func selectDate(date: Date) {
-        selectedDateSubject.send(date)
-        fetchRoutines(for: date)
-    }
-
-    // 선택한 날의 루틴을 필터링하여 보여줍니다. (oldestDate, latestDate 업데이트)
-    private func fetchRoutines(for date: Date) {
-        if date <= oldestDate {
-            oldestDate = calendar.date(byAdding: .weekOfYear, value: -1, to: date) ?? date
-            latestDate = calendar.date(byAdding: .day, value: -1, to: date) ?? date
-        } else if date >= latestDate {
-            oldestDate = calendar.date(byAdding: .day, value: 1, to: date) ?? date
-            latestDate = calendar.date(byAdding: .weekOfYear, value: 1, to: date) ?? date
-        }
-
-        let dateKey = date.convertToString(dateType: .yearMonthDate)
-        guard let dailyRoutines = routines[dateKey] else {
-            fetchRoutines()
-            return
-        }
-        routinesSubject.send(dailyRoutines)
     }
 
     // 반복 루틴을 삭제합니다.

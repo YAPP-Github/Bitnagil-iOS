@@ -106,13 +106,13 @@ final class HomeView: BaseViewController<HomeViewModel> {
         configureGradientBackground()
         showIndicatorView()
         viewModel.action(input: .loadNickname)
-        viewModel.action(input: .fetchRoutines)
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         configureNavigationBar(navigationStyle: .hidden)
         viewModel.action(input: .loadEmotion)
+        viewModel.action(input: .fetchRoutines)
     }
 
     override func viewDidLayoutSubviews() {
