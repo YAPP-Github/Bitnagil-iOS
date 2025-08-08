@@ -4,8 +4,10 @@ let project = Project(
     name: "App",
     settings: .settings(
         base: ["DEVELOPMENT_TEAM": "5B94TFMJJ4"],
-        debug: [:],
-        release: [:],
+        configurations: [
+            .debug(name: "Debug", xcconfig: .relativeToRoot("SupportingFiles/Secrets.xcconfig")),
+            .release(name: "Release", xcconfig: .relativeToRoot("SupportingFiles/Secrets.xcconfig"))
+        ],
         defaultSettings: .recommended
     ),
     targets: [
@@ -15,12 +17,10 @@ let project = Project(
             product: .app,
             bundleId: "com.bitnagil.app",
             deploymentTargets: .iOS("15.0"),
-            infoPlist: .file(path: "Resources/Info.plist"),
+            infoPlist: .file(path: .relativeToRoot("SupportingFiles/Info.plist")),
             sources: ["Sources/**"],
-            resources: [
-                "Resources/Assets.xcassets",
-                "Resources/LaunchScreen.storyboard",
-            ],
+            resources: ["Resources/**"],
+            entitlements: "App.entitlements",
             dependencies: [
                 .project(target: "Presentation", path: "../Presentation"),
                 .project(target: "Domain", path: "../Domain"),

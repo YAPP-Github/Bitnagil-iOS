@@ -9,11 +9,13 @@ let project = Project(
             product: .staticFramework,
             bundleId: "com.bitnagil.datasource",
             deploymentTargets: .iOS("15.0"),
-            infoPlist: .default,
             sources: ["Sources/**"],
             dependencies: [
                 .project(target: "Domain", path: "../Domain"),
                 .project(target: "Shared", path: "../Shared"),
+                .external(name: "KakaoSDKCommon"),
+                .external(name: "KakaoSDKAuth"),
+                .external(name: "KakaoSDKUser"),
             ]
         )
     ]

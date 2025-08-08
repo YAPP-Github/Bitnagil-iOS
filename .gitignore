@@ -11,7 +11,7 @@ xcuserdata/
 
 ## compatibility with Xcode 3 and earlier (ignoring not required starting Xcode 4)
 build/
-DerivedData/
+**/DerivedData/
 *.moved-aside
 *.pbxuser
 !default.pbxuser
@@ -97,7 +97,12 @@ iOSInjectionProject/
 
 # 프로젝트의 모든 경로에서 xcconfig 파일을 포함하지 않도록 함
 **/.xcconfig
-
 *.xcconfig
 
-
+# Tuist가 생성하는 파일 무시
+**/*.xcodeproj
+*.xcworkspace
+**/Derived/
+.build/
+.cache/
+*.swp

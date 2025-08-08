@@ -9,7 +9,6 @@ let project = Project(
             product: .framework,
             bundleId: "com.bitnagil.domain",
             deploymentTargets: .iOS("15.0"),
-            infoPlist: .default,
             sources: ["Sources/**"],
             dependencies: [
                 .project(target: "Shared", path: "../Shared")
