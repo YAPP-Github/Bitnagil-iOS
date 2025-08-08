@@ -261,6 +261,14 @@ final class ResultRecommendedRoutineView: BaseViewController<ResultRecommendedRo
                 }
             }
             .store(in: &cancellables)
+
+        viewModel.output.selectedRoutineIdPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] routineId in
+                guard let routineId else { return }
+                self?.goToRoutineCreationView(routineId: routineId)
+            }
+            .store(in: &cancellables)
     }
 
     // 추천 루틴 뷰들을 업데이트합니다.
@@ -352,10 +360,14 @@ final class ResultRecommendedRoutineView: BaseViewController<ResultRecommendedRo
                 tabBarView.selectedIndex = 2
             }
         case .emotion:
-            guard let routineCreationViewModel = DIContainer.shared.resolve(type: RoutineCreationViewModel.self)
-            else { fatalError("routineCreationViewModel 의존성이 등록되지 않았습니다.") }
-            let routineCreationView = RoutineCreationView(viewModel: routineCreationViewModel)
-            self.navigationController?.pushViewController(routineCreationView, animated: true)
+            viewModel.action(input: .fetchSelectedRoutinId)
         }
+    }
+
+    private func goToRoutineCreationView(routineId: Int) {
+        guard let routineCreationViewModel = DIContainer.shared.resolve(type: RoutineCreationViewModel.self)
+        else { fatalError("routineCreationViewModel 의존성이 등록되지 않았습니다.") }
+        let routineCreationView = RoutineCreationView(viewModel: routineCreationViewModel, recommendRoutineId: routineId)
+        self.navigationController?.pushViewController(routineCreationView, animated: true)
     }
 }
