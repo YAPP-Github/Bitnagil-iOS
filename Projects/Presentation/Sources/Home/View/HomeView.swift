@@ -137,12 +137,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
         }, for: .touchUpInside)
 
         let registerEmotionAction = UIAction(identifier: registerEmotionButtonActionIdentifier) { [weak self] _ in
-            guard let emotionRegisterViewModel = DIContainer.shared.resolve(type: EmotionRegisterViewModel.self) else {
-                fatalError("emotionRegisterViewModel 의존성이 등록되지 않았습니다.")
-            }
-            let emotionRegisterView = EmotionRegisterView(viewModel: emotionRegisterViewModel)
-            emotionRegisterView.hidesBottomBarWhenPushed = true
-            self?.navigationController?.pushViewController(emotionRegisterView, animated: true)
+            self?.goToEmotionRegisterView()
         }
         registerEmotionButton.addAction(registerEmotionAction, for: .touchUpInside)
 
@@ -439,6 +434,10 @@ final class HomeView: BaseViewController<HomeViewModel> {
         guard
             let emotion,
             let emotionOrbImageUrl = emotion.emotionImageUrl else {
+            let registerEmotionAction = UIAction(identifier: registerEmotionButtonActionIdentifier) { [weak self] _ in
+                self?.goToEmotionRegisterView()
+            }
+            registerEmotionButton.addAction(registerEmotionAction, for: .touchUpInside)
             emotionOrbView.image = BitnagilGraphic.defaultEmotionGraphic
             return
         }
@@ -568,6 +567,15 @@ final class HomeView: BaseViewController<HomeViewModel> {
     private func hideIndicatorView() {
         loadingIndicatorView.stopAnimating()
         contentView.isUserInteractionEnabled = true
+    }
+
+    private func goToEmotionRegisterView() {
+        guard let emotionRegisterViewModel = DIContainer.shared.resolve(type: EmotionRegisterViewModel.self) else {
+            fatalError("emotionRegisterViewModel 의존성이 등록되지 않았습니다.")
+        }
+        let emotionRegisterView = EmotionRegisterView(viewModel: emotionRegisterViewModel)
+        emotionRegisterView.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(emotionRegisterView, animated: true)
     }
 }
 
