@@ -360,7 +360,7 @@ final class ResultRecommendedRoutineView: BaseViewController<ResultRecommendedRo
                 tabBarView.selectedIndex = 2
             }
         case .emotion:
-            viewModel.action(input: .fetchSelectedRoutinId)
+            viewModel.action(input: .fetchSelectedRoutineId)
         }
     }
 

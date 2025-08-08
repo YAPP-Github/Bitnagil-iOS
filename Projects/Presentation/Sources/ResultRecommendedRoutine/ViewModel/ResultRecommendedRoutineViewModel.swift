@@ -19,7 +19,7 @@ final class ResultRecommendedRoutineViewModel: ViewModel {
     
     enum Input {
         case fetchResultRecommendedRoutines
-        case fetchSelectedRoutinId
+        case fetchSelectedRoutineId
         case selectRecommendedRoutine(routine: RecommendedRoutine)
         case registerRecommendedRoutine
     }
@@ -34,7 +34,7 @@ final class ResultRecommendedRoutineViewModel: ViewModel {
 
     private(set) var output: Output
     private let resultRecommendedRoutinesSubject = CurrentValueSubject<[RecommendedRoutine], Never>([])
-    private let selectedRoutinIdSubject = PassthroughSubject<Int?, Never>()
+    private let selectedRoutineIdSubject = PassthroughSubject<Int?, Never>()
     private let selectedRecommendedRoutineSubject = CurrentValueSubject<Set<RecommendedRoutine>, Never>([])
     private let confirmButtonSubject = PassthroughSubject<Bool, Never>()
     private let registerRoutineResultSubject = PassthroughSubject<Bool, Never>()
@@ -45,7 +45,7 @@ final class ResultRecommendedRoutineViewModel: ViewModel {
         self.resultRecommendedRoutineUseCase = resultRecommendedRoutineUseCase
         output = Output(
             resultRecommendedRoutinesPublisher: resultRecommendedRoutinesSubject.eraseToAnyPublisher(),
-            selectedRoutineIdPublisher: selectedRoutinIdSubject.eraseToAnyPublisher(),
+            selectedRoutineIdPublisher: selectedRoutineIdSubject.eraseToAnyPublisher(),
             selectedRecommendedRoutinePublisher: selectedRecommendedRoutineSubject.eraseToAnyPublisher(),
             confirmButtonPublisher: confirmButtonSubject.eraseToAnyPublisher(),
             registerRoutineResultPublisher: registerRoutineResultSubject.eraseToAnyPublisher()
@@ -57,9 +57,9 @@ final class ResultRecommendedRoutineViewModel: ViewModel {
         case .fetchResultRecommendedRoutines:
             fetchResultRecommendedRoutines()
 
-        case .fetchSelectedRoutinId:
+        case .fetchSelectedRoutineId:
             let routineId = selectedRecommendedRoutineSubject.value.first?.id
-            selectedRoutinIdSubject.send(routineId)
+            selectedRoutineIdSubject.send(routineId)
 
         case .selectRecommendedRoutine(let routine):
             selectRecommendedRoutine(routine: routine)
