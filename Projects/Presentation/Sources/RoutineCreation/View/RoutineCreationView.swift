@@ -621,6 +621,8 @@ final class RoutineCreationView: BaseViewController<RoutineCreationViewModel> {
             repeatInfoButton.isSelected = false
             repeatToolTipView.hideTooltip()
         }
+
+        view.endEditing(true)
     }
 }
 

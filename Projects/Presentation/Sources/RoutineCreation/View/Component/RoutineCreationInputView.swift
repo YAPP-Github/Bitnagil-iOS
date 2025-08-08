@@ -48,6 +48,7 @@ final class RoutineCreationInputView: UIView {
         textField.delegate = self
         textField.textColor = .black
         textField.font = BitnagilFont.init(style: .body2, weight: .semiBold).font
+        textField.returnKeyType = .done
 
         deleteButton.setImage(BitnagilIcon.deleteIcon, for: .normal)
         deleteButton.addAction(
@@ -100,6 +101,11 @@ extension RoutineCreationInputView: UITextFieldDelegate {
         if let text = textField.text {
             delegate?.routineCreationInputView(self, didChangeText: text)
         }
+        return true
+    }
+
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
         return true
     }
 }
