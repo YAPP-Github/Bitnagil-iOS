@@ -22,24 +22,26 @@ final class UserDataRepository: UserDataRepositoryProtocol {
         return user.nickname
     }
 
-    func reissueToken() async -> Bool {
+    func reissueToken() async -> UserState? {
         do {
             let refreshToken = try tokenManager.loadToken(tokenType: .refreshToken)
             let endpoint = AuthEndpoint.reissue(refreshToken: refreshToken)
 
-            guard let tokenResponse = try await networkService.request(endpoint: endpoint, type: TokenResponseDTO.self)
-            else { return false }
+            guard let loginResponse = try await networkService.request(endpoint: endpoint, type: LoginResponseDTO.self)
+            else { return nil }
 
-            try tokenManager.saveToken(token: tokenResponse.accessToken, tokenType: .accessToken)
-            try tokenManager.saveToken(token: tokenResponse.refreshToken, tokenType: .refreshToken)
+            try tokenManager.saveToken(token: loginResponse.accessToken, tokenType: .accessToken)
+            try tokenManager.saveToken(token: loginResponse.refreshToken, tokenType: .refreshToken)
 
-            BitnagilLogger.log(logType: .debug, message: "AccessToken Saved: \(tokenResponse.accessToken)")
-            BitnagilLogger.log(logType: .debug, message: "RefreshToken Saved: \(tokenResponse.refreshToken)")
+            BitnagilLogger.log(logType: .debug, message: "AccessToken Saved: \(loginResponse.accessToken)")
+            BitnagilLogger.log(logType: .debug, message: "RefreshToken Saved: \(loginResponse.refreshToken)")
+            BitnagilLogger.log(logType: .debug, message: "User State: \(loginResponse.userState)")
 
-            return true
+            let userState = UserState(rawValue: loginResponse.userState)
+            return userState
         } catch {
             BitnagilLogger.log(logType: .error, message: "\(error.localizedDescription)")
-            return false
+            return nil
         }
     }
 }

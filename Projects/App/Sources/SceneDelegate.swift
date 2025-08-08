@@ -58,8 +58,9 @@ extension SceneDelegate: SplashViewDelegate {
         else { fatalError("onboardingRepository 의존성이 등록되지 않았습니다.") }
 
         Task { @MainActor in
-            let isLogined = await userDataRepository.reissueToken()
-            if isLogined {
+            let userState = await userDataRepository.reissueToken()
+            switch userState {
+            case .user:
                 if onboardingRepository.isOnboardingDone() {
                     window?.rootViewController = TabBarView()
                 } else {
@@ -70,7 +71,7 @@ extension SceneDelegate: SplashViewDelegate {
                     let navigationController = UINavigationController(rootViewController: onboardingView)
                     window?.rootViewController = navigationController
                 }
-            } else {
+            case .guest, nil:
                 let introView = IntroView()
                 let navigationController = UINavigationController(rootViewController: introView)
                 window?.rootViewController = navigationController
