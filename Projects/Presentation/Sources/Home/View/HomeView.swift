@@ -54,12 +54,15 @@ final class HomeView: BaseViewController<HomeViewModel> {
         static let deleteAlertViewWidth: CGFloat = 298
         static let deleteAlertViewHeight: CGFloat = 214
         static let toastMessageBottomSpacing: CGFloat = 19
+        static let toastMessageWidth: CGFloat = 265
+        static let toastMessageHeight: CGFloat = 44
     }
 
     private let gradientLayer = CAGradientLayer()
     private let homeLabel = UILabel()
     private let informationButton = UIButton()
     private let emotionOrbView = UIImageView()
+    private let registerEmotionButtonActionIdentifier = UIAction.Identifier("goToEmotionRegisterView")
     private let registerEmotionButton = HomeRegisterEmotionButton()
 
     private let contentView = UIView()
@@ -133,14 +136,15 @@ final class HomeView: BaseViewController<HomeViewModel> {
             }
         }, for: .touchUpInside)
 
-        registerEmotionButton.addAction(UIAction { [weak self] _ in
+        let registerEmotionAction = UIAction(identifier: registerEmotionButtonActionIdentifier) { [weak self] _ in
             guard let emotionRegisterViewModel = DIContainer.shared.resolve(type: EmotionRegisterViewModel.self) else {
                 fatalError("emotionRegisterViewModel 의존성이 등록되지 않았습니다.")
             }
             let emotionRegisterView = EmotionRegisterView(viewModel: emotionRegisterViewModel)
             emotionRegisterView.hidesBottomBarWhenPushed = true
             self?.navigationController?.pushViewController(emotionRegisterView, animated: true)
-        }, for: .touchUpInside)
+        }
+        registerEmotionButton.addAction(registerEmotionAction, for: .touchUpInside)
 
         contentView.backgroundColor = .white
         contentView.layer.cornerRadius = Layout.contentViewCornerRadius
@@ -344,8 +348,8 @@ final class HomeView: BaseViewController<HomeViewModel> {
             .sink { [weak self] fetchRoutineResult in
                 if fetchRoutineResult {
                     self?.viewModel.action(input: .refreshSelectedDateRoutine)
-                    self?.hideIndicatorView()
                 }
+                self?.hideIndicatorView()
             }
             .store(in: &cancellables)
 
@@ -353,6 +357,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] routines in
                 self?.updateRoutineView(routines: routines)
+                self?.hideIndicatorView()
             }
             .store(in: &cancellables)
 
@@ -438,13 +443,16 @@ final class HomeView: BaseViewController<HomeViewModel> {
             return
         }
         emotionOrbView.kf.setImage(with: emotionOrbImageUrl)
-        registerEmotionButton.isEnabled = false
-
-        toastMessageView.showToast(
-            withCheckImage: true,
-            message: "선택한 감정 구슬이 이미 반영되었어요.",
-            width: 265,
-            height: 44)
+        registerEmotionButton.removeAction(identifiedBy: registerEmotionButtonActionIdentifier, for: .touchUpInside)
+        registerEmotionButton.addAction(
+            UIAction { [weak self] _ in
+                self?.toastMessageView.showToast(
+                    withCheckImage: true,
+                    message: "선택한 감정 구슬이 이미 반영되었어요.",
+                    width: Layout.toastMessageWidth,
+                    height: Layout.toastMessageHeight)
+            },
+            for: .touchUpInside)
     }
 
     @objc private func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
