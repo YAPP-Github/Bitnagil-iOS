@@ -15,19 +15,6 @@ enum BitnagilColor {
     static let kakao = UIColor(named: "Kakao", in: bundle, compatibleWith: nil)
     static let error = UIColor(named: "Error", in: bundle, compatibleWith: nil)
 
-    // MARK: - Gradient
-    static let gradientLeft = UIColor(named: "GradientLeft", in: bundle, compatibleWith: nil)
-    static let gradientRight = UIColor(named: "GradientRight", in: bundle, compatibleWith: nil)
-    static let homeGradientLeft = UIColor(named: "HomeGradientLeft", in: bundle, compatibleWith: nil)
-    static let homeGradientRight = UIColor(named: "HomeGradientRight", in: bundle, compatibleWith: nil)
-
-    // MARK: - Emotion Colors
-    static let happy = UIColor(named: "EmotionHappy", in: bundle, compatibleWith: nil)
-    static let lethargy = UIColor(named: "EmotionLethargy", in: bundle, compatibleWith: nil)
-    static let lonely = UIColor(named: "EmotionLonely", in: bundle, compatibleWith: nil)
-    static let sad = UIColor(named: "EmotionSad", in: bundle, compatibleWith: nil)
-    static let anxiety = UIColor(named: "EmotionAnxiety", in: bundle, compatibleWith: nil)
-
     // MARK: - Gray Colors
     static let gray5 = UIColor(named: "Gray5", in: bundle, compatibleWith: nil)
     static let gray7 = UIColor(named: "Gray7", in: bundle, compatibleWith: nil)
@@ -45,6 +32,26 @@ enum BitnagilColor {
     static let gray97 = UIColor(named: "Gray97", in: bundle, compatibleWith: nil)
     static let gray98 = UIColor(named: "Gray98", in: bundle, compatibleWith: nil)
     static let gray99 = UIColor(named: "Gray99", in: bundle, compatibleWith: nil)
+
+    // MARK: - Orange Colors
+    static let orange25 = UIColor(named: "Orange25", in: bundle, compatibleWith: nil)
+    static let orange50 = UIColor(named: "Orange50", in: bundle, compatibleWith: nil)
+    static let orange100 = UIColor(named: "Orange100", in: bundle, compatibleWith: nil)
+    static let orange200 = UIColor(named: "Orange200", in: bundle, compatibleWith: nil)
+    static let orange300 = UIColor(named: "Orange300", in: bundle, compatibleWith: nil)
+    static let orange400 = UIColor(named: "Orange400", in: bundle, compatibleWith: nil)
+    static let orange500 = UIColor(named: "Orange500", in: bundle, compatibleWith: nil)
+    static let orange600 = UIColor(named: "Orange600", in: bundle, compatibleWith: nil)
+    static let orange700 = UIColor(named: "Orange700", in: bundle, compatibleWith: nil)
+    static let orange800 = UIColor(named: "Orange800", in: bundle, compatibleWith: nil)
+    static let orange900 = UIColor(named: "Orange900", in: bundle, compatibleWith: nil)
+
+    // TODO: 제거될 색상들
+    // MARK: - Gradient
+    static let gradientLeft = UIColor(named: "GradientLeft", in: bundle, compatibleWith: nil)
+    static let gradientRight = UIColor(named: "GradientRight", in: bundle, compatibleWith: nil)
+    static let homeGradientLeft = UIColor(named: "HomeGradientLeft", in: bundle, compatibleWith: nil)
+    static let homeGradientRight = UIColor(named: "HomeGradientRight", in: bundle, compatibleWith: nil)
 
     // MARK: - Navy Colors
     static let navy50 = UIColor(named: "Navy50", in: bundle, compatibleWith: nil)
@@ -70,16 +77,4 @@ enum BitnagilColor {
     static let lightBlue700 = UIColor(named: "LightBlue700", in: bundle, compatibleWith: nil)
     static let lightBlue800 = UIColor(named: "LightBlue800", in: bundle, compatibleWith: nil)
     static let lightBlue900 = UIColor(named: "LightBlue900", in: bundle, compatibleWith: nil)
-
-    // MARK: - Orange Colors
-    static let orange50 = UIColor(named: "Orange50", in: bundle, compatibleWith: nil)
-    static let orange100 = UIColor(named: "Orange100", in: bundle, compatibleWith: nil)
-    static let orange200 = UIColor(named: "Orange200", in: bundle, compatibleWith: nil)
-    static let orange300 = UIColor(named: "Orange300", in: bundle, compatibleWith: nil)
-    static let orange400 = UIColor(named: "Orange400", in: bundle, compatibleWith: nil)
-    static let orange500 = UIColor(named: "Orange500", in: bundle, compatibleWith: nil)
-    static let orange600 = UIColor(named: "Orange600", in: bundle, compatibleWith: nil)
-    static let orange700 = UIColor(named: "Orange700", in: bundle, compatibleWith: nil)
-    static let orange800 = UIColor(named: "Orange800", in: bundle, compatibleWith: nil)
-    static let orange900 = UIColor(named: "Orange900", in: bundle, compatibleWith: nil)
 }
