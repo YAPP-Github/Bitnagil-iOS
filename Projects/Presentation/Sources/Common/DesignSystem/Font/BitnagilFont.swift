@@ -8,33 +8,42 @@
 import UIKit
 
 struct BitnagilFont {
+    let family: FontFamily
     let style: FontStyle
     let weight: FontWeight
 
-    init(style: FontStyle, weight: FontWeight) {
+    init(
+        family: FontFamily = .pretendard,
+        style: FontStyle,
+        weight: FontWeight
+    ) {
+        self.family = family
         self.style = style
         self.weight = weight
     }
 
-    init(fontSize: CGFloat,
-         lineHeight: CGFloat,
-         letterSpacing: CGFloat = 0,
-         underline: Bool = false,
-         weight: FontWeight
+    init(
+        family: FontFamily = .pretendard,
+        fontSize: CGFloat,
+        lineHeight: CGFloat,
+        letterSpacing: CGFloat = 0,
+        underline: Bool = false,
+        weight: FontWeight
     ) {
         let attributes = FontAttributes(
             fontSize: fontSize,
             lineHeight: lineHeight,
             letterSpacing: letterSpacing,
             underline: underline)
+        self.family = family
         self.style = .custom(fontAttribute: attributes)
         self.weight = weight
     }
 
     var font: UIFont {
-        guard let font = UIFont(name: weight.fontName, size: style.fontAttributes.fontSize) else {
-            return UIFont.systemFont(ofSize: style.fontAttributes.fontSize)
-        }
+        guard let font = UIFont(name: family.fontName(weight: weight), size: style.fontAttributes.fontSize)
+        else { return UIFont.systemFont(ofSize: style.fontAttributes.fontSize) }
+
         return font
     }
 

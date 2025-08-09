@@ -10,13 +10,22 @@ enum FontWeight {
     case semiBold
     case medium
     case regular
+    case light
 
-    var fontName: String {
+    var pretendardFontName: String {
         switch self {
         case .bold: "Pretendard-Bold"
         case .semiBold: "Pretendard-SemiBold"
         case .medium: "Pretendard-Medium"
         case .regular: "Pretendard-Regular"
+        default: "Pretendard-Medium"
+        }
+    }
+
+    var cafe24FontName: String {
+        switch self {
+        case .light: "Cafe24SsurroundairOTF"
+        default: "Cafe24SsurroundairOTF"
         }
     }
 }

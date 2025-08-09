@@ -25,6 +25,8 @@ enum FontStyle {
     case button1
     case button2
 
+    case cafe24Title1
+
     case custom(fontAttribute: FontAttributes)
 
     var fontAttributes: FontAttributes {
@@ -49,6 +51,8 @@ enum FontStyle {
         case .button2: FontAttributes(fontSize: 14, lineHeight: 20)
 
         case .custom(let fontAttribute): fontAttribute
+
+        case .cafe24Title1: FontAttributes(fontSize: 24, lineHeight: 36, letterSpacing: -0.5)
         }
     }
 }

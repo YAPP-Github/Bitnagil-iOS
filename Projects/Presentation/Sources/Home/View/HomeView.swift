@@ -123,7 +123,10 @@ final class HomeView: BaseViewController<HomeViewModel> {
     override func configureAttribute() {
         homeLabel.text = "님,\n오늘 기분 어때요?"
         homeLabel.numberOfLines = 2
-        homeLabel.font = BitnagilFont(style: .title1, weight: .semiBold).font
+        homeLabel.font = BitnagilFont(
+            family: .cafe24Ssurround,
+            style: .cafe24Title1,
+            weight: .light).font
         homeLabel.textColor = BitnagilColor.gray10
 
         informationButton.setImage(BitnagilIcon.informationIcon, for: .normal)
