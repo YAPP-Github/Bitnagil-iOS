@@ -1,5 +1,5 @@
 //
-//  SplashView.swift
+//  SplashViewController.swift
 //  Presentation
 //
 //  Created by 최정인 on 7/27/25.
@@ -10,13 +10,12 @@ import SnapKit
 import UIKit
 
 public protocol SplashViewDelegate: AnyObject {
-    func splashView(_ sender: SplashView, isCompletedAnimated: Bool)
+    func splashView(_ sender: SplashViewController, isCompletedAnimated: Bool)
 }
 
-public final class SplashView: UIViewController {
-
+public final class SplashViewController: UIViewController {
     private enum Layout {
-        static let splashAnimationViewVerticalOffset: CGFloat = -20
+        static let splashAnimationViewVerticalOffset: CGFloat = -45
         static let splashAnimationViewSize: CGFloat = 205
         static let logoImageTopSpacing: CGFloat = -10
     }
@@ -36,7 +35,7 @@ public final class SplashView: UIViewController {
     }
 
     private func configureAttribute() {
-        let presentationBundle = Bundle(for: SplashView.self)
+        let presentationBundle = Bundle(for: SplashViewController.self)
         guard let filePath = presentationBundle.path(forResource: "splash", ofType: "json")
         else { return }
         splashAnimationView =  LottieAnimationView(filePath: filePath)

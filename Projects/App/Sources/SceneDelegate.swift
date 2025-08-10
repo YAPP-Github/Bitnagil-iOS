@@ -20,7 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         DIContainer.shared.dependencyInjection()
 
-        let splashView = SplashView()
+        let splashView = SplashViewController()
         splashView.delegate = self
 
         window.rootViewController = splashView
@@ -48,7 +48,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 }
 
 extension SceneDelegate: SplashViewDelegate {
-    func splashView(_ sender: Presentation.SplashView, isCompletedAnimated: Bool) {
+    func splashView(_ sender: Presentation.SplashViewController, isCompletedAnimated: Bool) {
         guard isCompletedAnimated else { return }
 
         guard let userDataRepository = DIContainer.shared.resolve(type: UserDataRepositoryProtocol.self)
