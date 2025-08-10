@@ -12,9 +12,14 @@ enum BitnagilIcon {
         return Bundle(for: IntroView.self)
     }
 
+    // MARK: - Login Icons
     static let kakaoIcon = UIImage(named: "kakao_icon", in: bundle, with: nil)
     static let appleIcon = UIImage(named: "apple_icon", in: bundle, with: nil)
+
+    // MARK: - Terms Agreement Icons
     static let checkIcon = UIImage(named: "check_icon", in: bundle, with: nil)?.withRenderingMode(.alwaysTemplate)
+    static let smallCheckIcon = UIImage(named: "small_check_icon", in: bundle, with: nil)?.withRenderingMode(.alwaysTemplate)
+
     static let plusIcon = UIImage(named: "plus_icon", in: bundle, with: nil)?.withRenderingMode(.alwaysTemplate)
     static let chevronIcon = UIImage(named: "chevron_icon", in: bundle, with: nil)
     static func chevronIcon(direction: Direction) -> UIImage? {

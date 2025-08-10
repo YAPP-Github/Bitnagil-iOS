@@ -9,7 +9,6 @@ import SnapKit
 import UIKit
 
 final class TotalAgreementButton: UIButton {
-
     private enum Layout {
         static let cornerRadius: CGFloat = 12
         static let checkIconSize: CFloat = 24
@@ -71,9 +70,9 @@ final class TotalAgreementButton: UIButton {
     }
 
     private func updateButtonAttribute() {
-        backgroundColor = enableState ? BitnagilColor.lightBlue75 : BitnagilColor.gray99
-        checkButton.tintColor = enableState ? BitnagilColor.navy500 : BitnagilColor.navy100
-        buttonLabel.textColor = enableState ? BitnagilColor.navy500 : BitnagilColor.gray50
+        backgroundColor = enableState ? BitnagilColor.orange50 : BitnagilColor.gray99
+        checkButton.tintColor = enableState ? BitnagilColor.orange500 : BitnagilColor.gray90
+        buttonLabel.textColor = enableState ? BitnagilColor.orange500 : BitnagilColor.gray50
     }
 
     func updateButtonState(enableState: Bool) {

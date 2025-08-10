@@ -1,5 +1,5 @@
 //
-//  TermsAgreementView.swift
+//  TermsAgreementViewController.swift
 //  Presentation
 //
 //  Created by 최정인 on 7/7/25.
@@ -12,8 +12,7 @@ import Shared
 import SnapKit
 import UIKit
 
-final class TermsAgreementView: BaseViewController<LoginViewModel> {
-
+final class TermsAgreementViewController: BaseViewController<LoginViewModel> {
     private enum Layout {
         static let horizontalMargin: CGFloat = 20
         static let labelTopSpacing: CGFloat = 32
@@ -28,7 +27,7 @@ final class TermsAgreementView: BaseViewController<LoginViewModel> {
     private let agreementLabel = UILabel()
     private let totalAgreementButton = TotalAgreementButton()
     private var agreementViews: [TermsType: TermsAgreementItemView] = [:]
-    private let startButton = PrimaryButton(buttonState: .disabled, buttonTitle: "시작하기")
+    private let startButton = PrimaryButton(buttonState: .disabled, buttonTitle: "다음")
     private var cancellables: Set<AnyCancellable>
 
     override init(viewModel: LoginViewModel) {
@@ -38,10 +37,6 @@ final class TermsAgreementView: BaseViewController<LoginViewModel> {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -54,7 +49,7 @@ final class TermsAgreementView: BaseViewController<LoginViewModel> {
         agreementLabel.attributedText = BitnagilFont(style: .title2, weight: .bold).attributedString(text: text)
         agreementLabel.textAlignment = .left
         agreementLabel.numberOfLines = 2
-        agreementLabel.textColor = BitnagilColor.navy500
+        agreementLabel.textColor = BitnagilColor.gray10
 
         totalAgreementButton.addAction(UIAction { [weak self] _ in
             self?.viewModel.action(input: .toggleTotalAgreement)
@@ -155,7 +150,7 @@ final class TermsAgreementView: BaseViewController<LoginViewModel> {
 }
 
 // MARK: - TermsAgreementItemViewDelegate
-extension TermsAgreementView: TermsAgreementItemViewDelegate {
+extension TermsAgreementViewController: TermsAgreementItemViewDelegate {
     func termsAgreementItemView(_ sender: TermsAgreementItemView, didToggleCheckFor termType: TermsType) {
         viewModel.action(input: .toggleAgreement(termsType: termType))
     }

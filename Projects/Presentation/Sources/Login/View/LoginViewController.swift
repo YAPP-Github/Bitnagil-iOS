@@ -120,7 +120,7 @@ final class LoginViewController: BaseViewController<LoginViewModel> {
 
                 BitnagilLogger.log(logType: .info, message: "서버 로그인 성공")
                 if userState == .guest {
-                    let agreementView = TermsAgreementView(viewModel: self.viewModel)
+                    let agreementView = TermsAgreementViewController(viewModel: self.viewModel)
                     self.navigationController?.pushViewController(agreementView, animated: true)
                 } else {
                     if onboardingRepository.isOnboardingDone() {

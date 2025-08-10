@@ -15,7 +15,6 @@ protocol TermsAgreementItemViewDelegate: AnyObject {
 }
 
 final class TermsAgreementItemView: UIView {
-
     private enum Layout {
         static let checkButtonLeadingSpacing: CGFloat = 20
         static let checkButtonSize: CGFloat = 16
@@ -48,7 +47,7 @@ final class TermsAgreementItemView: UIView {
 
     private func configureAttribute() {
         checkButton.setImage(BitnagilIcon.checkIcon, for: .normal)
-        checkButton.tintColor = BitnagilColor.navy100
+        checkButton.tintColor = BitnagilColor.gray90
         checkButton.addAction(UIAction { [weak self] _ in
             guard let self else { return }
             self.isAgreed.toggle()
@@ -56,11 +55,11 @@ final class TermsAgreementItemView: UIView {
         }, for: .touchUpInside)
 
         agreementLable.attributedText = BitnagilFont(style: .body2, weight: .medium).attributedString(text: termType.title)
-        agreementLable.textColor = BitnagilColor.gray50
+        agreementLable.textColor = BitnagilColor.gray40
 
         let title = BitnagilFont(style: .captionUnderline1, weight: .semiBold).attributedString(text: "더보기")
         moreButton.setAttributedTitle(title, for: .normal)
-        moreButton.setTitleColor(BitnagilColor.gray50, for: .normal)
+        moreButton.setTitleColor(BitnagilColor.gray40, for: .normal)
         moreButton.isHidden = termType.link == nil
         moreButton.addAction(UIAction { [weak self] _ in
             guard let self else { return }
@@ -91,7 +90,7 @@ final class TermsAgreementItemView: UIView {
     }
 
     private func updateAttribute() {
-        checkButton.tintColor = isAgreed ? BitnagilColor.navy500 : BitnagilColor.navy100
+        checkButton.tintColor = isAgreed ? BitnagilColor.orange500 : BitnagilColor.gray90
     }
 
     func updateState(isAgreed: Bool) {
