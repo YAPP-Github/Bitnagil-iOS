@@ -55,7 +55,7 @@ public final class IntroView: UIViewController {
             guard let loginViewModel = DIContainer.shared.resolve(type: LoginViewModel.self)
             else { fatalError("loginViewModel 의존성이 등록되지 않았습니다.") }
 
-            let loginView = LoginView(onboardingRepository: onboardingRepository, viewModel: loginViewModel)
+            let loginView = LoginViewController(onboardingRepository: onboardingRepository, viewModel: loginViewModel)
             self?.navigationController?.pushViewController(loginView, animated: true)
         }, for: .touchUpInside)
     }

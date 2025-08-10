@@ -1,5 +1,5 @@
 //
-//  LoginView.swift
+//  LoginViewController.swift
 //  Presentation
 //
 //  Created by 최정인 on 6/30/25.
@@ -12,23 +12,22 @@ import Shared
 import SnapKit
 import UIKit
 
-final class LoginView: BaseViewController<LoginViewModel> {
-
+final class LoginViewController: BaseViewController<LoginViewModel> {
     private enum Layout {
         static let horizontalMargin: CGFloat = 20
-        static let loginLabelTopSpacing: CGFloat = 54
-        static let loginLabelHeight: CGFloat = 30
-        static let logoBottomSpacing: CGFloat = 79
-        static let logoLeadingSpacing: CGFloat = 53
-        static let logoWidth: CGFloat = 257
-        static let logoHeight: CGFloat = 295
+        static let loginLabelTopSpacing: CGFloat = 69
+        static let loginLabelHeight: CGFloat = 64
+        static let loginGraphicViewBottomSpacing: CGFloat = 79
+        static let loginGraphicViewLeadingSpacing: CGFloat = 30
+        static let loginGraphicViewWidth: CGFloat = 287
+        static let loginGraphicViewHeight: CGFloat = 307
         static let loginButtonHeight: CGFloat = 54
         static let loginButtonBottomSpacing: CGFloat = 20
         static let loginButtonSpacing: CGFloat = 12
     }
 
     private let loginLabel = UILabel()
-    private let logoView = UIImageView()
+    private let loginGraphicView = UIImageView()
     private let kakaoLoginButton = SocialLoginButton(socialType: .kakao)
     private let appleLoginButton = SocialLoginButton(socialType: .apple)
     private var cancellables: Set<AnyCancellable>
@@ -54,11 +53,13 @@ final class LoginView: BaseViewController<LoginViewModel> {
     }
 
     override func configureAttribute() {
-        loginLabel.text = "빛나길에 오신걸 환영해요!"
-        loginLabel.font = BitnagilFont(style: .title2, weight: .bold).font
-        loginLabel.textColor = BitnagilColor.navy500
+        let loginText = "안녕! 저는 포모예요\n함께 빛나길을 시작해볼까요?"
+        loginLabel.attributedText = BitnagilFont(style: .title1, weight: .bold).attributedString(text: loginText)
+        loginLabel.font = BitnagilFont(style: .title1, weight: .bold).font
+        loginLabel.textColor = BitnagilColor.gray10
+        loginLabel.numberOfLines = 2
 
-        logoView.image = BitnagilGraphic.introGraphic
+        loginGraphicView.image = BitnagilGraphic.loginGraphic
 
         kakaoLoginButton.addAction(UIAction { [weak self] _ in
             self?.viewModel.action(input: .kakaoLogin)
@@ -74,21 +75,21 @@ final class LoginView: BaseViewController<LoginViewModel> {
         view.backgroundColor = .systemBackground
 
         view.addSubview(loginLabel)
-        view.addSubview(logoView)
+        view.addSubview(loginGraphicView)
         view.addSubview(kakaoLoginButton)
         view.addSubview(appleLoginButton)
 
         loginLabel.snp.makeConstraints { make in
             make.top.equalTo(safeArea).offset(Layout.loginLabelTopSpacing)
+            make.leading.equalToSuperview().offset(Layout.horizontalMargin)
             make.height.equalTo(Layout.loginLabelHeight)
-            make.centerX.equalToSuperview()
         }
 
-        logoView.snp.makeConstraints { make in
-            make.leading.equalTo(safeArea).offset(Layout.logoLeadingSpacing)
-            make.bottom.equalTo(kakaoLoginButton.snp.top).offset(-Layout.logoBottomSpacing)
-            make.width.equalTo(Layout.logoWidth)
-            make.height.equalTo(Layout.logoHeight)
+        loginGraphicView.snp.makeConstraints { make in
+            make.leading.equalTo(safeArea).offset(Layout.loginGraphicViewLeadingSpacing)
+            make.bottom.equalTo(kakaoLoginButton.snp.top).offset(-Layout.loginGraphicViewBottomSpacing)
+            make.width.equalTo(Layout.loginGraphicViewWidth)
+            make.height.equalTo(Layout.loginGraphicViewHeight)
         }
 
         kakaoLoginButton.snp.makeConstraints { make in
@@ -152,7 +153,7 @@ final class LoginView: BaseViewController<LoginViewModel> {
 }
 
 // MARK: - ASAuthorizationControllerDelegate
-extension LoginView: ASAuthorizationControllerDelegate {
+extension LoginViewController: ASAuthorizationControllerDelegate {
     func authorizationController(
         controller: ASAuthorizationController,
         didCompleteWithAuthorization authorization: ASAuthorization
@@ -182,7 +183,7 @@ extension LoginView: ASAuthorizationControllerDelegate {
 }
 
 // MARK: - ASAuthorizationControllerPresentationContextProviding
-extension LoginView: ASAuthorizationControllerPresentationContextProviding {
+extension LoginViewController: ASAuthorizationControllerPresentationContextProviding {
     func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
         return view.window ?? UIWindow()
     }
