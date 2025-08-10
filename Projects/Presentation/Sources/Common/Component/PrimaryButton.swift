@@ -8,7 +8,6 @@
 import UIKit
 
 final class PrimaryButton: UIButton {
-
     enum ButtonState {
         case `default`
         case hover
@@ -17,10 +16,10 @@ final class PrimaryButton: UIButton {
 
         var buttonColor: UIColor? {
             switch self {
-            case .default: BitnagilColor.navy500
-            case .hover: BitnagilColor.navy700
-            case .pressed: BitnagilColor.navy700
-            case .disabled: BitnagilColor.navy50
+            case .default: BitnagilColor.gray10
+            case .hover: BitnagilColor.gray5
+            case .pressed: BitnagilColor.gray5
+            case .disabled: BitnagilColor.gray96
             }
         }
 
@@ -28,8 +27,8 @@ final class PrimaryButton: UIButton {
             switch self {
             case .default: .white
             case .hover: .white
-            case .pressed: BitnagilColor.navy400
-            case .disabled: BitnagilColor.gray70
+            case .pressed: BitnagilColor.gray20
+            case .disabled: .white
             }
         }
     }
