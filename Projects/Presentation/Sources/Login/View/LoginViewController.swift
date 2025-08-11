@@ -12,12 +12,13 @@ import Shared
 import SnapKit
 import UIKit
 
-final class LoginViewController: BaseViewController<LoginViewModel> {
+public final class LoginViewController: BaseViewController<LoginViewModel> {
     private enum Layout {
         static let horizontalMargin: CGFloat = 20
+        static let loginLabelTopMinSpacing: CGFloat = 45
         static let loginLabelTopSpacing: CGFloat = 69
         static let loginLabelHeight: CGFloat = 64
-        static let loginGraphicViewBottomSpacing: CGFloat = 79
+        static let loginGraphicViewTopSpacing: CGFloat = 75
         static let loginGraphicViewLeadingSpacing: CGFloat = 30
         static let loginGraphicViewWidth: CGFloat = 287
         static let loginGraphicViewHeight: CGFloat = 307
@@ -30,11 +31,12 @@ final class LoginViewController: BaseViewController<LoginViewModel> {
     private let loginGraphicView = UIImageView()
     private let kakaoLoginButton = SocialLoginButton(socialType: .kakao)
     private let appleLoginButton = SocialLoginButton(socialType: .apple)
+    private var isLayoutConfigured: Bool = false
+    private var loginLabelTopConstraint: Constraint?
+    private var loginGraphicViewTopConstraint: Constraint?
     private var cancellables: Set<AnyCancellable>
-    private let onboardingRepository: OnboardingRepositoryProtocol
 
-    init(onboardingRepository: OnboardingRepositoryProtocol, viewModel: LoginViewModel) {
-        self.onboardingRepository = onboardingRepository
+    public override init(viewModel: LoginViewModel) {
         cancellables = []
         super.init(viewModel: viewModel)
     }
@@ -43,13 +45,35 @@ final class LoginViewController: BaseViewController<LoginViewModel> {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
+    public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         configureNavigationBar(navigationStyle: .hidden)
+    }
+
+    public override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        if !isLayoutConfigured {
+            updateLoginGraphicViewTopSpacing()
+            isLayoutConfigured = true
+        }
+    }
+
+    private func updateLoginGraphicViewTopSpacing() {
+        let height = view.bounds.height
+        if height <= 667 {
+            // loginLabel 레이아웃 업데이트
+            loginLabelTopConstraint?.update(offset: Layout.loginLabelTopMinSpacing)
+
+            // loginGraphicView 레이아웃 업데이트
+            let loginLabelBottom = Layout.loginLabelTopMinSpacing + Layout.loginLabelHeight
+            let kakaoLoginButtonTop = height - view.safeAreaInsets.bottom - (Layout.loginButtonBottomSpacing + Layout.loginButtonHeight * 2 + Layout.loginButtonSpacing)
+
+            let middleSpacing = kakaoLoginButtonTop - loginLabelBottom
+            let newTopSpacing = (middleSpacing - Layout.loginGraphicViewHeight) / 2
+
+            loginGraphicViewTopConstraint?.update(offset: newTopSpacing)
+        }
     }
 
     override func configureAttribute() {
@@ -80,14 +104,14 @@ final class LoginViewController: BaseViewController<LoginViewModel> {
         view.addSubview(appleLoginButton)
 
         loginLabel.snp.makeConstraints { make in
-            make.top.equalTo(safeArea).offset(Layout.loginLabelTopSpacing)
+            loginLabelTopConstraint = make.top.equalTo(safeArea).offset(Layout.loginLabelTopSpacing).constraint
             make.leading.equalToSuperview().offset(Layout.horizontalMargin)
             make.height.equalTo(Layout.loginLabelHeight)
         }
 
         loginGraphicView.snp.makeConstraints { make in
             make.leading.equalTo(safeArea).offset(Layout.loginGraphicViewLeadingSpacing)
-            make.bottom.equalTo(kakaoLoginButton.snp.top).offset(-Layout.loginGraphicViewBottomSpacing)
+            loginGraphicViewTopConstraint = make.top.equalTo(loginLabel.snp.bottom).offset(Layout.loginGraphicViewTopSpacing).constraint
             make.width.equalTo(Layout.loginGraphicViewWidth)
             make.height.equalTo(Layout.loginGraphicViewHeight)
         }
@@ -119,22 +143,23 @@ final class LoginViewController: BaseViewController<LoginViewModel> {
                 }
 
                 BitnagilLogger.log(logType: .info, message: "서버 로그인 성공")
-                if userState == .guest {
+                switch userState {
+                case .guest:
                     let agreementView = TermsAgreementViewController(viewModel: self.viewModel)
                     self.navigationController?.pushViewController(agreementView, animated: true)
-                } else {
-                    if onboardingRepository.isOnboardingDone() {
-                        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                           let window = windowScene.windows.first(where: { $0.isKeyWindow }) {
-                            window.rootViewController = TabBarView()
-                        }
-                    } else {
-                        guard let onboardingViewModel = DIContainer.shared.resolve(type: OnboardingViewModel.self) else {
-                            fatalError("onboardingViewModel 의존성이 등록되지 않았습니다.")
-                        }
-                        let onboardingView = OnboardingView(viewModel: onboardingViewModel, onboarding: .time)
-                        self.navigationController?.pushViewController(onboardingView, animated: true)
+
+                case .user:
+                    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                       let window = windowScene.windows.first(where: { $0.isKeyWindow }) {
+                        window.rootViewController = TabBarView()
                     }
+
+                case .onboarding:
+                    guard let onboardingViewModel = DIContainer.shared.resolve(type: OnboardingViewModel.self)
+                    else { fatalError("onboardingViewModel 의존성이 등록되지 않았습니다.") }
+
+                    let onboardingView = OnboardingView(viewModel: onboardingViewModel, onboarding: .time)
+                    self.navigationController?.pushViewController(onboardingView, animated: true)
                 }
             }
             .store(in: &cancellables)
@@ -154,7 +179,7 @@ final class LoginViewController: BaseViewController<LoginViewModel> {
 
 // MARK: - ASAuthorizationControllerDelegate
 extension LoginViewController: ASAuthorizationControllerDelegate {
-    func authorizationController(
+    public func authorizationController(
         controller: ASAuthorizationController,
         didCompleteWithAuthorization authorization: ASAuthorization
     ) {
@@ -177,14 +202,14 @@ extension LoginViewController: ASAuthorizationControllerDelegate {
         self.viewModel.action(input: .appleLogin(nickname: nickname, authToken: authToken))
     }
 
-    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: any Error) {
+    public func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: any Error) {
         BitnagilLogger.log(logType: .error, message: "Apple 로그인 실패")
     }
 }
 
 // MARK: - ASAuthorizationControllerPresentationContextProviding
 extension LoginViewController: ASAuthorizationControllerPresentationContextProviding {
-    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+    public func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
         return view.window ?? UIWindow()
     }
 }
