@@ -5,93 +5,92 @@
 //  Created by 최정인 on 7/8/25.
 //
 
+import SnapKit
 import UIKit
 
 extension UIViewController {
     // MARK: - NavigationBar
-    func configureNavigationBar(navigationStyle: NavigationBarStyle) {
-        switch navigationStyle {
-        case .hidden:
-            navigationController?.setNavigationBarHidden(true, animated: false)
+    enum NavigationBarStyle {
+        case withBackButton(title: String)  // 백버튼 + 타이틀 (없으면 빈 String)
+        case withTitle(title: String)       // 오로지 타이틀만
+        case withProgressBar(step: Int)     // 백버튼 + progress
+    }
 
+    func configureCustomNaviagtionBar(navigationBarStyle: NavigationBarStyle) {
+        let safeArea = self.view.safeAreaLayoutGuide
+        let navigationBar: UIView = customNavigationBar(navigationBarStyle: navigationBarStyle)
+
+        self.view.addSubview(navigationBar)
+        navigationBar.snp.makeConstraints { make in
+            make.top.horizontalEdges.equalTo(safeArea)
+            make.height.equalTo(48)
+        }
+    }
+
+    private func customNavigationBar(navigationBarStyle: NavigationBarStyle) -> UIView {
+        let navigationBar = UIView()
+        let customBackButton = UIButton()
+        let titleLabel = UILabel()
+        let progressView = UIImageView()
+
+        customBackButton.setImage(BitnagilIcon.backButtonIcon, for: .normal)
+        customBackButton.addAction(
+            UIAction { [weak self] _ in
+                self?.navigationController?.popViewController(animated: true)
+            },
+            for: .touchUpInside)
+
+        titleLabel.text = " "
+        titleLabel.font = BitnagilFont(style: .title3, weight: .semiBold).font
+        titleLabel.textColor = BitnagilColor.gray10
+
+        progressView.isHidden = true
+
+        switch navigationBarStyle {
         case .withBackButton(let title):
-            navigationController?.setNavigationBarHidden(false, animated: false)
-            self.title = title
-            configureDefaultBackButton()
+            titleLabel.text = title
 
-        case .withPrograssBar(let step, let stepCount):
-            navigationController?.setNavigationBarHidden(false, animated: false)
-            configureDefaultBackButton()
-            configureProgressNavigationBar(step: step, stepCount: stepCount)
+        case .withTitle(let title):
+            titleLabel.text = title
+            customBackButton.isHidden = true
 
-        case .withPrograssBarWithCustomBackButton(let step, let stepCount):
-            navigationController?.setNavigationBarHidden(false, animated: false)
-            configureCustomBackButton()
-            configureProgressNavigationBar(step: step, stepCount: stepCount)
-
-        case .withPrograssBarWithoutBackButton(let step, let stepCount):
-            navigationController?.setNavigationBarHidden(false, animated: false)
-            navigationItem.setHidesBackButton(true, animated: false)
-            configureProgressNavigationBar(step: step, stepCount: stepCount)
-        }
-    }
-
-    private func configureDefaultBackButton() {
-        let backButton = UIBarButtonItem(
-            image: UIImage(systemName: "chevron.left"),
-            style: .plain,
-            target: self,
-            action: #selector(popViewController))
-        backButton.tintColor = .black
-        navigationItem.leftBarButtonItem = backButton
-        changeNavigationBackground(color: .white)
-    }
-
-    private func configureCustomBackButton() {
-        let backButton = UIBarButtonItem(
-            image: UIImage(systemName: "chevron.left"),
-            style: .plain,
-            target: self,
-            action: #selector(popTwoViewControllers))
-        backButton.tintColor = .black
-        navigationItem.leftBarButtonItem = backButton
-        changeNavigationBackground(color: .white)
-    }
-
-    private func configureProgressNavigationBar(step: Int, stepCount: Int) {
-        self.title = ""
-        let progressView = ProgressBarView(step: step, stepCount: stepCount)
-        navigationItem.titleView = progressView
-        changeNavigationBackground(color: BitnagilColor.gray99)
-    }
-
-    @objc private func popViewController() {
-        navigationController?.popViewController(animated: true)
-    }
-
-    @objc private func popTwoViewControllers() {
-        guard let navigationController = navigationController
-        else { return }
-        let viewControllers = navigationController.viewControllers
-
-        guard viewControllers.count >= 3 else {
-            navigationController.popViewController(animated: true)
-            return
+        case .withProgressBar(let step):
+            titleLabel.isHidden = true
+            progressView.image = progressImage(step: step)
+            progressView.isHidden = false
         }
 
-        let targetViewController = viewControllers[viewControllers.count - 3]
-        navigationController.popToViewController(targetViewController, animated: true)
+        navigationBar.backgroundColor = .systemBackground
+        [customBackButton, titleLabel, progressView].forEach {
+            navigationBar.addSubview($0)
+        }
+
+        customBackButton.snp.makeConstraints { make in
+            make.top.equalToSuperview()
+            make.leading.equalToSuperview()
+            make.size.equalTo(48)
+        }
+
+        titleLabel.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+
+        progressView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+
+        return navigationBar
     }
 
-    private func changeNavigationBackground(color: UIColor?) {
-        let appearance = UINavigationBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = color
-        appearance.shadowColor = .clear
-
-        navigationController?.navigationBar.standardAppearance = appearance
-        navigationController?.navigationBar.scrollEdgeAppearance = appearance
-        navigationController?.navigationBar.compactAppearance = appearance
+    private func progressImage(step: Int) -> UIImage? {
+        switch step {
+        case 1: BitnagilGraphic.progressStep1
+        case 2: BitnagilGraphic.progressStep2
+        case 3: BitnagilGraphic.progressStep3
+        case 4: BitnagilGraphic.progressStep4
+        case 5: BitnagilGraphic.progressStep5
+        default: nil
+        }
     }
 
     // MARK: - BottomSheet
@@ -99,12 +98,4 @@ extension UIViewController {
         let bottomSheet = CustomBottomSheet(contentViewController: contentViewController, maxHeight: maxHeight)
         present(bottomSheet, animated: true)
     }
-}
-
-enum NavigationBarStyle {
-    case hidden
-    case withBackButton(title: String)
-    case withPrograssBar(step: Int, stepCount: Int)
-    case withPrograssBarWithCustomBackButton(step: Int, stepCount: Int)
-    case withPrograssBarWithoutBackButton(step: Int, stepCount: Int)
 }

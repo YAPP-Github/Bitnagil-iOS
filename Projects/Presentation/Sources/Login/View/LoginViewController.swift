@@ -45,11 +45,6 @@ public final class LoginViewController: BaseViewController<LoginViewModel> {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        configureNavigationBar(navigationStyle: .hidden)
-    }
-
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
@@ -97,6 +92,7 @@ public final class LoginViewController: BaseViewController<LoginViewModel> {
     override func configureLayout() {
         let safeArea = view.safeAreaLayoutGuide
         view.backgroundColor = .systemBackground
+        navigationController?.setNavigationBarHidden(true, animated: false)
 
         view.addSubview(loginLabel)
         view.addSubview(loginGraphicView)
@@ -158,7 +154,7 @@ public final class LoginViewController: BaseViewController<LoginViewModel> {
                     guard let onboardingViewModel = DIContainer.shared.resolve(type: OnboardingViewModel.self)
                     else { fatalError("onboardingViewModel 의존성이 등록되지 않았습니다.") }
 
-                    let onboardingView = OnboardingView(viewModel: onboardingViewModel, onboarding: .time)
+                    let onboardingView = OnboardingViewController(viewModel: onboardingViewModel, onboarding: .time)
                     self.navigationController?.pushViewController(onboardingView, animated: true)
                 }
             }

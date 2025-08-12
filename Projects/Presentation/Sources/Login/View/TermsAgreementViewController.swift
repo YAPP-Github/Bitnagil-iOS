@@ -15,7 +15,7 @@ import UIKit
 final class TermsAgreementViewController: BaseViewController<LoginViewModel> {
     private enum Layout {
         static let horizontalMargin: CGFloat = 20
-        static let labelTopSpacing: CGFloat = 32
+        static let labelTopSpacing: CGFloat = 86
         static let totalButtonTopSpacing: CGFloat = 28
         static let totalButtonHeight: CGFloat = 52
         static let agreementViewTopSpacing: CGFloat = 8
@@ -39,11 +39,6 @@ final class TermsAgreementViewController: BaseViewController<LoginViewModel> {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        configureNavigationBar(navigationStyle: .withBackButton(title: "약관 동의"))
-    }
-
     override func configureAttribute() {
         let text = "빛나길 이용을 위해\n필수 약관에 동의해 주세요."
         agreementLabel.attributedText = BitnagilFont(style: .title2, weight: .bold).attributedString(text: text)
@@ -63,14 +58,16 @@ final class TermsAgreementViewController: BaseViewController<LoginViewModel> {
     override func configureLayout() {
         let safeArea = view.safeAreaLayoutGuide
         view.backgroundColor = .systemBackground
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        configureCustomNaviagtionBar(navigationBarStyle: .withBackButton(title: "약관 동의"))
 
         view.addSubview(agreementLabel)
         view.addSubview(totalAgreementButton)
         view.addSubview(startButton)
 
         agreementLabel.snp.makeConstraints { make in
-            make.leading.equalTo(safeArea).offset(Layout.horizontalMargin)
             make.top.equalTo(safeArea).offset(Layout.labelTopSpacing)
+            make.leading.equalTo(safeArea).offset(Layout.horizontalMargin)
         }
 
         totalAgreementButton.snp.makeConstraints { make in
@@ -126,7 +123,7 @@ final class TermsAgreementViewController: BaseViewController<LoginViewModel> {
                     guard let onboardingViewModel = DIContainer.shared.resolve(type: OnboardingViewModel.self) else {
                         fatalError("onboardingViewModel 의존성이 등록되지 않았습니다.")
                     }
-                    let onboardingView = OnboardingView(viewModel: onboardingViewModel, onboarding: .time)
+                    let onboardingView = OnboardingViewController(viewModel: onboardingViewModel, onboarding: .time)
                     self.navigationController?.pushViewController(onboardingView, animated: true)
                 } else {
                     // TODO: 약관 동의 실패 시, 에러 처리를 해야 합니다.

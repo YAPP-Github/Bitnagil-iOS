@@ -57,7 +57,7 @@ final class EmotionRegisterView: BaseViewController<EmotionRegisterViewModel> {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        configureNavigationBar(navigationStyle: .withBackButton(title: ""))
+//        configureNavigationBar(navigationStyle: .withBackButton(title: ""))
     }
 
     override func configureAttribute() {

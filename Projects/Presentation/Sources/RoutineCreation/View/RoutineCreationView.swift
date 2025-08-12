@@ -108,7 +108,7 @@ final class RoutineCreationView: BaseViewController<RoutineCreationViewModel> {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        configureNavigationBar(navigationStyle: .withBackButton(title: navigationTitle))
+//        configureNavigationBar(navigationStyle: .withBackButton(title: navigationTitle))
     }
 
     override func configureAttribute() {
