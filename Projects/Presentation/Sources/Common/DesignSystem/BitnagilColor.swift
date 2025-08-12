@@ -9,7 +9,7 @@ import UIKit
 
 enum BitnagilColor {
     private static var bundle: Bundle {
-        return Bundle(for: IntroView.self)
+        return Bundle(for: IntroViewController.self)
     }
 
     static let kakao = UIColor(named: "Kakao", in: bundle, compatibleWith: nil)

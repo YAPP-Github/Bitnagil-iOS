@@ -9,8 +9,11 @@ import UIKit
 
 enum BitnagilIcon {
     private static var bundle: Bundle {
-        return Bundle(for: IntroView.self)
+        return Bundle(for: IntroViewController.self)
     }
+
+    // MARK: - Common Icons
+    static let backButtonIcon = UIImage(named: "back_button_icon", in: bundle, with: nil)
 
     // MARK: - Login Icons
     static let kakaoIcon = UIImage(named: "kakao_icon", in: bundle, with: nil)
@@ -19,6 +22,12 @@ enum BitnagilIcon {
     // MARK: - Terms Agreement Icons
     static let checkIcon = UIImage(named: "check_icon", in: bundle, with: nil)?.withRenderingMode(.alwaysTemplate)
     static let smallCheckIcon = UIImage(named: "small_check_icon", in: bundle, with: nil)?.withRenderingMode(.alwaysTemplate)
+
+    // MARK: - Onboarding Icons
+    static let orangeCheckedCircleIcon = UIImage(named: "orange_checked_circle_icon", in: bundle, with: nil)
+    static let circleOneIcon = UIImage(named: "circle_one_icon", in: bundle, with: nil)
+    static let circleTwoIcon = UIImage(named: "circle_two_icon", in: bundle, with: nil)
+    static let circleThreeIcon = UIImage(named: "circle_three_icon", in: bundle, with: nil)
 
     static let plusIcon = UIImage(named: "plus_icon", in: bundle, with: nil)?.withRenderingMode(.alwaysTemplate)
     static let chevronIcon = UIImage(named: "chevron_icon", in: bundle, with: nil)
