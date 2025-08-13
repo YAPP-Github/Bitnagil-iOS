@@ -12,7 +12,12 @@ enum OnboardingEndpoint {
 
 extension OnboardingEndpoint: Endpoint {
     var baseURL: String {
-        return AppProperties.baseURL + "/api/v1/onboardings"
+        switch self {
+        case .registerOnboarding:
+            return AppProperties.baseURL + "/api/v1/onboardings"
+        case .registerRecommendedRoutine:
+            return AppProperties.baseURL + "/api/v2/onboardings"
+        }
     }
 
     var path: String {
