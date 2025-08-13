@@ -21,7 +21,7 @@ final class OnboardingResultViewController: BaseViewController<OnboardingViewMod
         static let resultGraphicViewTopSpacing: CGFloat = 28
         static let resultGraphicViewWidth: CGFloat = 311
         static let resultGraphicViewHeight: CGFloat = 151
-        static let rectangleImageViewTopInset: CGFloat = 1.5
+        static let rectangleImageViewTopSpacing: CGFloat = 1.5
         static let rectangleImageViewWidth: CGFloat = 310
         static let rectangleImageViewHeight: CGFloat = 220
         static let rectangleImageViewMaxHeight: CGFloat = 260
@@ -137,7 +137,7 @@ final class OnboardingResultViewController: BaseViewController<OnboardingViewMod
         }
 
         rectangleImageView.snp.makeConstraints { make in
-            make.top.equalTo(resultGraphicView.snp.bottom).inset(Layout.rectangleImageViewTopInset)
+            make.top.equalTo(resultGraphicView.snp.bottom).offset(-Layout.rectangleImageViewTopSpacing)
             make.centerX.equalToSuperview()
             make.width.equalTo(Layout.rectangleImageViewWidth)
             rectangleHeightConstraint = make.height.equalTo(Layout.rectangleImageViewHeight).constraint
