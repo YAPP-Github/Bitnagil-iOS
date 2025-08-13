@@ -89,7 +89,7 @@ public final class IntroViewController: BaseViewController<IntroViewModel> {
 
     override func configureLayout() {
         let safeArea = view.safeAreaLayoutGuide
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = BitnagilColor.gray99
         navigationController?.setNavigationBarHidden(true, animated: false)
 
         view.addSubview(introLabel)
