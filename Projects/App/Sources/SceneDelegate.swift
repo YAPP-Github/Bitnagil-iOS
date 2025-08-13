@@ -54,25 +54,25 @@ extension SceneDelegate: SplashViewDelegate {
         guard let userDataRepository = DIContainer.shared.resolve(type: UserDataRepositoryProtocol.self)
         else { fatalError("userDataRepository 의존성이 등록되지 않았습니다.") }
 
-        guard let onboardingRepository = DIContainer.shared.resolve(type: OnboardingRepositoryProtocol.self)
-        else { fatalError("onboardingRepository 의존성이 등록되지 않았습니다.") }
-
         Task { @MainActor in
             let userState = await userDataRepository.reissueToken()
             switch userState {
             case .user:
-                if onboardingRepository.isOnboardingDone() {
-                    window?.rootViewController = TabBarView()
-                } else {
-                    guard let onboardingViewModel = DIContainer.shared.resolve(type: OnboardingViewModel.self) else {
-                        fatalError("onboardingViewModel 의존성이 등록되지 않았습니다.")
-                    }
-                    let onboardingView = OnboardingView(viewModel: onboardingViewModel, onboarding: .time)
-                    let navigationController = UINavigationController(rootViewController: onboardingView)
-                    window?.rootViewController = navigationController
-                }
+                window?.rootViewController = TabBarView()
+
             case .guest, nil:
-                let introView = IntroView()
+                guard let loginViewModel = DIContainer.shared.resolve(type: LoginViewModel.self)
+                else { fatalError("loginViewModel 의존성이 등록되지 않았습니다.") }
+
+                let loginView = LoginViewController(viewModel: loginViewModel)
+                let navigationController = UINavigationController(rootViewController: loginView)
+                window?.rootViewController = navigationController
+
+            case .onboarding:
+                guard let introViewModel = DIContainer.shared.resolve(type: IntroViewModel.self)
+                else { fatalError("introViewModel 의존성이 등록되지 않았습니다.") }
+
+                let introView = IntroViewController(viewModel: introViewModel)
                 let navigationController = UINavigationController(rootViewController: introView)
                 window?.rootViewController = navigationController
             }

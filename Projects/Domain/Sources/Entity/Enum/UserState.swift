@@ -8,4 +8,5 @@
 public enum UserState: String {
     case guest = "GUEST"
     case user = "USER"
+    case onboarding = "ONBOARDING"
 }

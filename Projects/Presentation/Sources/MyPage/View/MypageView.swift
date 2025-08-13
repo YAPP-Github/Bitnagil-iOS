@@ -172,7 +172,7 @@ extension MypageView: UITableViewDataSource {
             fatalError("onboardingViewModel 의존성이 등록되지 않았습니다.")
         }
 
-        let onboardingView = OnboardingView(
+        let onboardingView = OnboardingViewController(
             viewModel: onboardingViewModel,
             onboarding: .time,
             isFromMypage: true)

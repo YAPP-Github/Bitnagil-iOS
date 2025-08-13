@@ -110,7 +110,7 @@ final class SettingView: BaseViewController<SettingViewModel> {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        configureNavigationBar(navigationStyle: .withBackButton(title: "설정"))
+//        configureNavigationBar(navigationStyle: .withBackButton(title: "설정"))
     }
 
     override func configureAttribute() {
@@ -209,8 +209,11 @@ final class SettingView: BaseViewController<SettingViewModel> {
                         let window = sceneDelegate.window
                     else { return }
 
-                    let introView = IntroView()
-                    let navigationController = UINavigationController(rootViewController: introView)
+                    guard let loginViewModel = DIContainer.shared.resolve(type: LoginViewModel.self)
+                    else { fatalError("loginViewModel 의존성이 등록되지 않았습니다.") }
+
+                    let loginView = LoginViewController(viewModel: loginViewModel)
+                    let navigationController = UINavigationController(rootViewController: loginView)
                     window?.rootViewController = navigationController
                     window?.makeKeyAndVisible()
                 }

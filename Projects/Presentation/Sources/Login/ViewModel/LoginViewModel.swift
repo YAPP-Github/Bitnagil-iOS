@@ -9,8 +9,8 @@ import Combine
 import Domain
 import Shared
 
-final class LoginViewModel: ViewModel {
-    enum Input {
+public final class LoginViewModel: ViewModel {
+    public enum Input {
         case kakaoLogin
         case appleLogin(nickname: String?, authToken: String)
         case toggleAgreement(termsType: TermsType)
@@ -18,7 +18,7 @@ final class LoginViewModel: ViewModel {
         case submitAgreement
     }
 
-    struct Output {
+    public struct Output {
         let loginResultPublisher: AnyPublisher<UserState?, Never>
         let agreementStatePublisher: AnyPublisher<TermsAgreementState, Never>
         let agreementResultPublisher: AnyPublisher<Bool, Never>
@@ -40,7 +40,7 @@ final class LoginViewModel: ViewModel {
         )
     }
 
-    func action(input: Input) {
+    public func action(input: Input) {
         switch input {
         case .kakaoLogin:
             Task {

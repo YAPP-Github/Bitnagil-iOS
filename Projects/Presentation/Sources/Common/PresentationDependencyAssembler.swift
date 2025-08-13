@@ -41,8 +41,11 @@ public struct PresentationDependencyAssembler: DependencyAssemblerProtocol {
             return LoginViewModel(loginUseCase: loginUseCase)
         }
 
-        DIContainer.shared.register(type: OnboardingViewModel.self) { _ in
-            return OnboardingViewModel()
+        DIContainer.shared.register(type: OnboardingViewModel.self) { container in
+            guard let userDataRepository = container.resolve(type: UserDataRepositoryProtocol.self)
+            else { fatalError("userDataRepository 의존성이 등록되지 않았습니다.") }
+
+            return OnboardingViewModel(userDataRepository: userDataRepository)
         }
 
         DIContainer.shared.register(type: RecommendedRoutineViewModel.self) { container in
@@ -87,6 +90,13 @@ public struct PresentationDependencyAssembler: DependencyAssemblerProtocol {
 
         DIContainer.shared.register(type: SettingViewModel.self) { _ in
             return SettingViewModel()
+        }
+
+        DIContainer.shared.register(type: IntroViewModel.self) { container in
+            guard let userDataRepository = container.resolve(type: UserDataRepositoryProtocol.self)
+            else { fatalError("userDataRepository 의존성이 등록되지 않았습니다.") }
+
+            return IntroViewModel(userDataRepository: userDataRepository)
         }
     }
 }

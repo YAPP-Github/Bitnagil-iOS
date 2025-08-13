@@ -151,11 +151,11 @@ public final class LoginViewController: BaseViewController<LoginViewModel> {
                     }
 
                 case .onboarding:
-                    guard let onboardingViewModel = DIContainer.shared.resolve(type: OnboardingViewModel.self)
-                    else { fatalError("onboardingViewModel 의존성이 등록되지 않았습니다.") }
+                    guard let introViewModel = DIContainer.shared.resolve(type: IntroViewModel.self)
+                    else { fatalError("introViewModel 의존성이 등록되지 않았습니다.") }
 
-                    let onboardingView = OnboardingViewController(viewModel: onboardingViewModel, onboarding: .time)
-                    self.navigationController?.pushViewController(onboardingView, animated: true)
+                    let introViewController = IntroViewController(viewModel: introViewModel)
+                    self.navigationController?.pushViewController(introViewController, animated: true)
                 }
             }
             .store(in: &cancellables)
