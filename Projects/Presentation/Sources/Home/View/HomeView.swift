@@ -12,9 +12,12 @@ import SnapKit
 import UIKit
 
 final class HomeView: BaseViewController<HomeViewModel> {
-
     private enum Layout {
         static let horizontalMargin: CGFloat = 20
+        static let headerViewHeight: CGFloat = 48
+        static let logoImageWidth: CGFloat = 71
+        static let logoImageHeight: CGFloat = 22
+        static let headerIconTrailingSpacing: CGFloat = 8
         static let homeLabelTopSpacing: CGFloat = 41
         static let homeLabelHeight: CGFloat = 64
         static let registerEmotionButtonTopSpacing: CGFloat = 16
@@ -34,7 +37,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
         static let emptyViewTopSpacing: CGFloat = 77
         static let emptyViewHeight: CGFloat = 120
         static let collapsedTop: CGFloat = 225
-        static let expandedTop: CGFloat = 40
+        static let expandedTop: CGFloat = 48
         static let floatingButtonBottomSpacing: CGFloat = 19
         static let floatingButtonSize: CGFloat = 52
         static let floatingMenuBottomSpacing: CGFloat = 15
@@ -44,10 +47,12 @@ final class HomeView: BaseViewController<HomeViewModel> {
         static let routineDetailViewSubRoutineHeight: CGFloat = 25
         static let deleteAlertViewWidth: CGFloat = 298
         static let deleteAlertViewHeight: CGFloat = 214
-        static let toastMessageBottomSpacing: CGFloat = 19
-        static let toastMessageWidth: CGFloat = 265
-        static let toastMessageHeight: CGFloat = 44
     }
+
+    private let headerView = UIView()
+    private let logoImageView = UIImageView()
+    private let helpButton = UIButton()
+    private let alarmButton = UIButton()
 
     private let homeLabel = UILabel()
     private let emotionOrbView = UIImageView()
@@ -91,11 +96,16 @@ final class HomeView: BaseViewController<HomeViewModel> {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
         viewModel.action(input: .loadEmotion)
         viewModel.action(input: .fetchRoutines)
     }
 
     override func configureAttribute() {
+        logoImageView.image = BitnagilGraphic.grayLogoGraphic
+        helpButton.setImage(BitnagilIcon.helpIcon, for: .normal)
+        alarmButton.setImage(BitnagilIcon.alarmIcon, for: .normal)
+
         let homeLabelText = "님,\n오늘 기분 어때요?"
         homeLabel.attributedText = BitnagilFont(
             family: .cafe24Ssurround,
@@ -162,6 +172,12 @@ final class HomeView: BaseViewController<HomeViewModel> {
     override func configureLayout() {
         let safeArea = view.safeAreaLayoutGuide
         view.backgroundColor = BitnagilColor.gray10
+        navigationController?.setNavigationBarHidden(true, animated: false)
+
+        [logoImageView, helpButton, alarmButton].forEach {
+            headerView.addSubview($0)
+        }
+        view.addSubview(headerView)
 
         view.addSubview(homeLabel)
         view.addSubview(emotionOrbView)
@@ -179,6 +195,30 @@ final class HomeView: BaseViewController<HomeViewModel> {
         view.addSubview(floatingButton)
 
         view.addSubview(deleteAlertView)
+
+        headerView.snp.makeConstraints { make in
+            make.top.horizontalEdges.equalTo(safeArea)
+            make.height.equalTo(Layout.headerViewHeight)
+        }
+
+        logoImageView.snp.makeConstraints { make in
+            make.leading.equalTo(safeArea).offset(Layout.horizontalMargin)
+            make.centerY.equalToSuperview()
+            make.width.equalTo(Layout.logoImageWidth)
+            make.height.equalTo(Layout.logoImageHeight)
+        }
+
+        helpButton.snp.makeConstraints { make in
+            make.top.equalToSuperview()
+            make.trailing.equalTo(alarmButton.snp.leading).offset(Layout.headerIconTrailingSpacing)
+            make.size.equalTo(Layout.headerViewHeight)
+        }
+
+        alarmButton.snp.makeConstraints { make in
+            make.top.equalToSuperview()
+            make.trailing.equalToSuperview().inset(Layout.headerIconTrailingSpacing)
+            make.size.equalTo(Layout.headerViewHeight)
+        }
 
         homeLabel.snp.makeConstraints { make in
             make.top.equalTo(safeArea).offset(Layout.homeLabelTopSpacing)

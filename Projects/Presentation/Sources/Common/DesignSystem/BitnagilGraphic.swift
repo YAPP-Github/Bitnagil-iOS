@@ -29,4 +29,5 @@ enum BitnagilGraphic {
     static let defaultEmotionGraphic = UIImage(named: "default_emotion_graphic", in: bundle, with: nil)
     static let logoGraphic = UIImage(named: "bitnagil_logo", in: bundle, with: nil)
     static let profileGraphic = UIImage(named: "profile_graphic", in: bundle, with: nil)
+    static let grayLogoGraphic = UIImage(named: "bitnagil_logo_gray", in: bundle, with: nil)
 }

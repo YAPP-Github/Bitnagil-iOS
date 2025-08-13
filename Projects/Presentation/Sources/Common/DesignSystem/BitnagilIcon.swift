@@ -36,7 +36,6 @@ enum BitnagilIcon {
     }
     static let ellipsisIcon = UIImage(named: "ellipsis_icon", in: bundle, with: nil)
     static let informationIcon = UIImage(named: "information_icon", in: bundle, with: nil)
-    static let sortIcon = UIImage(named: "sort_icon", in: bundle, with: nil)
     static let addRoutineIcon = UIImage(named: "add_routine_icon", in: bundle, with: nil)
 
     // MARK: - Tab Bar Icons
@@ -51,6 +50,11 @@ enum BitnagilIcon {
 
     static let mypageFillIcon = UIImage(named: "mypage_fill_icon", in: bundle, with: nil)
     static let mypageEmptyIcon = UIImage(named: "mypage_empty_icon", in: bundle, with: nil)
+
+    // MARK: - Home Icons
+    static let helpIcon = UIImage(named: "help_icon", in: bundle, with: nil)
+    static let alarmIcon = UIImage(named: "alarm_icon", in: bundle, with: nil)
+    static let alarmWithBadgeIcon = UIImage(named: "alarm_badge_icon", in: bundle, with: nil)
 
     // MARK: - Mypage Icons
     static let settingIcon = UIImage(named: "setting_icon", in: bundle, with: nil)
