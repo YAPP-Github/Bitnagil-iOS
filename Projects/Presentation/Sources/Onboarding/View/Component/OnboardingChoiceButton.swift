@@ -5,21 +5,24 @@
 //  Created by 최정인 on 7/9/25.
 //
 
+import SnapKit
 import UIKit
 
 final class OnboardingChoiceButton: UIButton {
-
     private enum Layout {
         static let cornerRadius: CGFloat = 12
         static let horizontalMargin: CGFloat = 20
         static let stackViewSpacing: CGFloat = 2
-        static let mainLabelHeight: CGFloat = 28
+        static let mainLabelHeight: CGFloat = 24
         static let subLabelHeight: CGFloat = 20
+        static let checkedIconTrailingSpacing: CGFloat = 20
+        static let checkedIconSize: CGFloat = 28
     }
 
     private let stackView = UIStackView()
     private let mainLabel = UILabel()
     private var subLabel: UILabel? = nil
+    private let checkedIcon = UIImageView()
 
     private var isChecked: Bool = false {
         didSet {
@@ -41,8 +44,8 @@ final class OnboardingChoiceButton: UIButton {
     }
 
     private func configureAttribute() {
-        backgroundColor = .white
-        layer.borderWidth = 1
+        backgroundColor = BitnagilColor.gray99
+        layer.masksToBounds = true
         layer.cornerRadius = Layout.cornerRadius
 
         stackView.axis = .vertical
@@ -50,28 +53,26 @@ final class OnboardingChoiceButton: UIButton {
         stackView.spacing = Layout.stackViewSpacing
         stackView.isUserInteractionEnabled = false
 
-        guard let subTitle = onboardingChoice.subTitle else {
-            mainLabel.text = onboardingChoice.mainTitle
-            mainLabel.font = BitnagilFont(style: .body1, weight: .regular).font
-            mainLabel.textColor = BitnagilColor.gray50
-            return
-        }
-
         mainLabel.text = onboardingChoice.mainTitle
-        mainLabel.font = BitnagilFont(style: .subtitle1, weight: .semiBold).font
+        mainLabel.font = BitnagilFont(style: .body1, weight: .semiBold).font
         mainLabel.textColor = BitnagilColor.gray50
 
-        subLabel = UILabel()
-        if let subLabel {
-            subLabel.text = subTitle
-            subLabel.font = BitnagilFont(style: .body2, weight: .regular).font
-            subLabel.textColor = BitnagilColor.gray50
+        if let subTitle = onboardingChoice.subTitle {
+            subLabel = UILabel()
+            subLabel?.text = subTitle
+            subLabel?.font = BitnagilFont(style: .body2, weight: .medium).font
+            subLabel?.textColor = BitnagilColor.gray50
         }
+
+        checkedIcon.image = BitnagilIcon.orangeCheckedCircleIcon
+        checkedIcon.isHidden = true
     }
 
     private func configureLayout() {
         addSubview(stackView)
+        addSubview(checkedIcon)
         stackView.addArrangedSubview(mainLabel)
+
         if let subLabel {
             stackView.addArrangedSubview(subLabel)
             mainLabel.snp.makeConstraints { make in
@@ -86,13 +87,19 @@ final class OnboardingChoiceButton: UIButton {
             make.leading.equalToSuperview().inset(Layout.horizontalMargin)
             make.centerY.equalToSuperview()
         }
+
+        checkedIcon.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(Layout.checkedIconTrailingSpacing)
+            make.size.equalTo(Layout.checkedIconSize)
+            make.centerY.equalToSuperview()
+        }
     }
 
     private func updateButtonAttribute() {
-        backgroundColor = isChecked ? BitnagilColor.lightBlue75 : .white
-        layer.borderColor = (isChecked ? BitnagilColor.lightBlue200 : .white)?.cgColor
-        mainLabel.textColor = isChecked ? BitnagilColor.navy500 : BitnagilColor.gray50
-        subLabel?.textColor = isChecked ? BitnagilColor.navy500 : BitnagilColor.gray50
+        backgroundColor = isChecked ? BitnagilColor.orange50 : BitnagilColor.gray99
+        mainLabel.textColor = isChecked ? BitnagilColor.orange500 : BitnagilColor.gray50
+        subLabel?.textColor = isChecked ? BitnagilColor.orange500 : BitnagilColor.gray50
+        checkedIcon.isHidden = !isChecked
     }
 
     func updateButtonState(isChecked: Bool) {

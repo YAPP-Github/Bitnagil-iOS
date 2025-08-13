@@ -13,17 +13,16 @@ extension NSAttributedString {
 
         attributedString.addAttribute(
             .font,
-            value: BitnagilFont(style: .body2, weight: .regular).font,
+            value: BitnagilFont(style: .subtitle1, weight: .medium).font,
             range: NSRange(location: 0, length: text.count)
         )
 
         if let range = text.range(of: highlightText) {
             let nsRange = NSRange(range, in: text)
-            attributedString.addAttribute(
-                .font,
-                value: BitnagilFont(style: .body2, weight: .semiBold).font,
-                range: nsRange
-            )
+            attributedString.addAttributes([
+                .font: BitnagilFont(style: .subtitle1, weight: .semiBold).font,
+                .foregroundColor: BitnagilColor.orange500 ?? .orange
+            ], range: nsRange)
         }
         return attributedString
     }

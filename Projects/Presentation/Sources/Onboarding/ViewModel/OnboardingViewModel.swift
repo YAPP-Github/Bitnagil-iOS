@@ -9,15 +9,17 @@ import Combine
 import Domain
 import Shared
 
-public final class OnboardingViewModel: ViewModel {
-    public enum Input {
+final class OnboardingViewModel: ViewModel {
+    enum Input {
+        case loadNickname
         case selectOnboardingChoice(selectedChoice: OnboardingChoiceType)
         case fetchOnboardingChoice(onboarding: OnboardingType)
         case fetchOnboardingChoices
         case makeOnboardingResult
     }
 
-    public struct Output {
+    struct Output {
+        let nicknamePublisher: AnyPublisher<String, Never>
         let timeOnboardingChoicePublisher: AnyPublisher<OnboardingChoiceType?, Never>
         let frequencyOnboardingChoicePublisher: AnyPublisher<OnboardingChoiceType?, Never>
         let feelingOnboardingChoicePublisher: AnyPublisher<Set<OnboardingChoiceType>, Never>
@@ -28,6 +30,7 @@ public final class OnboardingViewModel: ViewModel {
     }
 
     private(set) var output: Output
+    private let nicknameSubject = CurrentValueSubject<String, Never>("")
     private let timeOnboardingChoiceSubject = CurrentValueSubject<OnboardingChoiceType?, Never>(nil)
     private let frequencyOnboardingChoiceSubject = CurrentValueSubject<OnboardingChoiceType?, Never>(nil)
     private let feelingOnboardingChoiceSubject = CurrentValueSubject<Set<OnboardingChoiceType>, Never>([])
@@ -36,8 +39,11 @@ public final class OnboardingViewModel: ViewModel {
     private let onboardingChoicesSubject = PassthroughSubject<[OnboardingChoiceType], Never>()
     private let nextButtonSubject = PassthroughSubject<Bool, Never>()
 
-    init() {
+    private let userDataRepository: UserDataRepositoryProtocol
+    init(userDataRepository: UserDataRepositoryProtocol) {
+        self.userDataRepository = userDataRepository
         self.output = Output(
+            nicknamePublisher: nicknameSubject.eraseToAnyPublisher(),
             timeOnboardingChoicePublisher: timeOnboardingChoiceSubject.eraseToAnyPublisher(),
             frequencyOnboardingChoicePublisher: frequencyOnboardingChoiceSubject.eraseToAnyPublisher(),
             feelingOnboardingChoicePublisher: feelingOnboardingChoiceSubject.eraseToAnyPublisher(),
@@ -48,8 +54,11 @@ public final class OnboardingViewModel: ViewModel {
         )
     }
 
-    public func action(input: Input) {
+    func action(input: Input) {
         switch input {
+        case .loadNickname:
+            loadNickname()
+
         case .selectOnboardingChoice(let selectedChoice):
             selectChoice(choice: selectedChoice)
 
@@ -61,6 +70,18 @@ public final class OnboardingViewModel: ViewModel {
 
         case .makeOnboardingResult:
             makeOnboardingResult()
+        }
+    }
+
+    // 유저 닉네임을 가져옵니다.
+    private func loadNickname() {
+        Task {
+            do {
+                let nickname = try await userDataRepository.loadNickname()
+                nicknameSubject.send(nickname)
+            } catch {
+                // TODO: 에러 처리
+            }
         }
     }
 

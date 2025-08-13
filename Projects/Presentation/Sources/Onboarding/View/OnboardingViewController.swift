@@ -1,5 +1,5 @@
 //
-//  OnboardingView.swift
+//  OnboardingViewController.swift
 //  Presentation
 //
 //  Created by 최정인 on 7/8/25.
@@ -10,35 +10,35 @@ import Domain
 import SnapKit
 import UIKit
 
-public final class OnboardingView: BaseViewController<OnboardingViewModel> {
-
+final class OnboardingViewController: BaseViewController<OnboardingViewModel> {
     private enum Layout {
         static let horizontalMargin: CGFloat = 20
-        static let mainLabelMinTopSpacing: CGFloat = 12
-        static let mainLabelMaxTopSpacing: CGFloat = 32
+        static let mainLabelMinTopSpacing: CGFloat = 60
+        static let mainLabelMaxTopSpacing: CGFloat = 86
+        static let mainLabelMinHeight: CGFloat = 30
         static let mainLabelHeight: CGFloat = 60
         static let subLabelTopSpacing: CGFloat = 10
-        static let choiceButtonHeight: CGFloat = 52
-        static let choiceButtonHeightWithSubLabel: CGFloat = 84
+        static let choiceButtonHeight: CGFloat = 56
+        static let choiceButtonHeightWithSubLabel: CGFloat = 74
         static let choiceStackViewSpacing: CGFloat = 12
         static let choiceStackViewTopSpacing: CGFloat = 28
         static let nextButtonHeight: CGFloat = 54
         static let nextButtonBottomSpacing: CGFloat = 20
     }
 
-    private let onboarding: OnboardingType
     private let mainLabel = UILabel()
     private var subLabel: UILabel? = nil
     private let choiceStackView = UIStackView()
     private var choiceButtons: [OnboardingChoiceType: OnboardingChoiceButton] = [:]
     private let nextButton = PrimaryButton(buttonState: .disabled, buttonTitle: "다음")
 
+    private let onboarding: OnboardingType
+    private let isFromMypage: Bool
     private var isLayoutConfigured: Bool = false
     private var mainLabelTopConstraint: Constraint?
-
-    private let isFromMypage: Bool
     private var cancellables: Set<AnyCancellable>
-    public init(
+
+    init(
         viewModel: OnboardingViewModel,
         onboarding: OnboardingType,
         isFromMypage: Bool = false
@@ -53,20 +53,12 @@ public final class OnboardingView: BaseViewController<OnboardingViewModel> {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        let stepCount = OnboardingType.allCases.count + 1
-        if !isFromMypage && onboarding == .time {
-            configureNavigationBar(navigationStyle: .withPrograssBarWithoutBackButton(step: onboarding.step, stepCount: stepCount))
-        } else {
-            configureNavigationBar(navigationStyle: .withPrograssBar(step: onboarding.step, stepCount: stepCount))
-        }
-
         self.viewModel.action(input: .fetchOnboardingChoice(onboarding: onboarding))
     }
 
-    public override func viewDidLayoutSubviews() {
+    override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
         if !isLayoutConfigured {
@@ -78,22 +70,24 @@ public final class OnboardingView: BaseViewController<OnboardingViewModel> {
     private func updateMainLabelTopSpacing() {
         let height = view.bounds.height
         let spacing: CGFloat = height <= 667 ? Layout.mainLabelMinTopSpacing : Layout.mainLabelMaxTopSpacing
-
         mainLabelTopConstraint?.update(offset: spacing)
     }
 
     override func configureAttribute() {
         mainLabel.attributedText = BitnagilFont(style: .title2, weight: .bold).attributedString(text: onboarding.mainTitle)
-        mainLabel.textColor = BitnagilColor.navy500
+        mainLabel.textColor = BitnagilColor.gray10
         mainLabel.numberOfLines = 2
+        if onboarding == .feeling {
+            mainLabel.numberOfLines = 1
+        }
         mainLabel.textAlignment = .left
 
         if let subTitle = onboarding.subTitle {
             subLabel = UILabel()
             if let subLabel {
-                subLabel.attributedText = BitnagilFont(style: .body2, weight: .medium).attributedString(text: subTitle)
+                subLabel.text = subTitle
+                subLabel.font = BitnagilFont(style: .body1, weight: .medium).font
                 subLabel.textColor = BitnagilColor.gray50
-                subLabel.numberOfLines = 2
                 subLabel.textAlignment = .left
             }
         }
@@ -105,9 +99,11 @@ public final class OnboardingView: BaseViewController<OnboardingViewModel> {
             let choiceButton = OnboardingChoiceButton(onboardingChoice: choice)
             choiceButton.tag = index
 
-            choiceButton.addAction(UIAction { [weak self] _ in
-                self?.viewModel.action(input: .selectOnboardingChoice(selectedChoice: choice))
-            }, for: .touchUpInside)
+            choiceButton.addAction(
+                UIAction { [weak self] _ in
+                    self?.viewModel.action(input: .selectOnboardingChoice(selectedChoice: choice))
+                },
+                for: .touchUpInside)
             choiceButtons[choice] = choiceButton
             choiceStackView.addArrangedSubview(choiceButton)
 
@@ -116,14 +112,18 @@ public final class OnboardingView: BaseViewController<OnboardingViewModel> {
             }
         }
 
-        nextButton.addAction(UIAction { _ in
-            self.goNextStep()
-        }, for: .touchUpInside)
+        nextButton.addAction(
+            UIAction { _ in
+                self.goNextStep()
+            },
+            for: .touchUpInside)
     }
 
     override func configureLayout() {
         let safeArea = view.safeAreaLayoutGuide
-        view.backgroundColor = BitnagilColor.gray99
+        view.backgroundColor = .systemBackground
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        configureCustomNaviagtionBar(navigationBarStyle: .withProgressBar(step: onboarding.step))
 
         view.addSubview(mainLabel)
         view.addSubview(choiceStackView)
@@ -133,8 +133,8 @@ public final class OnboardingView: BaseViewController<OnboardingViewModel> {
         mainLabel.snp.makeConstraints { make in
             make.leading.equalTo(safeArea).offset(Layout.horizontalMargin)
             make.trailing.equalTo(safeArea).inset(Layout.horizontalMargin)
-            mainLabelTopConstraint = make.top.equalTo(safeArea).offset(Layout.mainLabelMinTopSpacing).constraint
-            make.height.equalTo(Layout.mainLabelHeight)
+            mainLabelTopConstraint = make.top.equalTo(safeArea).offset(Layout.mainLabelMaxTopSpacing).constraint
+            make.height.equalTo(onboarding == .feeling ? Layout.mainLabelMinHeight : Layout.mainLabelHeight)
         }
 
         if let subLabel {
@@ -223,10 +223,10 @@ public final class OnboardingView: BaseViewController<OnboardingViewModel> {
         var nextStep: OnboardingType?
         switch onboarding {
         case .time:
-            nextStep = .frequency
-        case .frequency:
             nextStep = .feeling
         case .feeling:
+            nextStep = .frequency
+        case .frequency:
             nextStep = .outdoor
         case .outdoor:
             nextStep = nil
@@ -234,12 +234,12 @@ public final class OnboardingView: BaseViewController<OnboardingViewModel> {
 
         var nextView: UIViewController?
         if let nextStep {
-            nextView = OnboardingView(
+            nextView = OnboardingViewController(
                 viewModel: viewModel,
                 onboarding: nextStep,
                 isFromMypage: isFromMypage)
         } else {
-            nextView = OnboardingResultView(viewModel: viewModel, isFromMypage: isFromMypage)
+            nextView = OnboardingResultViewController(viewModel: viewModel, isFromMypage: isFromMypage)
         }
         guard let nextView else { return }
         self.navigationController?.pushViewController(nextView, animated: true)

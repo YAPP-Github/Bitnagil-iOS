@@ -21,7 +21,7 @@ final class ResultRecommendedRoutineView: BaseViewController<ResultRecommendedRo
         var mainLabelText: String {
             switch self {
             case .onboarding, .mypage:
-                "당신만의 추천 루틴이\n생성되었어요!"
+                "당신만의 추천 루틴이 생성되었어요!"
             case .emotion:
                 "오늘 감정에 따른\n루틴을 추천드릴게요!"
             }
@@ -30,7 +30,7 @@ final class ResultRecommendedRoutineView: BaseViewController<ResultRecommendedRo
         var subLabelText: String {
             switch self {
             case .onboarding:
-                "원하는 루틴을 선택해서 가볍게 시작해보세요.\n선택한 루틴은 홈화면에서 자유롭게 수정 할 수 있어요."
+                "선택한 루틴은 홈에서 자유롭게 수정할 수 있어요."
             case .mypage:
                 "생활 패턴과 목표에 맞춰 다시 구성된 맞춤 루틴이에요.\n원하는 루틴을 선택해서 가볍게 시작해보세요."
             case .emotion:
@@ -67,14 +67,16 @@ final class ResultRecommendedRoutineView: BaseViewController<ResultRecommendedRo
 
     private enum Layout {
         static let horizontalMargin: CGFloat = 20
-        static let mainLabelMinTopSpacing: CGFloat = 12
-        static let mainLabelMaxTopSpacing: CGFloat = 32
+        static let mainLabelMinTopSpacing: CGFloat = 60
+        static let mainLabelMaxTopSpacing: CGFloat = 83
+        static let mainLabelMinHeight: CGFloat = 30
         static let mainLabelHeight: CGFloat = 60
         static let subLabelTopSpacing: CGFloat = 10
+        static let subLabelMinHeight: CGFloat = 24
         static let subLabelHeight: CGFloat = 40
         static let routineStackViewSpacing: CGFloat = 12
         static let routineStackViewTopSpacing: CGFloat = 28
-        static let routineButtonHeight: CGFloat = 84
+        static let routineButtonHeight: CGFloat = 74
         static let confirmButtonHeight: CGFloat = 54
         static let confirmButtonBottomSpacing: CGFloat = 10
         static let skipButtonLabelFontSize: CGFloat = 14
@@ -111,11 +113,6 @@ final class ResultRecommendedRoutineView: BaseViewController<ResultRecommendedRo
         viewModel.action(input: .fetchResultRecommendedRoutines)
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        settingNavigationItem()
-    }
-
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
@@ -135,14 +132,24 @@ final class ResultRecommendedRoutineView: BaseViewController<ResultRecommendedRo
     override func configureAttribute() {
         let mainLabelText = entryPoint.mainLabelText
         mainLabel.attributedText = BitnagilFont(style: .title2, weight: .bold).attributedString(text: mainLabelText)
-        mainLabel.textColor = BitnagilColor.navy500
-        mainLabel.numberOfLines = 2
+        mainLabel.textColor = BitnagilColor.gray10
+        switch entryPoint {
+        case .onboarding:
+            mainLabel.numberOfLines = 1
+        case .mypage, .emotion:
+            mainLabel.numberOfLines = 2
+        }
         mainLabel.textAlignment = .left
 
         let subLabelText = entryPoint.subLabelText
-        subLabel.attributedText = BitnagilFont(style: .body2, weight: .medium).attributedString(text: subLabelText)
+        subLabel.attributedText = BitnagilFont(style: .body1, weight: .medium).attributedString(text: subLabelText)
         subLabel.textColor = BitnagilColor.gray50
-        subLabel.numberOfLines = 2
+        switch entryPoint {
+        case .onboarding:
+            subLabel.numberOfLines = 1
+        case .mypage, .emotion:
+            subLabel.numberOfLines = 2
+        }
         subLabel.textAlignment = .left
 
         recommendedRoutineStackView.axis = .vertical
@@ -157,7 +164,7 @@ final class ResultRecommendedRoutineView: BaseViewController<ResultRecommendedRo
             underline: true,
             weight: .regular
         ).attributedString(text: "건너뛰기")
-        skipButtonLabel.textColor = BitnagilColor.navy500
+        skipButtonLabel.textColor = BitnagilColor.gray10
 
         skipButton.isHidden = entryPoint.isHiddenSkipButton
         configureSkipButton()
@@ -165,7 +172,9 @@ final class ResultRecommendedRoutineView: BaseViewController<ResultRecommendedRo
 
     override func configureLayout() {
         let safeArea = view.safeAreaLayoutGuide
-        view.backgroundColor = BitnagilColor.gray99
+        view.backgroundColor = .systemBackground
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        configureCustomNaviagtionBar(navigationBarStyle: .withProgressBar(step: OnboardingType.allCases.count + 1))
 
         view.addSubview(mainLabel)
         view.addSubview(subLabel)
@@ -178,14 +187,14 @@ final class ResultRecommendedRoutineView: BaseViewController<ResultRecommendedRo
             make.leading.equalTo(safeArea).offset(Layout.horizontalMargin)
             make.trailing.equalTo(safeArea).inset(Layout.horizontalMargin)
             mainLabelTopConstraint = make.top.equalTo(safeArea).offset(Layout.mainLabelMinTopSpacing).constraint
-            make.height.equalTo(Layout.mainLabelHeight)
+            make.height.equalTo(entryPoint == .onboarding ? Layout.mainLabelMinHeight : Layout.mainLabelHeight)
         }
 
         subLabel.snp.makeConstraints { make in
             make.leading.equalTo(safeArea).offset(Layout.horizontalMargin)
             make.trailing.equalTo(safeArea).inset(Layout.horizontalMargin)
-            make.top.equalTo(mainLabel.snp.bottom).offset(Layout.subLabelTopSpacing)
-            make.height.equalTo(Layout.subLabelHeight)
+            make.top.equalTo(mainLabel.snp.bottom).offset(entryPoint == .onboarding ? 5 : Layout.subLabelTopSpacing)
+            make.height.equalTo(entryPoint == .onboarding ? Layout.subLabelMinHeight : Layout.subLabelHeight)
         }
 
         recommendedRoutineStackView.snp.makeConstraints { make in
@@ -302,16 +311,6 @@ final class ResultRecommendedRoutineView: BaseViewController<ResultRecommendedRo
             } else {
                 routine.value.updateButtonState(isChecked: false)
             }
-        }
-    }
-
-    private func settingNavigationItem() {
-        switch entryPoint {
-        case .onboarding, .mypage:
-            let stepCount = OnboardingType.allCases.count + 1
-            configureNavigationBar(navigationStyle: .withPrograssBarWithCustomBackButton(step: stepCount, stepCount: stepCount))
-        case .emotion:
-            configureNavigationBar(navigationStyle: .withBackButton(title: ""))
         }
     }
 

@@ -15,20 +15,20 @@ extension OnboardingChoiceType: OnboardingChoiceProtocol {
         case .eveningTime: "저녁을 편안하게 마무리하고 싶어요."
         case .allTime: "언제든 상관 없어요."
 
-        case .never: "밖에 나가지 않고 집에서만 지냈어요."
-        case .rarely: "잠깐 외출했어요."
-        case .sometimes: "가끔 나가요."
-        case .often: "자주 외출해요."
-
         case .stability: "안정감"
         case .connection: "연결감"
         case .growth: "성장감"
         case .vitality: "생동감"
 
+        case .never: "나가지 않고 집에서만 지냈어요."
+        case .rarely: "잠깐 외출했어요."
+        case .sometimes: "가끔 나가요."
+        case .often: "자주 외출해요."
+
         case .once: "시작이 더 중요해요."
         case .twoToThree: "너무 무리하지 않아도 괜찮아요."
-        case .fourOrMore: "이 정도면 충분히 활력 있는 한 주가 될거에요."
-        case .notSure: "목표 선택을 도와드릴게요!"
+        case .fourOrMore: "충분히 활력 있는 한 주가 될거에요."
+        case .notSure: "아직 잘 모르겠어요."
         }
     }
 
@@ -50,7 +50,7 @@ extension OnboardingChoiceType: OnboardingChoiceProtocol {
         case .fourOrMore:
             return "일주일에 4회 이상"
         case .notSure:
-            return "아직 잘 모르겠어요"
+            return "목표 선택을 도와드릴게요!"
 
         default:
             return nil
