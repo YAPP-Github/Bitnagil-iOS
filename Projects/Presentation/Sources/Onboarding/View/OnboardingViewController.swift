@@ -123,7 +123,7 @@ final class OnboardingViewController: BaseViewController<OnboardingViewModel> {
         let safeArea = view.safeAreaLayoutGuide
         view.backgroundColor = .systemBackground
         navigationController?.setNavigationBarHidden(true, animated: false)
-        configureCustomNaviagtionBar(navigationBarStyle: .withProgressBar(step: onboarding.step))
+        configureCustomNavigationBar(navigationBarStyle: .withProgressBar(step: onboarding.step))
 
         view.addSubview(mainLabel)
         view.addSubview(choiceStackView)

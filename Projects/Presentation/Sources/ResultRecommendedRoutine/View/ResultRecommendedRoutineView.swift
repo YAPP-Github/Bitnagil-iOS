@@ -174,7 +174,7 @@ final class ResultRecommendedRoutineView: BaseViewController<ResultRecommendedRo
         let safeArea = view.safeAreaLayoutGuide
         view.backgroundColor = .systemBackground
         navigationController?.setNavigationBarHidden(true, animated: false)
-        configureCustomNaviagtionBar(navigationBarStyle: .withProgressBar(step: OnboardingType.allCases.count + 1))
+        configureCustomNavigationBar(navigationBarStyle: .withProgressBar(step: OnboardingType.allCases.count + 1))
 
         view.addSubview(mainLabel)
         view.addSubview(subLabel)

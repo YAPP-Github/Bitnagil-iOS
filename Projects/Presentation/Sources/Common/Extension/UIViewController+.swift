@@ -16,7 +16,7 @@ extension UIViewController {
         case withProgressBar(step: Int)     // 백버튼 + progress
     }
 
-    func configureCustomNaviagtionBar(navigationBarStyle: NavigationBarStyle) {
+    func configureCustomNavigationBar(navigationBarStyle: NavigationBarStyle) {
         let safeArea = self.view.safeAreaLayoutGuide
         let navigationBar: UIView = customNavigationBar(navigationBarStyle: navigationBarStyle)
 

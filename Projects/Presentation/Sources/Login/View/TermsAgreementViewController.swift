@@ -59,7 +59,7 @@ final class TermsAgreementViewController: BaseViewController<LoginViewModel> {
         let safeArea = view.safeAreaLayoutGuide
         view.backgroundColor = .systemBackground
         navigationController?.setNavigationBarHidden(true, animated: false)
-        configureCustomNaviagtionBar(navigationBarStyle: .withBackButton(title: "약관 동의"))
+        configureCustomNavigationBar(navigationBarStyle: .withBackButton(title: "약관 동의"))
 
         view.addSubview(agreementLabel)
         view.addSubview(totalAgreementButton)
