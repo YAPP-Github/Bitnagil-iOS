@@ -8,21 +8,44 @@
 import UIKit
 
 final class HomeRegisterEmotionButton: UIButton {
+    enum ButtonState {
+        case `default`
+        case tap
+        case disabled
 
-    private enum Layout {
-        static let chevronIconSize: CGFloat = 12
-        static let chevronIconLeadingSpacing: CGFloat = 4
-        static let buttonLabelLeadingSpacing: CGFloat = 20
-        static let buttonLabelHeight: CGFloat = 20
+        var buttonBackgroudColor: UIColor? {
+            switch self {
+            case .default: BitnagilColor.orange500
+            case .tap: BitnagilColor.orange600
+            case .disabled:  BitnagilColor.gray30
+            }
+        }
+
+        var buttonTextColor: UIColor? {
+            switch self {
+            case .default: .white
+            case .tap: .white
+            case .disabled: BitnagilColor.gray10
+            }
+        }
+
+        var buttonTitle: String {
+            switch self {
+            case .default, .tap: "오늘 감정 등록하기"
+            case .disabled: "오늘 감정 등록완료"
+            }
+        }
     }
 
-    private let buttonLabel = UILabel()
-    private let chevronIcon = UIImageView()
+    private var buttonState: ButtonState = .default {
+        didSet {
+            updateButtonUI()
+        }
+    }
 
     init() {
         super.init(frame: .zero)
         configureAttribute()
-        configureLayout()
     }
     
     required init?(coder: NSCoder) {
@@ -30,29 +53,25 @@ final class HomeRegisterEmotionButton: UIButton {
     }
     
     private func configureAttribute() {
-        buttonLabel.text = "감정구슬 기록하기"
-        buttonLabel.font = BitnagilFont(style: .caption1, weight: .medium).font
-        buttonLabel.textColor = BitnagilColor.navy300
+        layer.masksToBounds = true
+        layer.cornerRadius = 8
 
-        chevronIcon.image = BitnagilIcon.chevronIcon(direction: .right)?
-            .resize(to: CGSize(width: Layout.chevronIconSize, height: Layout.chevronIconSize))?
-            .withRenderingMode(.alwaysTemplate)
-        chevronIcon.tintColor = BitnagilColor.navy300
+        var buttonConfiguration = UIButton.Configuration.filled()
+        buttonConfiguration.baseBackgroundColor = buttonState.buttonBackgroudColor
+        buttonConfiguration.attributedTitle = AttributedString(
+            buttonState.buttonTitle,
+            attributes: .init([.font: BitnagilFont(style: .body2, weight: .semiBold).font]))
+        buttonConfiguration.baseForegroundColor = buttonState.buttonTextColor
+        self.configuration = buttonConfiguration
     }
 
-    private func configureLayout() {
-        addSubview(buttonLabel)
-        addSubview(chevronIcon)
+    private func updateButtonUI() {
+        backgroundColor = buttonState.buttonBackgroudColor
+        setTitleColor(buttonState.buttonTextColor, for: .normal)
+    }
 
-        buttonLabel.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.leading.equalToSuperview().offset(Layout.buttonLabelLeadingSpacing)
-            make.height.equalTo(Layout.buttonLabelHeight)
-        }
-
-        chevronIcon.snp.makeConstraints { make in
-            make.centerY.equalToSuperview()
-            make.leading.equalTo(buttonLabel.snp.trailing).offset(Layout.chevronIconLeadingSpacing)
-        }
+    func updateButtonState(buttonState: ButtonState) {
+        self.buttonState = buttonState
+        self.isEnabled = buttonState != .disabled
     }
 }

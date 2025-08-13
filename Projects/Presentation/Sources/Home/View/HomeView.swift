@@ -17,12 +17,8 @@ final class HomeView: BaseViewController<HomeViewModel> {
         static let horizontalMargin: CGFloat = 20
         static let homeLabelTopSpacing: CGFloat = 41
         static let homeLabelHeight: CGFloat = 64
-        static let informationButton: CGFloat = 24
-        static let informationButtonLeadingSpacing: CGFloat = 1
-        static let informationButtonBottomSpacing: CGFloat = 4
-        static let informationButtonSize: CGFloat = 24
-        static let registerEmotionButtonTopSpacing: CGFloat = 3
-        static let registerEmotionButtonHeight: CGFloat = 44
+        static let registerEmotionButtonTopSpacing: CGFloat = 16
+        static let registerEmotionButtonHeight: CGFloat = 36
         static let registerEmotionButtonWidth: CGFloat = 136
         static let emotionOrbViewTopSpacing: CGFloat = 46
         static let emotionOrbViewTrailingSpacing: CGFloat = 35
@@ -44,11 +40,6 @@ final class HomeView: BaseViewController<HomeViewModel> {
         static let floatingMenuBottomSpacing: CGFloat = 15
         static let floatingMenuHeight: CGFloat = 64
         static let floatingMenuWidth: CGFloat = 144
-        static let tooltipViewTailLeadingSpacing: CGFloat = 78.68
-        static let tooltipViewLeadingSpacing: CGFloat = 76
-        static let tooltipViewBottomSpacing: CGFloat = 4
-        static let tooltipViewWidth: CGFloat = 176
-        static let tooltipViewHeight: CGFloat = 47
         static let routineDetailViewDefaultHeight: CGFloat = 367
         static let routineDetailViewSubRoutineHeight: CGFloat = 25
         static let deleteAlertViewWidth: CGFloat = 298
@@ -58,11 +49,8 @@ final class HomeView: BaseViewController<HomeViewModel> {
         static let toastMessageHeight: CGFloat = 44
     }
 
-    private let gradientLayer = CAGradientLayer()
     private let homeLabel = UILabel()
-    private let informationButton = UIButton()
     private let emotionOrbView = UIImageView()
-    private let registerEmotionButtonActionIdentifier = UIAction.Identifier("goToEmotionRegisterView")
     private let registerEmotionButton = HomeRegisterEmotionButton()
 
     private let contentView = UIView()
@@ -70,12 +58,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
     private let emptyView = HomeEmptyView()
 
     private let routineScrollView = UIScrollView()
-    private let routineSortButton = UIButton()
-    private let routineSortView = SelectableItemTableView<RoutineSortType>(items: [RoutineSortType.complete, RoutineSortType.incomplete])
     private let routineStackView = UIStackView()
-
-    private let toastMessageView = ToastMessageView()
-    private let tooltipView = TooltipView(tailPosition: .offsetFromLeading(Layout.tooltipViewTailLeadingSpacing))
 
     private var isShowingFloatingMenu: Bool = false
     private let dimmedView = UIView()
@@ -102,7 +85,6 @@ final class HomeView: BaseViewController<HomeViewModel> {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureGradientBackground()
         showIndicatorView()
         viewModel.action(input: .loadNickname)
     }
@@ -113,34 +95,20 @@ final class HomeView: BaseViewController<HomeViewModel> {
         viewModel.action(input: .fetchRoutines)
     }
 
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        gradientLayer.frame = view.bounds
-    }
-
     override func configureAttribute() {
-        homeLabel.text = "님,\n오늘 기분 어때요?"
-        homeLabel.numberOfLines = 2
-        homeLabel.font = BitnagilFont(
+        let homeLabelText = "님,\n오늘 기분 어때요?"
+        homeLabel.attributedText = BitnagilFont(
             family: .cafe24Ssurround,
             style: .cafe24Title1,
-            weight: .light).font
-        homeLabel.textColor = BitnagilColor.gray10
+            weight: .light).attributedString(text: homeLabelText)
+        homeLabel.numberOfLines = 2
+        homeLabel.textColor = .white
 
-        informationButton.setImage(BitnagilIcon.informationIcon, for: .normal)
-        informationButton.addAction(UIAction { [weak self] _ in
-            self?.informationButton.isSelected.toggle()
-            if self?.informationButton.isSelected ?? false {
-                self?.tooltipView.showTooltip()
-            } else {
-                self?.tooltipView.hideTooltip()
-            }
-        }, for: .touchUpInside)
-
-        let registerEmotionAction = UIAction(identifier: registerEmotionButtonActionIdentifier) { [weak self] _ in
-            self?.goToEmotionRegisterView()
-        }
-        registerEmotionButton.addAction(registerEmotionAction, for: .touchUpInside)
+        registerEmotionButton.addAction(
+            UIAction { [weak self] _ in
+                self?.goToEmotionRegisterView()
+            },
+            for: .touchUpInside)
 
         contentView.backgroundColor = .white
         contentView.layer.cornerRadius = Layout.contentViewCornerRadius
@@ -154,9 +122,9 @@ final class HomeView: BaseViewController<HomeViewModel> {
         weekView.delegate = self
 
         emptyView.didTapRegisterRoutineButton = {
-            guard let routineCreationViewModel = DIContainer.shared.resolve(type: RoutineCreationViewModel.self) else {
-                fatalError("routineCreationViewModel 의존성이 등록되지 않았습니다.")
-            }
+            guard let routineCreationViewModel = DIContainer.shared.resolve(type: RoutineCreationViewModel.self)
+            else { fatalError("routineCreationViewModel 의존성이 등록되지 않았습니다.") }
+
             let routineCreationView = RoutineCreationView(viewModel: routineCreationViewModel)
             routineCreationView.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(routineCreationView, animated: true)
@@ -165,22 +133,10 @@ final class HomeView: BaseViewController<HomeViewModel> {
         routineScrollView.showsVerticalScrollIndicator = false
         routineScrollView.showsHorizontalScrollIndicator = false
 
-        routineSortButton.setImage(BitnagilIcon.sortIcon, for: .normal)
-        routineSortButton.addAction(UIAction { [weak self] _ in
-            self?.showRoutineSortBottomSheet()
-        }, for: .touchUpInside)
-
-        routineSortView.delegate = self
-
         routineStackView.axis = .vertical
         routineStackView.spacing = Layout.routineStackViewSpacing
         routineStackView.alignment = .fill
         routineStackView.distribution = .fill
-
-        tooltipView.configure(message: "감정 기록 시, 루틴을 추천 받아요!")
-        tooltipView.isHidden = true
-        let viewTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
-        view.addGestureRecognizer(viewTapGesture)
 
         floatingButton.addAction(UIAction { [weak self] _ in
             self?.toggleFloatingButton()
@@ -205,11 +161,9 @@ final class HomeView: BaseViewController<HomeViewModel> {
 
     override func configureLayout() {
         let safeArea = view.safeAreaLayoutGuide
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = BitnagilColor.gray10
 
         view.addSubview(homeLabel)
-        view.addSubview(informationButton)
-        view.addSubview(tooltipView)
         view.addSubview(emotionOrbView)
         view.addSubview(registerEmotionButton)
 
@@ -217,7 +171,6 @@ final class HomeView: BaseViewController<HomeViewModel> {
         contentView.addSubview(weekView)
         contentView.addSubview(emptyView)
         contentView.addSubview(routineScrollView)
-        routineScrollView.addSubview(routineSortButton)
         routineScrollView.addSubview(routineStackView)
         contentView.addSubview(loadingIndicatorView)
 
@@ -226,7 +179,6 @@ final class HomeView: BaseViewController<HomeViewModel> {
         view.addSubview(floatingButton)
 
         view.addSubview(deleteAlertView)
-        view.addSubview(toastMessageView)
 
         homeLabel.snp.makeConstraints { make in
             make.top.equalTo(safeArea).offset(Layout.homeLabelTopSpacing)
@@ -234,21 +186,8 @@ final class HomeView: BaseViewController<HomeViewModel> {
             make.height.equalTo(Layout.homeLabelHeight)
         }
 
-        informationButton.snp.makeConstraints { make in
-            make.leading.equalTo(homeLabel.snp.trailing).offset(Layout.informationButtonLeadingSpacing)
-            make.bottom.equalTo(homeLabel.snp.bottom).inset(Layout.informationButtonBottomSpacing)
-            make.size.equalTo(Layout.informationButtonSize)
-        }
-
-        tooltipView.snp.makeConstraints { make in
-            make.leading.equalTo(informationButton).offset(-Layout.tooltipViewLeadingSpacing)
-            make.bottom.equalTo(informationButton.snp.top).offset(-Layout.tooltipViewBottomSpacing)
-            make.width.equalTo(Layout.tooltipViewWidth)
-            make.height.equalTo(Layout.tooltipViewHeight)
-        }
-
         registerEmotionButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview()
+            make.leading.equalToSuperview().offset(Layout.horizontalMargin)
             make.top.equalTo(homeLabel.snp.bottom).offset(Layout.registerEmotionButtonTopSpacing)
             make.height.equalTo(Layout.registerEmotionButtonHeight)
             make.width.equalTo(Layout.registerEmotionButtonWidth)
@@ -277,12 +216,6 @@ final class HomeView: BaseViewController<HomeViewModel> {
             make.top.equalTo(weekView.snp.bottom)
             make.horizontalEdges.equalTo(safeArea)
             make.bottom.equalTo(safeArea)
-        }
-
-        routineSortButton.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.trailing.equalTo(safeArea).inset(Layout.routineSortButtonTrailingSpacing)
-            make.size.equalTo(Layout.routineSortButtonSize)
         }
 
         routineStackView.snp.makeConstraints { make in
@@ -324,18 +257,17 @@ final class HomeView: BaseViewController<HomeViewModel> {
         loadingIndicatorView.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
-
-        toastMessageView.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.bottom.equalTo(safeArea.snp.bottom).offset(-Layout.toastMessageBottomSpacing)
-        }
     }
 
     override func bind() {
         viewModel.output.nicknamePublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] nickname in
-                self?.homeLabel.text = "\(nickname)님,\n오늘 기분 어때요?"
+                let homeLabelText = "\(nickname)님,\n오늘 기분 어때요?"
+                self?.homeLabel.attributedText = BitnagilFont(
+                    family: .cafe24Ssurround,
+                    style: .cafe24Title1,
+                    weight: .light).attributedString(text: homeLabelText)
             }
             .store(in: &cancellables)
 
@@ -389,24 +321,6 @@ final class HomeView: BaseViewController<HomeViewModel> {
             .store(in: &cancellables)
     }
 
-    // 홈 Graident 배경색을 설정합니다.
-    private func configureGradientBackground() {
-        gradientLayer.colors = [
-            BitnagilColor.homeGradientLeft?.cgColor ?? UIColor.systemPink.cgColor,
-            BitnagilColor.homeGradientRight?.cgColor ?? UIColor.blue.cgColor]
-        gradientLayer.startPoint = CGPoint(x: 0, y: 0)
-        gradientLayer.endPoint = CGPoint(x: 1, y: 0.9)
-        view.layer.insertSublayer(gradientLayer, at: 0)
-    }
-
-    // 루틴 정렬 Bottom Sheet를 보여줍니다.
-    private func showRoutineSortBottomSheet() {
-        if !tooltipView.isHidden {
-            hideTooltipView()
-        }
-        presentCustomBottomSheet(contentViewController: routineSortView, maxHeight: Layout.routineSortViewHeight)
-    }
-
     // 해당 날짜의 Routine View를 설정합니다. (없다면 EmptyView)
     private func updateRoutineView(routines: [MainRoutine]) {
         routineStackView.arrangedSubviews.forEach {
@@ -415,11 +329,9 @@ final class HomeView: BaseViewController<HomeViewModel> {
 
         if routines.isEmpty {
             routineScrollView.isHidden = true
-            routineSortButton.isHidden = true
             emptyView.isHidden = false
         } else {
             routineScrollView.isHidden = false
-            routineSortButton.isHidden = false
             emptyView.isHidden = true
 
             for routine in routines {
@@ -435,24 +347,12 @@ final class HomeView: BaseViewController<HomeViewModel> {
         guard
             let emotion,
             let emotionOrbImageUrl = emotion.emotionImageUrl else {
-            let registerEmotionAction = UIAction(identifier: registerEmotionButtonActionIdentifier) { [weak self] _ in
-                self?.goToEmotionRegisterView()
-            }
-            registerEmotionButton.addAction(registerEmotionAction, for: .touchUpInside)
             emotionOrbView.image = BitnagilGraphic.defaultEmotionGraphic
+            registerEmotionButton.updateButtonState(buttonState: .default)
             return
         }
         emotionOrbView.kf.setImage(with: emotionOrbImageUrl)
-        registerEmotionButton.removeAction(identifiedBy: registerEmotionButtonActionIdentifier, for: .touchUpInside)
-        registerEmotionButton.addAction(
-            UIAction { [weak self] _ in
-                self?.toastMessageView.showToast(
-                    withCheckImage: true,
-                    message: "선택한 감정 구슬이 이미 반영되었어요.",
-                    width: Layout.toastMessageWidth,
-                    height: Layout.toastMessageHeight)
-            },
-            for: .touchUpInside)
+        registerEmotionButton.updateButtonState(buttonState: .disabled)
     }
 
     @objc private func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
@@ -498,10 +398,6 @@ final class HomeView: BaseViewController<HomeViewModel> {
     }
 
     private func toggleFloatingButton() {
-        if !tooltipView.isHidden {
-            hideTooltipView()
-        }
-
         floatingButton.toggle()
         isShowingFloatingMenu.toggle()
 
@@ -538,26 +434,6 @@ final class HomeView: BaseViewController<HomeViewModel> {
         if isShowingDeleteAlertView {
             toggleDeleteAlertView()
         }
-    }
-
-    @objc private func handleTap(_ gesture: UITapGestureRecognizer) {
-        let location = gesture.location(in: view)
-
-        // 탭한 곳이 버튼 영역인 경우
-        if informationButton.frame.contains(location) {
-            hideTooltipView()
-            return
-        }
-
-        // 탭한 곳이 tooltip 영역 밖인 경우
-        if !tooltipView.frame.contains(location) {
-            hideTooltipView()
-        }
-    }
-
-    private func hideTooltipView() {
-        informationButton.isSelected = false
-        tooltipView.hideTooltip()
     }
 
     private func showIndicatorView() {

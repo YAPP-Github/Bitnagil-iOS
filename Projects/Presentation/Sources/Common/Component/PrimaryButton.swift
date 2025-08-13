@@ -19,7 +19,7 @@ final class PrimaryButton: UIButton {
             case .default: BitnagilColor.gray10
             case .hover: BitnagilColor.gray5
             case .pressed: BitnagilColor.gray5
-            case .disabled: BitnagilColor.gray96
+            case .disabled: BitnagilColor.gray95
             }
         }
 
