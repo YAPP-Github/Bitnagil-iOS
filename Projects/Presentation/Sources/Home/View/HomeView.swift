@@ -27,7 +27,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
         static let emotionOrbViewTrailingSpacing: CGFloat = 35
         static let emotionOrbViewSize: CGFloat = 172
         static let contentViewCornerRadius: CGFloat = 20
-        static let weekViewHeight: CGFloat = 127
+        static let weekViewHeight: CGFloat = 92
         static let routineSortButtonTrailingSpacing: CGFloat = 8
         static let routineSortButtonSize: CGFloat = 40
         static let routineSortViewHeight: CGFloat = 192
@@ -43,38 +43,42 @@ final class HomeView: BaseViewController<HomeViewModel> {
         static let floatingMenuBottomSpacing: CGFloat = 15
         static let floatingMenuHeight: CGFloat = 64
         static let floatingMenuWidth: CGFloat = 144
-        static let routineDetailViewDefaultHeight: CGFloat = 367
-        static let routineDetailViewSubRoutineHeight: CGFloat = 25
-        static let deleteAlertViewWidth: CGFloat = 298
-        static let deleteAlertViewHeight: CGFloat = 214
     }
 
+    // headerView
     private let headerView = UIView()
     private let logoImageView = UIImageView()
     private let helpButton = UIButton()
     private let alarmButton = UIButton()
 
+    // label + emotion
     private let homeLabel = UILabel()
     private let emotionOrbView = UIImageView()
     private let registerEmotionButton = HomeRegisterEmotionButton()
 
+    // contentView
     private let contentView = UIView()
-    private let weekView = WeekView()
-    private let emptyView = HomeEmptyView()
 
+    // weekView
+    private let weekStackView = UIStackView()
+    private let weekHeaderView = UIView()
+    private let monthLabel = UILabel()
+    private let previousWeekButton = UIButton()
+    private let nextWeekButton = UIButton()
+    private let weekView = WeekView()
+
+    // routineView
+    private let emptyView = HomeEmptyView()
     private let routineScrollView = UIScrollView()
     private let routineStackView = UIStackView()
+    private let loadingIndicatorView = UIActivityIndicatorView(style: .large)
 
+    // floatingButton
     private var isShowingFloatingMenu: Bool = false
     private let dimmedView = UIView()
     private let floatingButton = FloatingButton()
     private let floatingMenu = FloatingMenuView()
     private var bottomSheet: CustomBottomSheet?
-
-    private var isShowingDeleteAlertView: Bool = false
-    private let deleteAlertView = RoutineDeleteAlertView()
-
-    private let loadingIndicatorView = UIActivityIndicatorView(style: .large)
 
     private var contentViewTopConstraint: Constraint?
     private var cancellables: Set<AnyCancellable>
@@ -120,15 +124,34 @@ final class HomeView: BaseViewController<HomeViewModel> {
             },
             for: .touchUpInside)
 
-        contentView.backgroundColor = .white
+        contentView.backgroundColor = BitnagilColor.gray99
         contentView.layer.cornerRadius = Layout.contentViewCornerRadius
         contentView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         contentView.clipsToBounds = true
 
+        weekStackView.axis = .vertical
+        weekStackView.spacing = 4
+
+        monthLabel.text = " "
+        monthLabel.font = BitnagilFont(style: .title3, weight: .semiBold).font
+        monthLabel.textColor = BitnagilColor.gray10
+
+        previousWeekButton.setImage(BitnagilIcon.chevronLeftIcon, for: .normal)
+        previousWeekButton.addAction(
+            UIAction { [weak self] _ in
+                self?.viewModel.action(input: .moveWeek(week: -1))
+            }, for: .touchUpInside)
+
+        nextWeekButton.setImage(BitnagilIcon.chevronRightIcon, for: .normal)
+        nextWeekButton.addAction(
+            UIAction { [weak self] _ in
+                self?.viewModel.action(input: .moveWeek(week: 1))
+            }, for: .touchUpInside)
+
         let panGesture = UIPanGestureRecognizer()
         panGesture.addTarget(self, action: #selector(handlePanGesture(_:)))
-        weekView.addGestureRecognizer(panGesture)
-        weekView.isUserInteractionEnabled = true
+        weekStackView.addGestureRecognizer(panGesture)
+        weekStackView.isUserInteractionEnabled = true
         weekView.delegate = self
 
         emptyView.didTapRegisterRoutineButton = {
@@ -162,9 +185,6 @@ final class HomeView: BaseViewController<HomeViewModel> {
         let dimmedViewTapGesture = UITapGestureRecognizer(target: self, action: #selector(tappedDimmedView))
         dimmedView.addGestureRecognizer(dimmedViewTapGesture)
 
-        deleteAlertView.delegate = self
-        deleteAlertView.isHidden = true
-
         loadingIndicatorView.hidesWhenStopped = true
         loadingIndicatorView.color = BitnagilColor.gray40
     }
@@ -184,7 +204,13 @@ final class HomeView: BaseViewController<HomeViewModel> {
         view.addSubview(registerEmotionButton)
 
         view.addSubview(contentView)
-        contentView.addSubview(weekView)
+        [monthLabel, previousWeekButton, nextWeekButton].forEach {
+            weekHeaderView.addSubview($0)
+        }
+        [weekHeaderView, weekView].forEach {
+            weekStackView.addArrangedSubview($0)
+        }
+        contentView.addSubview(weekStackView)
         contentView.addSubview(emptyView)
         contentView.addSubview(routineScrollView)
         routineScrollView.addSubview(routineStackView)
@@ -193,8 +219,6 @@ final class HomeView: BaseViewController<HomeViewModel> {
         view.addSubview(dimmedView)
         view.addSubview(floatingMenu)
         view.addSubview(floatingButton)
-
-        view.addSubview(deleteAlertView)
 
         headerView.snp.makeConstraints { make in
             make.top.horizontalEdges.equalTo(safeArea)
@@ -244,11 +268,38 @@ final class HomeView: BaseViewController<HomeViewModel> {
             make.bottom.equalToSuperview()
         }
 
-        weekView.snp.makeConstraints { make in
+        monthLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(20)
+            make.centerY.equalToSuperview()
+            make.height.equalTo(24)
+        }
+
+        previousWeekButton.snp.makeConstraints { make in
             make.top.equalToSuperview()
-            make.leading.equalTo(safeArea)
-            make.trailing.equalTo(safeArea)
+            make.trailing.equalTo(nextWeekButton.snp.leading)
+            make.size.equalTo(48)
+        }
+
+        nextWeekButton.snp.makeConstraints { make in
+            make.top.equalToSuperview()
+            make.trailing.equalToSuperview()
+            make.size.equalTo(48)
+        }
+
+        weekHeaderView.snp.makeConstraints { make in
+            make.height.equalTo(48)
+        }
+
+        weekView.snp.makeConstraints { make in
+//            make.top.equalToSuperview()
+//            make.leading.equalTo(safeArea)
+//            make.trailing.equalTo(safeArea)
             make.height.equalTo(Layout.weekViewHeight)
+        }
+
+        weekStackView.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(10)
+            make.horizontalEdges.equalToSuperview()
         }
 
         routineScrollView.snp.makeConstraints { make in
@@ -287,12 +338,6 @@ final class HomeView: BaseViewController<HomeViewModel> {
             make.edges.equalToSuperview()
         }
 
-        deleteAlertView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.equalTo(Layout.deleteAlertViewWidth)
-            make.height.equalTo(Layout.deleteAlertViewHeight)
-        }
-
         loadingIndicatorView.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
@@ -307,6 +352,14 @@ final class HomeView: BaseViewController<HomeViewModel> {
                     family: .cafe24Ssurround,
                     style: .cafe24Title1,
                     weight: .light).attributedString(text: homeLabelText)
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.selectedDatePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] selectedDate in
+                self?.monthLabel.text = selectedDate.convertToString(dateType: .yearMonth)
+                self?.weekView.updateWeekDateViews(date: selectedDate)
             }
             .store(in: &cancellables)
 
@@ -332,20 +385,6 @@ final class HomeView: BaseViewController<HomeViewModel> {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] emotion in
                 self?.updateEmotionOrbView(emotion: emotion)
-            }
-            .store(in: &cancellables)
-
-        viewModel.output.deleteRoutineResultPublisher
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] isDeleteRoutine in
-                guard let self else { return }
-                if isDeleteRoutine {
-                    if self.isShowingDeleteAlertView {
-                        self.toggleDeleteAlertView()
-                    }
-                    viewModel.action(input: .refreshSelectedDateRoutine)
-                    hideIndicatorView()
-                }
             }
             .store(in: &cancellables)
 
@@ -449,29 +488,9 @@ final class HomeView: BaseViewController<HomeViewModel> {
         }
     }
 
-    private func toggleDeleteAlertView() {
-        isShowingDeleteAlertView.toggle()
-
-        deleteAlertView.isHidden = !isShowingDeleteAlertView
-        dimmedView.isHidden = !isShowingDeleteAlertView
-
-        if !isShowingDeleteAlertView {
-            viewModel.action(input: .selectRoutine(routine: nil))
-        }
-
-        UIView.animate(withDuration: 0.2, delay: 0, options: [.curveEaseOut]) {
-            self.dimmedView.alpha = self.isShowingDeleteAlertView ? 1 : 0
-            self.deleteAlertView.alpha = self.isShowingDeleteAlertView ? 1 : 0
-        }
-    }
-
     @objc private func tappedDimmedView() {
         if isShowingFloatingMenu {
             toggleFloatingButton()
-        }
-
-        if isShowingDeleteAlertView {
-            toggleDeleteAlertView()
         }
     }
 
@@ -502,17 +521,6 @@ extension HomeView: RoutineViewDelegate {
         viewModel.action(input: .updateRoutineCompletion(updatedRoutine: mainRoutine))
     }
 
-    func routineView(_ sender: RoutineView, didTapMainRoutineMoreButton mainRoutine: MainRoutine) {
-        let maxHeight = Layout.routineDetailViewDefaultHeight + CGFloat(mainRoutine.subRoutines.count - 1) * Layout.routineDetailViewSubRoutineHeight
-        let routineDetailView = RoutineDetailView(routine: mainRoutine)
-        routineDetailView.delegate = self
-        bottomSheet = CustomBottomSheet(contentViewController: routineDetailView, maxHeight: maxHeight)
-        if let bottomSheet {
-            present(bottomSheet, animated: true)
-            viewModel.action(input: .selectRoutine(routine: mainRoutine))
-        }
-    }
-
     func routineView(_ sender: RoutineView, didTapSubRoutineCheckButton subRoutine: SubRoutine) {
         showIndicatorView()
         viewModel.action(input: .updateRoutineCompletion(updatedRoutine: subRoutine))
@@ -531,10 +539,6 @@ extension HomeView: SelectableItemTableViewDelegate {
 
 // MARK: WeekViewDelegate
 extension HomeView: WeekViewDelegate {
-    func weekView(_ sender: WeekView, didMoveWeek weekStartDate: Date) {
-        viewModel.action(input: .selectDate(date: weekStartDate))
-    }
-    
     func weekView(_ sender: WeekView, didSelectDate date: Date) {
         viewModel.action(input: .selectDate(date: date))
     }
@@ -550,47 +554,5 @@ extension HomeView: FloatingMenuViewDelegate {
         let routineCreationView = RoutineCreationView(viewModel: routineCreationViewModel)
         routineCreationView.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(routineCreationView, animated: true)
-    }
-}
-
-// MARK: RoutineDetailViewDelegate
-extension HomeView: RoutineDetailViewDelegate {
-    func routineDetailView(_ sender: RoutineDetailView, didEditRoutine routine: MainRoutine) {
-        if let bottomSheet {
-            bottomSheet.dismissBottomSheet()
-            self.bottomSheet = nil
-        }
-        guard let routineCreationViewModel = DIContainer.shared.resolve(type: RoutineCreationViewModel.self) else {
-            fatalError("routineCreationViewModel 의존성이 등록되지 않았습니다.")
-        }
-        let routineCreationView = RoutineCreationView(viewModel: routineCreationViewModel, routineId: routine.id)
-        routineCreationView.hidesBottomBarWhenPushed = true
-        self.navigationController?.pushViewController(routineCreationView, animated: true)
-    }
-    
-    func routineDetailView(_ sender: RoutineDetailView, didDeleteRoutine routine: MainRoutine) {
-        if let bottomSheet {
-            bottomSheet.dismissBottomSheet()
-            self.bottomSheet = nil
-        }
-
-        if routine.repeatDay.isEmpty {
-            viewModel.action(input: .deleteDailyRoutine)
-        } else {
-            toggleDeleteAlertView()
-        }
-    }
-}
-
-// MARK: RoutineDeleteAlertViewDelegate
-extension HomeView: RoutineDeleteAlertViewDelegate {
-    func routineDeleteAlertViewDidTapDeleteAllRoutine(_ sender: RoutineDeleteAlertView) {
-        showIndicatorView()
-        viewModel.action(input: .deleteAllRoutine)
-    }
-    
-    func routineDeleteAlertViewDidTapDeleteDailyRoutine(_ sender: RoutineDeleteAlertView) {
-        showIndicatorView()
-        viewModel.action(input: .deleteDailyRoutine)
     }
 }

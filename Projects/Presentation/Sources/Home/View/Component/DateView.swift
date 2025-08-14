@@ -10,7 +10,6 @@ import SnapKit
 import UIKit
 
 final class DateView: UIView {
-
     private enum Layout {
         static let dateButtonCornerRadius: CGFloat = 8
         static let dayLabelHeight: CGFloat = 18
@@ -58,9 +57,11 @@ final class DateView: UIView {
         dateButton.backgroundColor = .white
         dateButton.layer.masksToBounds = true
         dateButton.layer.cornerRadius = Layout.dateButtonCornerRadius
-        dateButton.addAction(UIAction { [weak self] _ in
-            self?.selectDate()
-        }, for: .touchUpInside)
+        dateButton.addAction(
+            UIAction { [weak self] _ in
+                self?.selectDate()
+            },
+            for: .touchUpInside)
 
         dateLabel.text = "\(date.convertToString(dateType: .date))"
         dateLabel.font = BitnagilFont(style: .body2, weight: .medium).font
@@ -91,9 +92,17 @@ final class DateView: UIView {
     }
 
     private func updateAttribute() {
+        let selectedDayLabelFont = BitnagilFont(style: .caption1, weight: .semiBold).font
+        let deselectedDayLabelFont = BitnagilFont(style: .caption1, weight: .medium).font
+        dayLabel.font = isSelected ? selectedDayLabelFont : deselectedDayLabelFont
         dayLabel.textColor = isSelected ? BitnagilColor.gray10 : BitnagilColor.gray70
-        dateLabel.textColor = isSelected ? BitnagilColor.gray10 : BitnagilColor.gray70
-        dateButton.backgroundColor = isSelected ? BitnagilColor.lightBlue100 : .white
+
+        let selectedDateLabelFont = BitnagilFont(style: .body2, weight: .semiBold).font
+        let deselectedDateLabelFont = BitnagilFont(style: .body2, weight: .medium).font
+        dateLabel.font = isSelected ? selectedDateLabelFont : deselectedDateLabelFont
+        dateLabel.textColor = isSelected ? .white : BitnagilColor.gray70
+
+        dateButton.backgroundColor = isSelected ? BitnagilColor.gray10 : .clear
     }
 
     private func selectDate() {
