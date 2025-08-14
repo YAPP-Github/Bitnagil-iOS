@@ -40,8 +40,8 @@ final class HomeView: BaseViewController<HomeViewModel> {
         static let expandedTop: CGFloat = 48
         static let floatingButtonBottomSpacing: CGFloat = 19
         static let floatingButtonSize: CGFloat = 52
-        static let floatingMenuBottomSpacing: CGFloat = 15
-        static let floatingMenuHeight: CGFloat = 64
+        static let floatingMenuBottomSpacing: CGFloat = 16
+        static let floatingMenuHeight: CGFloat = 56
         static let floatingMenuWidth: CGFloat = 144
     }
 

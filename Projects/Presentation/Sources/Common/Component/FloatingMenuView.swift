@@ -13,12 +13,11 @@ protocol FloatingMenuViewDelegate: AnyObject {
 }
 
 final class FloatingMenuView: UIView {
-
     private enum Layout {
-        static let registerRoutineButtonHeight: CGFloat = 22
-        static let registerRoutineButtonWidth: CGFloat = 98
+        static let registerRoutineButtonHeight: CGFloat = 24
         static let registerRoutineIconSize: CGFloat = 24
-        static let registerRoutineLabelLeadingSpacing: CGFloat = 16
+        static let registerRoutineLabelLeadingSpacing: CGFloat = 14
+        static let registerRoutineButtonWidth: CGFloat = 112
         static let registerRoutineLabelHeight: CGFloat = 20
     }
 
@@ -46,13 +45,15 @@ final class FloatingMenuView: UIView {
         registerRoutineIconView.image = BitnagilIcon.addRoutineIcon
 
         registerRoutineLabel.text = "루틴 등록"
-        registerRoutineLabel.font = BitnagilFont(style: .subtitle1, weight: .medium).font
-        registerRoutineLabel.textColor = BitnagilColor.navy500
+        registerRoutineLabel.font = BitnagilFont(style: .body2, weight: .medium).font
+        registerRoutineLabel.textColor = BitnagilColor.gray30
 
-        registerRoutineButton.addAction(UIAction { [weak self] _ in
-            guard let self else { return }
-            self.delegate?.floatingMenuDidTapRegisterRoutineButton(self)
-        }, for: .touchUpInside)
+        registerRoutineButton.addAction(
+            UIAction { [weak self] _ in
+                guard let self else { return }
+                self.delegate?.floatingMenuDidTapRegisterRoutineButton(self)
+            },
+            for: .touchUpInside)
     }
 
     private func configureLayout() {

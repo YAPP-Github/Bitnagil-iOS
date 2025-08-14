@@ -9,10 +9,9 @@ import SnapKit
 import UIKit
 
 final class FloatingButton: UIButton {
-
     private enum Layout {
         static let floatingButtonHeight: CGFloat = 52
-        static let plusIconSize: CGFloat = 15
+        static let plusIconSize: CGFloat = 24
     }
 
     private let plusIcon = UIImageView()
@@ -29,12 +28,12 @@ final class FloatingButton: UIButton {
     }
 
     private func configureAttribute() {
-        backgroundColor = BitnagilColor.navy500
+        backgroundColor = BitnagilColor.orange500
         layer.masksToBounds = true
         layer.cornerRadius = Layout.floatingButtonHeight / 2
 
         plusIcon.image = BitnagilIcon.plusIcon
-        plusIcon.tintColor = BitnagilColor.gray99
+        plusIcon.tintColor = .white
     }
 
     private func configureLayout() {
@@ -51,6 +50,8 @@ final class FloatingButton: UIButton {
 
         let angle: CGFloat = isToggled ? -.pi / 4 : 0
         UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseInOut]) {
+            self.backgroundColor = self.isToggled ? .white : BitnagilColor.orange500
+            self.plusIcon.tintColor = self.isToggled ? BitnagilColor.gray30 : .white
             self.plusIcon.transform = CGAffineTransform(rotationAngle: angle)
         }
     }
