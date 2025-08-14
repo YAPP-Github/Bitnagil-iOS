@@ -52,7 +52,7 @@ enum FontStyle {
 
         case .custom(let fontAttribute): fontAttribute
 
-        case .cafe24Title1: FontAttributes(fontSize: 24, lineHeight: 36, letterSpacing: -0.5)
+        case .cafe24Title1: FontAttributes(fontSize: 20, lineHeight: 30, letterSpacing: -0.5)
         }
     }
 }

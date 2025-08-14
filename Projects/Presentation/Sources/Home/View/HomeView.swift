@@ -18,8 +18,8 @@ final class HomeView: BaseViewController<HomeViewModel> {
         static let logoImageWidth: CGFloat = 71
         static let logoImageHeight: CGFloat = 22
         static let headerIconTrailingSpacing: CGFloat = 8
-        static let homeLabelTopSpacing: CGFloat = 41
-        static let homeLabelHeight: CGFloat = 64
+        static let homeLabelTopSpacing: CGFloat = 18
+        static let homeLabelHeight: CGFloat = 60
         static let registerEmotionButtonTopSpacing: CGFloat = 16
         static let registerEmotionButtonHeight: CGFloat = 36
         static let registerEmotionButtonWidth: CGFloat = 136
@@ -221,9 +221,8 @@ final class HomeView: BaseViewController<HomeViewModel> {
         }
 
         homeLabel.snp.makeConstraints { make in
-            make.top.equalTo(safeArea).offset(Layout.homeLabelTopSpacing)
+            make.top.equalTo(headerView.snp.bottom).offset(Layout.homeLabelTopSpacing)
             make.leading.equalTo(safeArea).offset(Layout.horizontalMargin)
-            make.height.equalTo(Layout.homeLabelHeight)
         }
 
         registerEmotionButton.snp.makeConstraints { make in
@@ -303,7 +302,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
         viewModel.output.nicknamePublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] nickname in
-                let homeLabelText = "\(nickname)님,\n오늘 기분 어때요?"
+                let homeLabelText = "\(nickname)님, 오셨군요!\n오늘 기분은 어떤가요?"
                 self?.homeLabel.attributedText = BitnagilFont(
                     family: .cafe24Ssurround,
                     style: .cafe24Title1,
