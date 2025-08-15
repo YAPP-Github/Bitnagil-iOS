@@ -52,6 +52,10 @@ final class HomeRegisterEmotionButton: UIButton {
         fatalError("init(coder:) has not been implemented")
     }
     
+    /// Configure the button's static visual attributes.
+    /// 
+    /// Sets layer properties (corner radius, masks), initial background color based on the current `buttonState`,
+    /// the title font, and the titles and title colors for the normal, highlighted, and disabled control states.
     private func configureAttribute() {
         layer.masksToBounds = true
         layer.cornerRadius = 8
@@ -69,10 +73,15 @@ final class HomeRegisterEmotionButton: UIButton {
         setTitleColor(ButtonState.disabled.buttonTextColor, for: .disabled)
     }
 
+    /// Update the button's appearance to match the current `buttonState`.
+    ///
+    /// Sets the button's `backgroundColor` to `buttonState.buttonBackgroudColor`.
     private func updateButtonUI() {
         backgroundColor = buttonState.buttonBackgroudColor
     }
 
+    /// Updates the button's visual state and enabled status.
+    /// - Parameter buttonState: The new visual state to apply; sets the internal state, updates the UI, and disables the control when `.disabled`.
     func updateButtonState(buttonState: ButtonState) {
         self.buttonState = buttonState
         self.isEnabled = buttonState != .disabled

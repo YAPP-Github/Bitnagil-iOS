@@ -73,6 +73,10 @@ final class HomeViewModel: ViewModel {
         )
     }
 
+    /// Routes a user/UI intent to the corresponding view-model action handler.
+    ///
+    — Dispatches the given `Input` case to the appropriate private method or subject update, causing side effects such as loading data, changing the selected date, mutating cached routines, or publishing results to the view-model's output publishers.
+    /// - Parameter input: An `Input` enum case representing the user or UI intent to perform (e.g., loadNickname, loadEmotion, moveWeek, selectDate, fetchRoutines, selectRoutine, deleteDailyRoutine, deleteAllRoutine, updateRoutineCompletion, refreshSelectedDateRoutine, selectRoutineSortType).
     func action(input: Input) {
         switch input {
         case .loadNickname:
@@ -123,7 +127,9 @@ final class HomeViewModel: ViewModel {
         }
     }
 
-    // 감정 구슬을 불러옵니다.
+    /// Asynchronously loads today's emotion and publishes it to `emotionSubject`.
+    /// 
+    /// Uses `emotionUseCase.loadEmotion(date: today)` to fetch an optional emotion entity, converts it with `toEmotion()`, and sends the resulting `Emotion?` to `emotionSubject`. Errors from the use case are caught and ignored (no value is published on error).
     private func fetchEmotion() {
         Task {
             do {
@@ -136,7 +142,9 @@ final class HomeViewModel: ViewModel {
         }
     }
 
-    // MARK: - 날짜
+    /// Moves the currently selected date forward or backward by the given number of weeks and publishes the new selection.
+    /// - Parameter week: Number of weeks to move the selected date. Positive values move forward; negative values move backward.
+    /// If the date computation fails the selected date is left unchanged.
     private func moveWeek(by week: Int) {
         let currentDate = selectedDateSubject.value
         guard let weekStartDate = calendar.date(byAdding: .weekOfYear, value: week, to: currentDate)
@@ -145,7 +153,11 @@ final class HomeViewModel: ViewModel {
     }
 
     // MARK: - 루틴
-    // 루틴들을 불러옵니다. (처음에는 +-1 주, 그 이후에는 1주씩)
+    /// Ensures a date window is set and fetches routines for that range.
+    ///
+    /// If the in-memory `routines` cache is empty, initializes `oldestDate` to one week before `today`
+    /// and `latestDate` to one week after `today`. Then invokes `fetchRoutines(startDate:endDate:)`
+    /// to load routines for the computed date range, updating the cache and related publishers.
     private func fetchRoutines() {
         if routines.isEmpty {
             oldestDate = calendar.date(byAdding: .weekOfYear, value: -1, to: today) ?? today

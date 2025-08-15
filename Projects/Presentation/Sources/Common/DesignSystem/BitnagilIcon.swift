@@ -42,6 +42,9 @@ enum BitnagilIcon {
     static let uncheckedCircleSmallIcon = UIImage(named: "unchecked_circle_small_icon", in: bundle, with: nil)
 
     static let chevronIcon = UIImage(named: "chevron_icon", in: bundle, with: nil)
+    /// Returns the chevron icon rotated to the given direction and configured for template rendering.
+    /// - Parameter direction: The direction to rotate the base chevron icon (uses `Direction.rotation` degrees).
+    /// - Returns: A `UIImage` of the chevron rotated to `direction` and set to `.alwaysTemplate`, or `nil` if the base chevron image is unavailable or rotation fails.
     static func chevronIcon(direction: Direction) -> UIImage? {
         return BitnagilIcon.chevronIcon?.rotate(degrees: direction.rotation)?.withRenderingMode(.alwaysTemplate)
     }

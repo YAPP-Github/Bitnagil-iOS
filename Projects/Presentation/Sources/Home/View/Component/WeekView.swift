@@ -38,6 +38,9 @@ final class WeekView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    /// Configure visual and layout attributes for `dateStackView`.
+    /// 
+    /// Sets the stack view to horizontal axis, applies the predefined spacing, centers arranged views vertically, and uses equal spacing distribution.
     private func configureAttribute() {
         dateStackView.axis = .horizontal
         dateStackView.spacing = Layout.dateStackViewSpacing
@@ -45,6 +48,10 @@ final class WeekView: UIView {
         dateStackView.distribution = .equalSpacing
     }
 
+    /// Configures the view's layout and constraints.
+    /// 
+    /// - Sets the view background color to `BitnagilColor.gray99`.
+    /// - Adds `dateStackView` as a subview and pins it to the top of the view with horizontal margins defined by `Layout.horizontalMargin` and a fixed height `Layout.dateStackViewHeight`.
     private func configureLayout() {
         backgroundColor = BitnagilColor.gray99
         addSubview(dateStackView)
@@ -57,14 +64,27 @@ final class WeekView: UIView {
         }
     }
 
-    // 현재 주의 첫째 날을 계산해줍니다.
+    /// Returns the Monday of the week that contains the given date.
+    /// 
+    /// If `date` falls on a Sunday, the function treats the previous Monday as the start of the week; for other weekdays it computes the offset back to Monday. If calendar arithmetic fails, the original `date` is returned as a fallback.
+    /// - Parameter date: The date for which to compute the week's start (Monday).
+    /// - Returns: A `Date` corresponding to the Monday of the same week as `date`, or `date` if the calculation fails.
     private func calculateWeekStartDate(for date: Date) -> Date {
         let weekday = calendar.component(.weekday, from: date)
         let daysFromMonday = (weekday == 1) ? 6 : weekday - 2
         return calendar.date(byAdding: .day, value: -daysFromMonday, to: date) ?? date
     }
 
-    // 현재 주에 맞춰 DateView들 업데이트합니다.
+    /// Rebuilds the seven day DateView items for the week containing `date` and updates selection state.
+    /// 
+    /// This clears any existing date views, computes the week's start (Monday) for the provided `date`,
+    /// and creates seven `DateView` instances (one per day) which are added to `dateStackView` and
+    /// stored in `dateViews`. Each `DateView` receives its initial `isSelected` and `isToday` state and
+    /// a tap handler that routes selection to `selectDate(date:)`.
+    /// 
+    /// If the provided `date` is not the same day as the current `selectedDate`, `selectedDate` is set
+    /// to the computed week start date before creating the views.
+    /// - Parameter date: Any date within the week to display; the week start is computed from this value.
     func updateWeekDateViews(date: Date) {
         dateViews.values.forEach {
             $0.removeFromSuperview()
@@ -100,14 +120,18 @@ final class WeekView: UIView {
         }
     }
 
-    // 날짜를 선택합니다.
+    /// Selects the given date as the current selection, updates the visible selection state, and notifies the delegate.
+    /// - Parameters:
+    ///   - date: The date to mark as selected (used to update `selectedDate` and refresh `DateView` selection states).
     private func selectDate(date: Date) {
         selectedDate = date
         updateSelectState()
         delegate?.weekView(self, didSelectDate: date)
     }
 
-    // 선택한 날짜의 dateView를 업데이트합니다.
+    /// Updates the selection state of each cached DateView to reflect the current `selectedDate`.
+    /// 
+    /// Iterates over `dateViews` and calls `updateSelectState(isSelected:)` on each `DateView`, setting `isSelected` to true when the mapped date is the same day as `selectedDate` according to the view's `calendar`.
     private func updateSelectState() {
         for (date, dateView) in dateViews {
             let isSelected = calendar.isDate(date, inSameDayAs: selectedDate)

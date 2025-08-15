@@ -27,6 +27,9 @@ final class FloatingButton: UIButton {
         fatalError("init(coder:) has not been implemented")
     }
 
+    /// Configures the button's visual appearance.
+    /// 
+    /// Sets the default background color, makes the layer circular by applying a corner radius and enabling masking, and assigns the plus icon image and its tint color.
     private func configureAttribute() {
         backgroundColor = BitnagilColor.orange500
         layer.masksToBounds = true
@@ -36,6 +39,9 @@ final class FloatingButton: UIButton {
         plusIcon.tintColor = .white
     }
 
+    /// Adds the plusIcon as a subview and installs its layout constraints.
+    /// 
+    /// The icon is sized to `Layout.plusIconSize` and centered within the button using SnapKit.
     private func configureLayout() {
         addSubview(plusIcon)
 
@@ -45,6 +51,11 @@ final class FloatingButton: UIButton {
         }
     }
 
+    /// Toggles the button's state and animates its appearance.
+    /// 
+    /// When called this flips `isToggled` and animates visual changes (0.3s, ease-in-out):
+    /// - Toggled on: background → white, `plusIcon.tintColor` → `BitnagilColor.gray30`, icon rotated to -π/4.
+    /// - Toggled off: background → `BitnagilColor.orange500`, `plusIcon.tintColor` → white, icon rotation reset to 0.
     func toggle() {
         isToggled.toggle()
 

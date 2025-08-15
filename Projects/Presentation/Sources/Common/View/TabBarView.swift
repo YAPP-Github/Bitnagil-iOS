@@ -9,11 +9,21 @@ import Shared
 import UIKit
 
 final public class TabBarView: UITabBarController {
+    /// Called after the controller's view is loaded into memory.
+    /// 
+    /// Performs initial setup for the tab bar controller by calling `super.viewDidLoad()` and configuring tab bar appearance and child view controllers (via `configureAttribute()`).
     override public func viewDidLoad() {
         super.viewDidLoad()
         configureAttribute()
     }
 
+    /// Configures the tab bar appearance, resolves required view models, creates the three tab views, and embeds them in navigation controllers as the tab bar's viewControllers.
+    /// 
+    /// - Appearance: sets a white background, shadow color, title text attributes and icon colors for normal and selected states, and applies the appearance to both `standardAppearance` and `scrollEdgeAppearance`. Also sets `tintColor` and `unselectedItemTintColor`.
+    /// - Dependency resolution: resolves `HomeViewModel`, `RecommendedRoutineViewModel`, and `MypageViewModel` from `DIContainer.shared`; if any resolution fails the app terminates with `fatalError`.
+    /// - View setup: instantiates `HomeView`, `RecommendedRoutineView`, and `MypageView` with their view models, configures each view's `tabBarItem` (title and icon), and assigns three `UINavigationController` instances (one per view) to `viewControllers`.
+    /// 
+    /// Side effects: mutates the controller's `tabBar` appearance and `viewControllers`, and can terminate the process via `fatalError` if dependencies are missing.
     private func configureAttribute() {
         let appearance = UITabBarAppearance()
         appearance.configureWithDefaultBackground()

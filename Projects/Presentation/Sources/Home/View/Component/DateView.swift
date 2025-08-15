@@ -48,6 +48,12 @@ final class DateView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    /// Configures the visual attributes and initial content of the view's subviews.
+    /// 
+    /// - Sets `dayLabel` text to `"오늘"` when `isToday` is true, otherwise to the date's day-of-week string.
+    /// - Applies fonts, text color, and centered alignment for `dayLabel`.
+    /// - Sets `dateLabel` text to the formatted date and applies its font and color.
+    /// - Configures `dateButton` appearance (background color, corner radius, masking) and adds a `.touchUpInside` action that calls `selectDate()`.
     private func configureAttribute() {
         dayLabel.text = isToday ? "오늘" : "\(date.convertToString(dateType: .dayOfWeek))"
         dayLabel.font = BitnagilFont(style: .caption1, weight: .medium).font
@@ -68,6 +74,13 @@ final class DateView: UIView {
         dateLabel.textColor = BitnagilColor.gray70
     }
 
+    /// Sets up the view hierarchy and Auto Layout constraints for the subviews.
+    /// 
+    /// - Adds `dayLabel` and `dateButton` to the view and `dateLabel` inside `dateButton`.
+    /// - Configures constraints (using SnapKit) to position:
+    ///   - `dayLabel` pinned to the top/leading/trailing with a fixed height and width equal to `dateButton`.
+    ///   - `dateButton` placed below `dayLabel`, aligned horizontally with a fixed size and top spacing.
+    ///   - `dateLabel` centered inside `dateButton` with a fixed height.
     private func configureLayout() {
         addSubview(dayLabel)
         addSubview(dateButton)
@@ -91,6 +104,13 @@ final class DateView: UIView {
         }
     }
 
+    /// Update visual appearance to reflect the current selection state.
+    ///
+    /// When `isSelected` is true, applies the selected fonts and colors (semiBold caption1 for `dayLabel`,
+    /// semiBold body2 and white text for `dateLabel`, and a gray background for `dateButton`).
+    /// When `isSelected` is false, applies the deselected fonts and colors (medium caption1 for `dayLabel`,
+    /// medium body2 and gray text for `dateLabel`, and a clear background for `dateButton`).
+    /// This method mutates the view's subviews (`dayLabel`, `dateLabel`, `dateButton`) only.
     private func updateAttribute() {
         let selectedDayLabelFont = BitnagilFont(style: .caption1, weight: .semiBold).font
         let deselectedDayLabelFont = BitnagilFont(style: .caption1, weight: .medium).font
@@ -105,6 +125,8 @@ final class DateView: UIView {
         dateButton.backgroundColor = isSelected ? BitnagilColor.gray10 : .clear
     }
 
+    /// Notifies the selection handler that this date was tapped by calling `didTappedDateButton` with the view's `date`.
+    /// If no handler is set, the call is ignored.
     private func selectDate() {
         didTappedDateButton?(date)
     }

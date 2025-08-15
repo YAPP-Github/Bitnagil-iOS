@@ -108,7 +108,9 @@ final class RecommendedRoutineViewModel: ViewModel {
         }
     }
 
-    // 감정 구슬을 불러옵니다.
+    /// Checks whether an emotion entry exists for today and updates `emotionExistSubject`.
+    /// 
+    /// This launches an asynchronous task that calls `emotionRepository.loadEmotion` for the current date (formatted as `yearMonthDate`). If the repository returns `nil`, publishes `false` to `emotionExistSubject`; otherwise publishes `true`. Any errors thrown by the repository are caught and ignored (no value is emitted on error).
     private func loadEmotion() {
         Task {
             do {

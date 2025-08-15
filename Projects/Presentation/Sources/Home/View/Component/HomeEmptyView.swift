@@ -34,6 +34,9 @@ final class HomeEmptyView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    /// Configures the visual appearance and interactive behavior of the view's subviews.
+    /// 
+    /// Sets text, fonts, alignment, and colors for `emptyMainLabel` and `emptySubLabel`, applies a filled `UIButton.Configuration` (title font, background and foreground colors) to `registerRoutineButton`, rounds its corners, and attaches the touch-up action that forwards to `didTapRegisterRoutine()`.
     private func configureAttribute() {
         emptyMainLabel.text = "등록한 루틴이 없어요"
         emptyMainLabel.font = BitnagilFont(style: .subtitle1, weight: .semiBold).font
@@ -61,6 +64,12 @@ final class HomeEmptyView: UIView {
             for: .touchUpInside)
     }
 
+    /// Configures the view hierarchy and Auto Layout constraints for the empty-state UI.
+    /// 
+    /// Adds `emptyMainLabel`, `emptySubLabel`, and `registerRoutineButton` as subviews and positions/sizes them using SnapKit constraints driven by the `Layout` constants. The constraints:
+    /// - pin `emptyMainLabel` to the top and center it horizontally with a fixed height,
+    /// - place `emptySubLabel` below `emptyMainLabel`, span its horizontal edges, center it, and set a fixed height,
+    /// - position `registerRoutineButton` below `emptySubLabel`, center it, and set fixed height and width.
     private func configureLayout() {
         addSubview(emptyMainLabel)
         addSubview(emptySubLabel)

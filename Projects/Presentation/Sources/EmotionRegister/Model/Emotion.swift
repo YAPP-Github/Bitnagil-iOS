@@ -16,6 +16,8 @@ struct Emotion {
 }
 
 extension EmotionEntity {
+    /// Converts this EmotionEntity into a domain Emotion value.
+    /// - Returns: An `Emotion` with fields mapped from the entity (`emotionType` → `emotionType`, `emotionName` → `emotionTitle`, `emotionImageUrl` → `emotionImageUrl`, `emotionMessage` → `emotionMessage`).
     func toEmotion() -> Emotion {
         return Emotion(
             emotionType: emotionType,

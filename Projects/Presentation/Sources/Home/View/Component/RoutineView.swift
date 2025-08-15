@@ -46,6 +46,7 @@ final class RoutineView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    /// Called during the view layout pass. Marks the view as having completed its one-time layout configuration on the first invocation by setting `isLayoutConfigured`, ensuring any idempotent setup tied to layout occurs only once. Also forwards to the superclass implementation.
     override func layoutSubviews() {
         super.layoutSubviews()
 
@@ -62,6 +63,14 @@ final class RoutineView: UIView {
         return CGSize(width: UIView.noIntrinsicMetric, height: baseHeight)
     }
 
+    /// Configure initial visual attributes and interactive behavior for the view's subviews.
+    /// 
+    /// - Sets display text, fonts, and colors for `timeLabel` and `mainRoutineLabel`.
+    /// - Applies background color and corner radius to `containerView`.
+    /// - Initializes `mainRoutineCheckButton` image and installs a touch action that toggles `routine.isDone`,
+    ///   updates the internal `routine` state, and notifies the delegate via `routineView(_:didTapMainRoutineCheckButton:)`.
+    /// - Sets `grayLine` visibility based on whether `routine.subRoutines` is empty.
+    /// - Configures `subRoutineStackView` axis and spacing.
     private func configureAttribute() {
         timeLabel.text = routine.startTime.convertToString(dateType: .time24hour)
         timeLabel.font = BitnagilFont(style: .body2, weight: .medium).font
@@ -93,6 +102,16 @@ final class RoutineView: UIView {
         subRoutineStackView.spacing = 10
     }
 
+    /// Configures the view hierarchy and Auto Layout constraints for the RoutineView.
+    ///
+    — Builds and adds subviews (timeLabel, containerView, mainRoutineView, grayLine, subRoutineStackView),
+    — lays out those subviews using SnapKit, and creates per-subroutine rows by calling `makeSubRoutineView(subRoutine:)`.
+    /// 
+    /// Side effects:
+    /// - Adds all required subviews to the view hierarchy.
+    /// - Installs SnapKit constraints for positioning and sizing.
+    /// - Stores the main routine check button height constraint in `mainRoutineHeightConstraint`.
+    /// - Adds each sub-routine view as an arranged subview of `subRoutineStackView`.
     private func configureLayout() {
         addSubview(timeLabel)
         addSubview(containerView)
@@ -155,6 +174,12 @@ final class RoutineView: UIView {
         }
     }
 
+    /// Creates a compact view representing a sub-routine row containing a check icon and its title.
+    /// 
+    /// The returned view contains a 24×24 check button aligned to the top-left and a label to its right.
+    /// The check icon reflects `subRoutine.isDone` (checked or unchecked), and the label displays `subRoutine.title`.
+    /// - Parameter subRoutine: The sub-routine model used to configure the check state and title.
+    /// - Returns: A configured `UIView` containing the check button and title label.
     private func makeSubRoutineView(subRoutine: SubRoutine) -> UIView {
         let subRoutineView = UIView()
         let checkButton = UIButton()
@@ -184,6 +209,9 @@ final class RoutineView: UIView {
         return subRoutineView
     }
 
+    /// Updates the main routine check button's image to reflect the current `routine.isDone` state.
+    /// 
+    /// Reads `routine.isDone` and sets `mainRoutineCheckButton` to the checked or unchecked circle icon accordingly. Intended to synchronize the button's visual state with the underlying routine model.
     func updateRoutineState() {
         let isDone = routine.isDone
         mainRoutineCheckButton.setImage(isDone ? BitnagilIcon.checkedCircleIcon : BitnagilIcon.uncheckedCircleIcon, for: .normal)

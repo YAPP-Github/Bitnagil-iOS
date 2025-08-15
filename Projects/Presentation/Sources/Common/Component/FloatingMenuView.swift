@@ -37,6 +37,9 @@ final class FloatingMenuView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    /// Configures visual attributes and actions for the view's subviews.
+    /// 
+    /// Sets the container's background, corner radius, and clipping; assigns the register icon image; configures the register label's text, font, and color; and adds a touch-up action to the register button that notifies the delegate when tapped.
     private func configureAttribute() {
         containerView.backgroundColor = .white
         containerView.layer.masksToBounds = true
@@ -56,6 +59,13 @@ final class FloatingMenuView: UIView {
             for: .touchUpInside)
     }
 
+    /// Sets up the view hierarchy and Auto Layout constraints for the floating menu's subviews.
+    /// 
+    /// Adds `containerView`, `registerRoutineButton`, `registerRoutineIconView`, and `registerRoutineLabel` to the view hierarchy and applies SnapKit constraints to:
+    /// - pin `containerView` to the view's edges,
+    /// - center `registerRoutineButton` inside `containerView` with fixed height and width from `Layout`,
+    /// - position `registerRoutineIconView` at the leading edge of the button with a fixed size,
+    /// - place `registerRoutineLabel` to the right of the icon with the configured leading spacing and fixed height.
     private func configureLayout() {
         addSubview(containerView)
         containerView.addSubview(registerRoutineButton)

@@ -100,12 +100,19 @@ final class HomeView: BaseViewController<HomeViewModel> {
         fatalError("init(coder:) has not been implemented")
     }
 
+    /// Called after the controller's view is loaded into memory.
+    /// 
+    /// Shows the loading indicator and requests the user's nickname from the view model. Overrides `UIViewController.viewDidLoad()` and preserves superclass behavior.
     override func viewDidLoad() {
         super.viewDidLoad()
         showIndicatorView()
         viewModel.action(input: .loadNickname)
     }
 
+    /// Called before the view appears on screen.
+    /// 
+    /// Hides the navigation bar (non-animated) and requests the view model to reload the current emotion and fetch the latest routines so the UI is refreshed each time the view appears.
+    /// - Parameter animated: If true, the appearance transition is animated. The navigation bar hiding performed here is not animated.
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: false)
@@ -113,6 +120,9 @@ final class HomeView: BaseViewController<HomeViewModel> {
         viewModel.action(input: .fetchRoutines)
     }
 
+    /// Configures visual styles, actions, gestures, and delegates for HomeView's UI components.
+    /// 
+    /// Sets images, fonts, colors, and layout-related view properties; wires button actions and gesture recognizers; assigns delegates for interactive subviews; configures the empty-routines handler to navigate to the routine creation flow; and initializes floating menu, dimmed overlay, and loading indicator behavior.
     override func configureAttribute() {
         logoImageView.image = BitnagilGraphic.grayLogoGraphic
         helpButton.setImage(BitnagilIcon.helpIcon, for: .normal)
@@ -206,6 +216,9 @@ final class HomeView: BaseViewController<HomeViewModel> {
         loadingIndicatorView.color = BitnagilColor.gray40
     }
 
+    /// Configures the view hierarchy and Auto Layout constraints for HomeView's UI elements.
+    /// 
+    /// Builds and places header, emotion area, content area (week and routine sections), floating menu, dimmed overlay, and loading indicator into the view hierarchy, then creates all SnapKit constraints used for layout. Also sets the view background color, hides the navigation bar, and captures the top constraint for the content view (contentViewTopConstraint) for later interactive animations.
     override func configureLayout() {
         let safeArea = view.safeAreaLayoutGuide
         view.backgroundColor = BitnagilColor.gray10
@@ -380,6 +393,15 @@ final class HomeView: BaseViewController<HomeViewModel> {
         }
     }
 
+    /// Subscribes to the view model's output publishers and updates UI state accordingly.
+    /// 
+    /// Binds publishers to the main queue and stores subscriptions in `cancellables`.
+    /// - Updates `nickname` when `nicknamePublisher` emits.
+    /// - Updates `monthLabel` and `weekView` when `selectedDatePublisher` emits.
+    /// - Triggers a refresh (`.refreshSelectedDateRoutine`) and hides the loading indicator when `fetchRoutineResultPublisher` signals success.
+    /// - Renders routines via `updateRoutineView(_:)` and hides the loading indicator when `routinesPublisher` emits.
+    /// - Updates the emotion orb UI when `emotionPublisher` emits.
+    /// - On `updateRoutineCompletionResultPublisher` success, triggers a refresh and hides the loading indicator.
     override func bind() {
         viewModel.output.nicknamePublisher
             .receive(on: DispatchQueue.main)
@@ -432,7 +454,13 @@ final class HomeView: BaseViewController<HomeViewModel> {
             .store(in: &cancellables)
     }
 
-    // 해당 날짜의 Routine View를 설정합니다. (없다면 EmptyView)
+    /// Updates the routine list UI to reflect the given routines.
+    /// 
+    /// Clears any existing routine views, then:
+    /// - If `routines` is empty: hides the routine header and scroll area and shows the empty view.
+    /// - If `routines` contains items: shows the routine header and scroll area, hides the empty view, and creates a `RoutineView` for each `MainRoutine`, sets its delegate to `self`, and adds it to `routineStackView`.
+    /// 
+    /// - Parameter routines: The routines to display in the list.
     private func updateRoutineView(routines: [MainRoutine]) {
         routineStackView.arrangedSubviews.forEach {
             $0.removeFromSuperview()
@@ -455,7 +483,10 @@ final class HomeView: BaseViewController<HomeViewModel> {
         }
     }
 
-    // 감정 구슬 View를 업데이트 합니다.
+    /// Updates the UI to reflect the given emotion state: the greeting label, emotion orb image, and register button state.
+    /// - If `emotion` is nil or missing an image/message, sets a default greeting using the stored `nickname`, displays the default emotion graphic, and enables the register button.
+    /// - If `emotion` is present with an image URL and message, sets a greeting that includes the emotion message, loads the image into `emotionOrbView` (via Kingfisher), and disables the register button.
+    /// - Parameter emotion: The optional Emotion model containing `emotionImageUrl` and `emotionMessage`.
     private func updateEmotionOrbView(emotion: Emotion?) {
         guard
             let emotion,
@@ -479,6 +510,14 @@ final class HomeView: BaseViewController<HomeViewModel> {
         registerEmotionButton.updateButtonState(buttonState: .disabled)
     }
 
+    /// Handles the pan gesture used to drag the main content view between its expanded and collapsed positions.
+    /// 
+    /// While dragging (.changed) this updates `contentViewTopConstraint` by the gesture translation, clamped to
+    /// `Layout.expandedTop...Layout.collapsedTop`. When the gesture ends or is cancelled, the final position is
+    /// chosen based on vertical velocity (threshold ±500 pts/s) or the midpoint between expanded and collapsed states,
+    /// and `animateToPosition(_:)` is invoked to animate to the chosen target.
+    ///
+    /// - Parameter gesture: The `UIPanGestureRecognizer` driving the drag; typically attached to the content/week stack view.
     @objc private func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
         let translation = gesture.translation(in: view)
         let velocity = gesture.velocity(in: view)
@@ -508,6 +547,9 @@ final class HomeView: BaseViewController<HomeViewModel> {
         }
     }
 
+    /// Animates the content view's top constraint to the specified vertical offset using a spring animation.
+    /// - Parameters:
+    ///   - targetTop: The top offset (in points) to apply to `contentViewTopConstraint` — typically an expanded or collapsed position.
     private func animateToPosition(_ targetTop: CGFloat) {
         contentViewTopConstraint?.update(offset: targetTop)
         UIView.animate(
@@ -521,6 +563,9 @@ final class HomeView: BaseViewController<HomeViewModel> {
         }
     }
 
+    /// Toggles the floating action button and its associated menu overlay.
+    /// 
+    /// Updates the button state, shows or hides the floating menu and dimmed background, and animates their alpha changes (0.2s, ease-out).
     private func toggleFloatingButton() {
         floatingButton.toggle()
         isShowingFloatingMenu.toggle()
@@ -534,12 +579,16 @@ final class HomeView: BaseViewController<HomeViewModel> {
         }
     }
 
+    /// Handles taps on the dimmed overlay by closing the floating menu if it is currently shown.
+    /// 
+    /// When the dimmed view is tapped and the floating menu is visible, this method collapses the menu (via `toggleFloatingButton`). If the menu is not visible, the tap is ignored.
     @objc private func tappedDimmedView() {
         if isShowingFloatingMenu {
             toggleFloatingButton()
         }
     }
 
+    /// Starts the loading indicator and disables user interaction for the content area to indicate a loading state.
     private func showIndicatorView() {
         loadingIndicatorView.startAnimating()
         contentView.isUserInteractionEnabled = false
@@ -562,11 +611,22 @@ final class HomeView: BaseViewController<HomeViewModel> {
 
 // MARK: RoutineViewDelegate
 extension HomeView: RoutineViewDelegate {
+    /// Handles the user tapping the main routine's completion checkbox.
+    /// 
+    /// Shows the loading indicator and sends an update request to the view model to toggle or update the completion state of the provided main routine.
+    /// - Parameters:
+    ///   - sender: The RoutineView that emitted the tap event.
+    ///   - mainRoutine: The main routine whose completion state should be updated.
     func routineView(_ sender: RoutineView, didTapMainRoutineCheckButton mainRoutine: MainRoutine) {
         showIndicatorView()
         viewModel.action(input: .updateRoutineCompletion(updatedRoutine: mainRoutine))
     }
 
+    /// Handles the user tapping a sub-routine's completion checkbox.
+    /// Shows the loading indicator and notifies the view model to update the sub-routine's completion state.
+    /// - Parameters:
+    ///   - sender: The RoutineView that originated the event.
+    ///   - subRoutine: The SubRoutine whose completion state should be updated.
     func routineView(_ sender: RoutineView, didTapSubRoutineCheckButton subRoutine: SubRoutine) {
         showIndicatorView()
         viewModel.action(input: .updateRoutineCompletion(updatedRoutine: subRoutine))
@@ -585,6 +645,11 @@ extension HomeView: SelectableItemTableViewDelegate {
 
 // MARK: WeekViewDelegate
 extension HomeView: WeekViewDelegate {
+    /// Called when a date is selected in the week view.
+    /// Sends a `.selectDate` action with the selected date to the view model.
+    /// - Parameters:
+    ///   - sender: The WeekView that reported the selection.
+    ///   - date: The date selected by the user.
     func weekView(_ sender: WeekView, didSelectDate date: Date) {
         viewModel.action(input: .selectDate(date: date))
     }
@@ -592,6 +657,11 @@ extension HomeView: WeekViewDelegate {
 
 // MARK: FloatingMenuViewDelegate
 extension HomeView: FloatingMenuViewDelegate {
+    /// Handles the floating menu's "register routine" action by closing the menu and navigating to the routine creation screen.
+    /// 
+    /// Resolves a `RoutineCreationViewModel` from the `DIContainer`, creates a `RoutineCreationView` with it, and pushes it onto the navigation stack (hiding the bottom bar). If the view model cannot be resolved, the function terminates the app with a `fatalError`.
+    /// 
+    /// - Note: The menu is toggled closed before navigation occurs.
     func floatingMenuDidTapRegisterRoutineButton(_ sender: FloatingMenuView) {
         toggleFloatingButton()
         guard let routineCreationViewModel = DIContainer.shared.resolve(type: RoutineCreationViewModel.self) else {

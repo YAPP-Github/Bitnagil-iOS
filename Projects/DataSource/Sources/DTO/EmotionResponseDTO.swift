@@ -23,6 +23,10 @@ struct EmotionResponseDTO: Decodable {
 }
 
 extension EmotionResponseDTO {
+    /// Converts the DTO into an `EmotionEntity`.
+    /// 
+    /// Returns `nil` if any of the required DTO fields (`type`, `name`, or `imageUrl`) are missing; otherwise returns an `EmotionEntity` with `emotionType`, `emotionName`, `emotionImageUrl` (constructed from `imageUrl`), and the optional `emotionMessage`.
+    /// - Returns: An `EmotionEntity` populated from this DTO, or `nil` when required fields are absent.
     func toEmotionEntity() -> EmotionEntity? {
         guard
             let type,
