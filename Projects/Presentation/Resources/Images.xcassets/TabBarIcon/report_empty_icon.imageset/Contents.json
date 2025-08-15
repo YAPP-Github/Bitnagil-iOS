@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "navigation=report, status=empty.png",
+      "filename" : "report_empty_icon.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "navigation=report, status=empty@2x.png",
+      "filename" : "report_empty_icon@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "navigation=report, status=empty@3x.png",
+      "filename" : "report_empty_icon@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

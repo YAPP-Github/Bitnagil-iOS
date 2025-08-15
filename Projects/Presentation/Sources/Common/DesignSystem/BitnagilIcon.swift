@@ -50,17 +50,11 @@ enum BitnagilIcon {
     static let addRoutineIcon = UIImage(named: "add_routine_icon", in: bundle, with: nil)
 
     // MARK: - Tab Bar Icons
-    static let homeFillIcon = UIImage(named: "home_fill_icon", in: bundle, with: nil)
-    static let homeEmptyIcon = UIImage(named: "home_empty_icon", in: bundle, with: nil)
-
-    static let recommendFillIcon = UIImage(named: "recommend_fill_icon",in: bundle, with: nil)
-    static let recommendEmptyIcon = UIImage(named: "recommend_empty_icon", in: bundle, with: nil)
-
+    static let homeIcon = UIImage(named: "home_fill_icon", in: bundle, with: nil)
+    static let recommendIcon = UIImage(named: "recommend_fill_icon",in: bundle, with: nil)
     static let reportFillIcon = UIImage(named: "report_fill_icon", in: bundle, with: nil)?.withRenderingMode(.alwaysOriginal)
     static let reportEmptyIcon = UIImage(named: "report_empty_icon", in: bundle, with: nil)?.withRenderingMode(.alwaysOriginal)
-
-    static let mypageFillIcon = UIImage(named: "mypage_fill_icon", in: bundle, with: nil)
-    static let mypageEmptyIcon = UIImage(named: "mypage_empty_icon", in: bundle, with: nil)
+    static let mypageIcon = UIImage(named: "mypage_fill_icon", in: bundle, with: nil)
 
     // MARK: - Mypage Icons
     static let settingIcon = UIImage(named: "setting_icon", in: bundle, with: nil)

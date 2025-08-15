@@ -9,7 +9,6 @@ import Shared
 import UIKit
 
 final public class TabBarView: UITabBarController {
-
     override public func viewDidLoad() {
         super.viewDidLoad()
         configureAttribute()
@@ -18,25 +17,27 @@ final public class TabBarView: UITabBarController {
     private func configureAttribute() {
         let appearance = UITabBarAppearance()
         appearance.configureWithDefaultBackground()
-        appearance.backgroundColor = .systemBackground
+        appearance.backgroundColor = .white
+        appearance.shadowColor = BitnagilColor.gray98
 
         let normalAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: BitnagilColor.navy100 ?? .systemGray,
+            .foregroundColor: BitnagilColor.gray90 ?? .systemGray,
             .font: BitnagilFont(style: .caption2, weight: .medium).font
         ]
         appearance.stackedLayoutAppearance.normal.titleTextAttributes = normalAttributes
-        appearance.stackedLayoutAppearance.normal.iconColor = BitnagilColor.navy100
+        appearance.stackedLayoutAppearance.normal.iconColor = BitnagilColor.gray90
 
         let selectedAttributes: [NSAttributedString.Key: Any] = [
-            .foregroundColor: BitnagilColor.navy600 ?? .systemGray,
-            .font: BitnagilFont(style: .caption2, weight: .medium).font
+            .foregroundColor: BitnagilColor.gray10 ?? .systemGray,
+            .font: BitnagilFont(style: .caption2, weight: .semiBold).font
         ]
         appearance.stackedLayoutAppearance.selected.titleTextAttributes = selectedAttributes
-        appearance.stackedLayoutAppearance.selected.iconColor = BitnagilColor.navy600
+        appearance.stackedLayoutAppearance.selected.iconColor = BitnagilColor.gray10
 
         tabBar.standardAppearance = appearance
-        tabBar.tintColor = BitnagilColor.navy600
-        tabBar.unselectedItemTintColor = BitnagilColor.navy100
+        tabBar.scrollEdgeAppearance = appearance
+        tabBar.tintColor = BitnagilColor.gray10
+        tabBar.unselectedItemTintColor = BitnagilColor.gray90
 
         guard let homeViewModel = DIContainer.shared.resolve(type: HomeViewModel.self)
         else { fatalError("homeViewModel 의존성이 등록되지 않았습니다.") }
@@ -53,18 +54,18 @@ final public class TabBarView: UITabBarController {
 
         homeView.tabBarItem = UITabBarItem(
             title: "홈",
-            image: BitnagilIcon.homeEmptyIcon,
-            selectedImage: BitnagilIcon.homeFillIcon)
+            image: BitnagilIcon.homeIcon,
+            selectedImage: BitnagilIcon.homeIcon)
 
         recommendView.tabBarItem = UITabBarItem(
             title: "추천루틴",
-            image: BitnagilIcon.recommendEmptyIcon,
-            selectedImage: BitnagilIcon.recommendFillIcon)
+            image: BitnagilIcon.recommendIcon,
+            selectedImage: BitnagilIcon.recommendIcon)
 
         mypageView.tabBarItem = UITabBarItem(
             title: "마이페이지",
-            image: BitnagilIcon.mypageEmptyIcon,
-            selectedImage: BitnagilIcon.mypageFillIcon)
+            image: BitnagilIcon.mypageIcon,
+            selectedImage: BitnagilIcon.mypageIcon)
 
         viewControllers = [
             UINavigationController(rootViewController: homeView),
