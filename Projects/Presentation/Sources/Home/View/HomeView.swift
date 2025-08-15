@@ -470,7 +470,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
             registerEmotionButton.updateButtonState(buttonState: .default)
             return
         }
-        let homeLabelText = "\(nickname)님\n\(emotionMessage)"
+        let homeLabelText = "\(nickname)님,\n\(emotionMessage)"
         homeLabel.attributedText = BitnagilFont(
             family: .cafe24Ssurround,
             style: .cafe24Title1,

@@ -38,8 +38,9 @@ enum BitnagilIcon {
     static let chevronRightIcon = UIImage(named: "chevron_right_icon", in: bundle, with: nil)
     static let checkedCircleIcon = UIImage(named: "checked_circle_icon", in: bundle, with: nil)
     static let uncheckedCircleIcon = UIImage(named: "unchecked_circle_icon", in: bundle, with: nil)
+    static let checkedCircleSmallIcon = UIImage(named: "checked_circle_small_icon", in: bundle, with: nil)
+    static let uncheckedCircleSmallIcon = UIImage(named: "unchecked_circle_small_icon", in: bundle, with: nil)
 
-    
     static let chevronIcon = UIImage(named: "chevron_icon", in: bundle, with: nil)
     static func chevronIcon(direction: Direction) -> UIImage? {
         return BitnagilIcon.chevronIcon?.rotate(degrees: direction.rotation)?.withRenderingMode(.alwaysTemplate)
