@@ -20,10 +20,10 @@ public final class EmotionUseCase: EmotionUseCaseProtocol {
         return emotions
     }
 
-    public func fetchEmotion(date: Date) async throws -> EmotionEntity? {
+    public func loadEmotion(date: Date) async throws -> EmotionEntity? {
         let dateString = date.convertToString(dateType: .yearMonthDate)
 
-        let emotion = try await emotionRepository.fetchEmotion(date: dateString)
+        let emotion = try await emotionRepository.loadEmotion(date: dateString)
         return emotion
     }
 }

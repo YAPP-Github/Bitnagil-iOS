@@ -30,6 +30,7 @@ extension Date {
         case dayOfWeek
         case date
         case time
+        case time24hour
         case amPmTime
         case amPmTimeShort
 
@@ -40,9 +41,9 @@ extension Date {
             case .dayOfWeek: "E"
             case .date: "d"
             case .time: "HH:mm:ss"
+            case .time24hour: "HH:mm"
             case .amPmTime: "a HH:mm"
             case .amPmTimeShort: "a h:mm"
-
             }
         }
     }

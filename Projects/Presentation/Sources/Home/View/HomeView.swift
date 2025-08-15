@@ -23,20 +23,24 @@ final class HomeView: BaseViewController<HomeViewModel> {
         static let registerEmotionButtonTopSpacing: CGFloat = 16
         static let registerEmotionButtonHeight: CGFloat = 36
         static let registerEmotionButtonWidth: CGFloat = 136
-        static let emotionOrbViewTopSpacing: CGFloat = 46
-        static let emotionOrbViewTrailingSpacing: CGFloat = 35
-        static let emotionOrbViewSize: CGFloat = 172
+        static let emotionOrbViewTopSpacing: CGFloat = 66
+        static let emotionOrbViewTrailingSpacing: CGFloat = 24
+        static let emotionOrbViewWidth: CGFloat = 108
+        static let emotionOrbViewHeight: CGFloat = 149
         static let contentViewCornerRadius: CGFloat = 20
+        static let monthLabelHeight: CGFloat = 24
+        static let moveWeekButtonSize: CGFloat = 48
         static let weekViewHeight: CGFloat = 92
-        static let routineSortButtonTrailingSpacing: CGFloat = 8
-        static let routineSortButtonSize: CGFloat = 40
-        static let routineSortViewHeight: CGFloat = 192
+        static let weekStackViewTopSpacing: CGFloat = 10
+        static let routineHeaderViewTopSpacing: CGFloat = 6
+        static let routineHeaderViewHeight: CGFloat = 20
+        static let routineListButtonHeight: CGFloat = 18
         static let routineStackViewSpacing: CGFloat = 21
-        static let routineStackViewTopSpacing: CGFloat = 23
+        static let routineScrollViewTopSpacing: CGFloat = 14
         static let routineStackViewBottomSpacing: CGFloat = 100
         static let emptyViewTopSpacing: CGFloat = 77
         static let emptyViewHeight: CGFloat = 120
-        static let collapsedTop: CGFloat = 225
+        static let collapsedTop: CGFloat = 210
         static let expandedTop: CGFloat = 48
         static let floatingButtonBottomSpacing: CGFloat = 19
         static let floatingButtonSize: CGFloat = 52
@@ -52,6 +56,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
     private let alarmButton = UIButton()
 
     // label + emotion
+    private var nickname: String = ""
     private let homeLabel = UILabel()
     private let emotionOrbView = UIImageView()
     private let registerEmotionButton = HomeRegisterEmotionButton()
@@ -69,6 +74,9 @@ final class HomeView: BaseViewController<HomeViewModel> {
 
     // routineView
     private let emptyView = HomeEmptyView()
+    private let routineHeaderView = UIView()
+    private let routineListLabel = UILabel()
+    private let routineListButton = UIButton()
     private let routineScrollView = UIScrollView()
     private let routineStackView = UIStackView()
     private let loadingIndicatorView = UIActivityIndicatorView(style: .large)
@@ -110,7 +118,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
         helpButton.setImage(BitnagilIcon.helpIcon, for: .normal)
         alarmButton.setImage(BitnagilIcon.alarmIcon, for: .normal)
 
-        let homeLabelText = "님,\n오늘 기분 어때요?"
+        let homeLabelText = "\(nickname)\n"
         homeLabel.attributedText = BitnagilFont(
             family: .cafe24Ssurround,
             style: .cafe24Title1,
@@ -163,6 +171,15 @@ final class HomeView: BaseViewController<HomeViewModel> {
             self.navigationController?.pushViewController(routineCreationView, animated: true)
         }
 
+        routineListLabel.text = "루틴 리스트"
+        routineListLabel.font = BitnagilFont(style: .body2, weight: .semiBold).font
+        routineListLabel.textColor = BitnagilColor.gray60
+
+        routineListButton.setAttributedTitle(
+            BitnagilFont(style: .caption1, weight: .semiBold).attributedString(text: "더보기"),
+            for: .normal)
+        routineListButton.setTitleColor(BitnagilColor.gray10, for: .normal)
+
         routineScrollView.showsVerticalScrollIndicator = false
         routineScrollView.showsHorizontalScrollIndicator = false
 
@@ -212,6 +229,10 @@ final class HomeView: BaseViewController<HomeViewModel> {
         }
         contentView.addSubview(weekStackView)
         contentView.addSubview(emptyView)
+        [routineListLabel, routineListButton].forEach {
+            routineHeaderView.addSubview($0)
+        }
+        contentView.addSubview(routineHeaderView)
         contentView.addSubview(routineScrollView)
         routineScrollView.addSubview(routineStackView)
         contentView.addSubview(loadingIndicatorView)
@@ -258,8 +279,9 @@ final class HomeView: BaseViewController<HomeViewModel> {
 
         emotionOrbView.snp.makeConstraints { make in
             make.top.equalTo(safeArea).offset(Layout.emotionOrbViewTopSpacing)
-            make.trailing.equalToSuperview()
-            make.size.equalTo(Layout.emotionOrbViewSize)
+            make.trailing.equalToSuperview().inset(Layout.emotionOrbViewTrailingSpacing)
+            make.width.equalTo(Layout.emotionOrbViewWidth)
+            make.height.equalTo(Layout.emotionOrbViewHeight)
         }
 
         contentView.snp.makeConstraints { make in
@@ -269,47 +291,62 @@ final class HomeView: BaseViewController<HomeViewModel> {
         }
 
         monthLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(20)
+            make.leading.equalToSuperview().offset(Layout.horizontalMargin)
             make.centerY.equalToSuperview()
-            make.height.equalTo(24)
+            make.height.equalTo(Layout.monthLabelHeight)
         }
 
         previousWeekButton.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.trailing.equalTo(nextWeekButton.snp.leading)
-            make.size.equalTo(48)
+            make.size.equalTo(Layout.moveWeekButtonSize)
         }
 
         nextWeekButton.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.trailing.equalToSuperview()
-            make.size.equalTo(48)
+            make.size.equalTo(Layout.moveWeekButtonSize)
         }
 
         weekHeaderView.snp.makeConstraints { make in
-            make.height.equalTo(48)
+            make.height.equalTo(Layout.moveWeekButtonSize)
         }
 
         weekView.snp.makeConstraints { make in
-//            make.top.equalToSuperview()
-//            make.leading.equalTo(safeArea)
-//            make.trailing.equalTo(safeArea)
             make.height.equalTo(Layout.weekViewHeight)
         }
 
         weekStackView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(10)
+            make.top.equalToSuperview().offset(Layout.weekStackViewTopSpacing)
             make.horizontalEdges.equalToSuperview()
         }
 
+        routineHeaderView.snp.makeConstraints { make in
+            make.top.equalTo(weekStackView.snp.bottom).offset(Layout.routineHeaderViewTopSpacing)
+            make.horizontalEdges.equalToSuperview()
+            make.height.equalTo(Layout.routineHeaderViewHeight)
+        }
+
+        routineListLabel.snp.makeConstraints { make in
+            make.top.equalToSuperview()
+            make.leading.equalToSuperview().offset(Layout.horizontalMargin)
+            make.centerY.equalToSuperview()
+        }
+
+        routineListButton.snp.makeConstraints { make in
+            make.top.equalToSuperview()
+            make.trailing.equalToSuperview().inset(Layout.horizontalMargin)
+            make.height.equalTo(Layout.routineListButtonHeight)
+        }
+
         routineScrollView.snp.makeConstraints { make in
-            make.top.equalTo(weekView.snp.bottom)
+            make.top.equalTo(routineHeaderView.snp.bottom).offset(Layout.routineScrollViewTopSpacing)
             make.horizontalEdges.equalTo(safeArea)
             make.bottom.equalTo(safeArea)
         }
 
         routineStackView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(Layout.routineStackViewTopSpacing)
+            make.top.equalToSuperview()
             make.leading.equalTo(safeArea).offset(Layout.horizontalMargin)
             make.trailing.equalTo(safeArea).inset(Layout.horizontalMargin)
             make.bottom.equalToSuperview().inset(Layout.routineStackViewBottomSpacing)
@@ -347,11 +384,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
         viewModel.output.nicknamePublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] nickname in
-                let homeLabelText = "\(nickname)님, 오셨군요!\n오늘 기분은 어떤가요?"
-                self?.homeLabel.attributedText = BitnagilFont(
-                    family: .cafe24Ssurround,
-                    style: .cafe24Title1,
-                    weight: .light).attributedString(text: homeLabelText)
+                self?.nickname = nickname
             }
             .store(in: &cancellables)
 
@@ -406,9 +439,11 @@ final class HomeView: BaseViewController<HomeViewModel> {
         }
 
         if routines.isEmpty {
+            routineHeaderView.isHidden = true
             routineScrollView.isHidden = true
             emptyView.isHidden = false
         } else {
+            routineHeaderView.isHidden = false
             routineScrollView.isHidden = false
             emptyView.isHidden = true
 
@@ -424,11 +459,22 @@ final class HomeView: BaseViewController<HomeViewModel> {
     private func updateEmotionOrbView(emotion: Emotion?) {
         guard
             let emotion,
-            let emotionOrbImageUrl = emotion.emotionImageUrl else {
-            emotionOrbView.image = BitnagilGraphic.defaultEmotionGraphic
+            let emotionOrbImageUrl = emotion.emotionImageUrl,
+            let emotionMessage = emotion.emotionMessage else {
+            let homeLabelText = "\(nickname)님, 오셨군요!\n오늘 기분은 어떤가요?"
+            homeLabel.attributedText = BitnagilFont(
+                family: .cafe24Ssurround,
+                style: .cafe24Title1,
+                weight: .light).attributedString(text: homeLabelText)
+            emotionOrbView.image = BitnagilGraphic.defaultEmotionHandGraphic
             registerEmotionButton.updateButtonState(buttonState: .default)
             return
         }
+        let homeLabelText = "\(nickname)님\n\(emotionMessage)"
+        homeLabel.attributedText = BitnagilFont(
+            family: .cafe24Ssurround,
+            style: .cafe24Title1,
+            weight: .light).attributedString(text: homeLabelText)
         emotionOrbView.kf.setImage(with: emotionOrbImageUrl)
         registerEmotionButton.updateButtonState(buttonState: .disabled)
     }

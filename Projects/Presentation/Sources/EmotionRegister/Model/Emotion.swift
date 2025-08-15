@@ -12,6 +12,7 @@ struct Emotion {
     let emotionType: String
     let emotionTitle: String
     let emotionImageUrl: URL?
+    let emotionMessage: String?
 }
 
 extension EmotionEntity {
@@ -19,6 +20,7 @@ extension EmotionEntity {
         return Emotion(
             emotionType: emotionType,
             emotionTitle: emotionName,
-            emotionImageUrl: emotionImageUrl)
+            emotionImageUrl: emotionImageUrl,
+            emotionMessage: emotionMessage)
     }
 }

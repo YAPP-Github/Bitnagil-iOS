@@ -26,6 +26,9 @@ enum BitnagilGraphic {
     static let progressStep4 = UIImage(named: "progress_step4", in: bundle, with: nil)
     static let progressStep5 = UIImage(named: "progress_step5", in: bundle, with: nil)
 
+    // MARK: - Home
+    static let defaultEmotionHandGraphic = UIImage(named: "default_emotion_with_hand_graphic", in: bundle, with: nil)
+
     static let defaultEmotionGraphic = UIImage(named: "default_emotion_graphic", in: bundle, with: nil)
     static let logoGraphic = UIImage(named: "bitnagil_logo", in: bundle, with: nil)
     static let profileGraphic = UIImage(named: "profile_graphic", in: bundle, with: nil)

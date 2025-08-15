@@ -112,7 +112,7 @@ final class RecommendedRoutineViewModel: ViewModel {
     private func loadEmotion() {
         Task {
             do {
-                let emotionEntity = try await emotionRepository.fetchEmotion(date: Date().convertToString(dateType: .yearMonthDate))
+                let emotionEntity = try await emotionRepository.loadEmotion(date: Date().convertToString(dateType: .yearMonthDate))
                 if emotionEntity == nil {
                     emotionExistSubject.send(false)
                 } else {

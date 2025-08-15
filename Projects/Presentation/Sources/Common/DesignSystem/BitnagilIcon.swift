@@ -14,6 +14,7 @@ enum BitnagilIcon {
 
     // MARK: - Common Icons
     static let backButtonIcon = UIImage(named: "back_button_icon", in: bundle, with: nil)
+    static let plusIcon = UIImage(named: "plus_icon", in: bundle, with: nil)?.withRenderingMode(.alwaysTemplate)
 
     // MARK: - Login Icons
     static let kakaoIcon = UIImage(named: "kakao_icon", in: bundle, with: nil)
@@ -35,9 +36,10 @@ enum BitnagilIcon {
     static let alarmWithBadgeIcon = UIImage(named: "alarm_badge_icon", in: bundle, with: nil)
     static let chevronLeftIcon = UIImage(named: "chevron_left_icon", in: bundle, with: nil)
     static let chevronRightIcon = UIImage(named: "chevron_right_icon", in: bundle, with: nil)
+    static let checkedCircleIcon = UIImage(named: "checked_circle_icon", in: bundle, with: nil)
+    static let uncheckedCircleIcon = UIImage(named: "unchecked_circle_icon", in: bundle, with: nil)
 
-
-    static let plusIcon = UIImage(named: "plus_icon", in: bundle, with: nil)?.withRenderingMode(.alwaysTemplate)
+    
     static let chevronIcon = UIImage(named: "chevron_icon", in: bundle, with: nil)
     static func chevronIcon(direction: Direction) -> UIImage? {
         return BitnagilIcon.chevronIcon?.rotate(degrees: direction.rotation)?.withRenderingMode(.alwaysTemplate)

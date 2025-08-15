@@ -19,8 +19,8 @@ final class EmotionRepository: EmotionRepositoryProtocol {
         return emotionEntities
     }
 
-    func fetchEmotion(date: String) async throws -> EmotionEntity? {
-        let endpoint = EmotionEndpoint.fetchEmotion(date: date)
+    func loadEmotion(date: String) async throws -> EmotionEntity? {
+        let endpoint = EmotionEndpoint.loadEmotion(date: date)
         guard let response = try await networkService.request(endpoint: endpoint, type: EmotionResponseDTO.self)
         else { throw NetworkError.unknown(description: "Emotion Reponse를 받아오지 못했습니다.") }
 

@@ -17,7 +17,7 @@ final class HomeRegisterEmotionButton: UIButton {
             switch self {
             case .default: BitnagilColor.orange500
             case .tap: BitnagilColor.orange600
-            case .disabled:  BitnagilColor.gray30
+            case .disabled: BitnagilColor.gray30
             }
         }
 
@@ -56,18 +56,21 @@ final class HomeRegisterEmotionButton: UIButton {
         layer.masksToBounds = true
         layer.cornerRadius = 8
 
-        var buttonConfiguration = UIButton.Configuration.filled()
-        buttonConfiguration.baseBackgroundColor = buttonState.buttonBackgroudColor
-        buttonConfiguration.attributedTitle = AttributedString(
-            buttonState.buttonTitle,
-            attributes: .init([.font: BitnagilFont(style: .body2, weight: .semiBold).font]))
-        buttonConfiguration.baseForegroundColor = buttonState.buttonTextColor
-        self.configuration = buttonConfiguration
+        backgroundColor = buttonState.buttonBackgroudColor
+        titleLabel?.font = BitnagilFont(style: .body2, weight: .semiBold).font
+
+        setTitle("오늘 감정 등록하기", for: .normal)
+        setTitleColor(ButtonState.default.buttonTextColor, for: .normal)
+
+        setTitle("오늘 감정 등록하기", for: .highlighted)
+        setTitleColor(ButtonState.tap.buttonTextColor, for: .highlighted)
+
+        setTitle("오늘 감정 등록완료", for: .disabled)
+        setTitleColor(ButtonState.disabled.buttonTextColor, for: .disabled)
     }
 
     private func updateButtonUI() {
         backgroundColor = buttonState.buttonBackgroudColor
-        setTitleColor(buttonState.buttonTextColor, for: .normal)
     }
 
     func updateButtonState(buttonState: ButtonState) {

@@ -127,7 +127,7 @@ final class HomeViewModel: ViewModel {
     private func fetchEmotion() {
         Task {
             do {
-                let emotionEntity = try await emotionUseCase.fetchEmotion(date: today)
+                let emotionEntity = try await emotionUseCase.loadEmotion(date: today)
                 let emotion = emotionEntity?.toEmotion()
                 emotionSubject.send(emotion)
             } catch {

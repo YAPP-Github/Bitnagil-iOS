@@ -12,11 +12,13 @@ struct EmotionResponseDTO: Decodable {
     let type: String?
     let name: String?
     let imageUrl: String?
+    let message: String?
 
     enum CodingKeys: String, CodingKey {
         case type = "emotionMarbleType"
         case name = "emotionMarbleName"
         case imageUrl
+        case message = "emotionMarbleHomeMessage"
     }
 }
 
@@ -31,6 +33,7 @@ extension EmotionResponseDTO {
         return EmotionEntity(
             emotionType: type,
             emotionName: name,
-            emotionImageUrl: URL(string: imageUrl))
+            emotionImageUrl: URL(string: imageUrl),
+            emotionMessage: message)
     }
 }
