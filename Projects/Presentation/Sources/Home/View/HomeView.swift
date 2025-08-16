@@ -597,8 +597,9 @@ extension HomeView: FloatingMenuViewDelegate {
         guard let routineCreationViewModel = DIContainer.shared.resolve(type: RoutineCreationViewModel.self) else {
             fatalError("routineCreationViewModel 의존성이 등록되지 않았습니다.")
         }
-        let routineCreationView = RoutineCreationView(viewModel: routineCreationViewModel)
-        routineCreationView.hidesBottomBarWhenPushed = true
-        self.navigationController?.pushViewController(routineCreationView, animated: true)
+        let routineCreationViewController = RoutineCreationViewController(viewModel: routineCreationViewModel)
+        routineCreationViewController.hidesBottomBarWhenPushed = true
+
+        self.navigationController?.pushViewController(routineCreationViewController, animated: true)
     }
 }
