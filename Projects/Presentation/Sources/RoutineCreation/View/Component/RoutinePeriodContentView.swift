@@ -29,9 +29,8 @@ final class RoutinePeriodContentView: UIView, RoutineCreationExpandable {
         case endDateSetTapped
     }
 
-    struct Dependencies {
-        let start: Date
-        let end: Date
+    struct Dependency {
+        let dates: (start: Date, end: Date)
     }
 
     private let startLabel = UILabel()
@@ -65,9 +64,15 @@ final class RoutinePeriodContentView: UIView, RoutineCreationExpandable {
         self.subviews.forEach { $0.isHidden = !expanded }
     }
 
-    func configure(dependencies: Dependencies) {
-        let startString = dependencies.start.convertToString(dateType: .yearMonthDate)
-        let endString = dependencies.end.convertToString(dateType: .yearMonthDate)
+    func configure(dependency: Dependency) {
+        let startString = dependency
+            .dates
+            .start
+            .convertToString(dateType: .yearMonthDate)
+        let endString = dependency
+            .dates
+            .end
+            .convertToString(dateType: .yearMonthDate)
 
         startButton.setTitle(startString, for: .normal)
         endButton.setTitle(endString, for: .normal)

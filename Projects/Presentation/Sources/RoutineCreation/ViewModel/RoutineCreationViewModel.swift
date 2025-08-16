@@ -10,41 +10,27 @@ import Domain
 import Foundation
 
 final class RoutineCreationViewModel: ViewModel {
-    enum RoutineExample: String, CaseIterable {
-        case wakeUp = "아침에 개운하게 일어나기"
-        case foldBlanket = "일어나자마자 이불 개기"
-        case drinkWater = "일어나서 찬물 마시기"
-        case washFace = "세수하기"
+    enum UpdateType {
+        case today
+        case tomorrow
     }
 
-    enum ExecutionType: Comparable {
-        case time(startAt: Date)
-        case allDay
-        case none
-
-        var description: String {
-            switch self {
-            case .time(let time):
-                return time.convertToString(dateType: .amPmTimeShort)
-            case .allDay:
-                return "하루종일"
-            case .none:
-                return "시간 선택"
-            }
-        }
+    struct ExecutionTime {
+        let startAt: Date?
     }
 
     enum Input {
         case fetchRoutine(id: String)
         case fetchRecommendedRoutine(id: Int)
         case configureName(name: String)
-        case addSubRoutine
-        case deleteSubRoutine(index: Int)
+        case deleteAllSubRoutines
         case configureSubRoutine(name: String, index: Int)
         case configureRepeatType(type: RepeatType)
-        case toggleRepeatDay(weekDay: Week)
-        case toggleRepeatAllDay
-        case configureExecution(type: ExecutionType)
+        case configureRepeatWeeks(weeks: [Week])
+        case toggleAllDay
+        case configureStartDate(date: Date)
+        case configureEndDate(date: Date)
+        case configureExecution(type: ExecutionTime)
         case registerRoutine
     }
 
@@ -52,17 +38,18 @@ final class RoutineCreationViewModel: ViewModel {
         let namePublisher: AnyPublisher<String?, Never>
         let subRoutinesPublisher: AnyPublisher<[String], Never>
         let repeatTypePublisher: AnyPublisher<RepeatType?, Never>
-        let weekDayPublisher: AnyPublisher<Set<Week>, Never>
-        let executionTimePublisher: AnyPublisher<String, Never>
+        let periodPublisher: AnyPublisher<(Date, Date), Never>
+        let executionTimePublisher: AnyPublisher<Date?, Never>
         let isRoutineValid: AnyPublisher<Bool, Never>
     }
 
     private(set) var output: Output
     private let nameSubject = CurrentValueSubject<String?, Never>("")
-    private let subRoutinesSubject = CurrentValueSubject<[SubRoutineSummaryEntity], Never>([])
+    private let subRoutinesSubject = CurrentValueSubject<[String], Never>([])
     private let repeatTypeSubject = CurrentValueSubject<RepeatType?, Never>(nil)
-    private let weekDaySubject = CurrentValueSubject<Set<Week>, Never>([])
-    private let executionTimeSubject = CurrentValueSubject<ExecutionType, Never>(.none)
+    private let periodStartSubject = CurrentValueSubject<Date, Never>(Date())
+    private let periodEndSubject   = CurrentValueSubject<Date, Never>(Date())
+    private let executionTimeSubject = CurrentValueSubject<ExecutionTime, Never>(.init(startAt: nil))
     private let checkRoutinePublisher = PassthroughSubject<Bool, Never>()
     private let routineUseCase: RoutineUseCaseProtocol
     private let recommenededRoutineUseCase: RecommendedRoutineUseCaseProtocol
@@ -72,16 +59,17 @@ final class RoutineCreationViewModel: ViewModel {
     init(routineUseCase: RoutineUseCaseProtocol, recommenededRoutineUseCase: RecommendedRoutineUseCaseProtocol) {
         self.routineUseCase = routineUseCase
         self.recommenededRoutineUseCase = recommenededRoutineUseCase
-        
+
         output = Output(
             namePublisher: nameSubject.eraseToAnyPublisher(),
-            subRoutinesPublisher: subRoutinesSubject
-                .map { $0.compactMap { $0.subRoutineName } }
-                .eraseToAnyPublisher(),
+            subRoutinesPublisher: subRoutinesSubject.eraseToAnyPublisher(),
             repeatTypePublisher: repeatTypeSubject.eraseToAnyPublisher(),
-            weekDayPublisher: weekDaySubject.eraseToAnyPublisher(),
+            periodPublisher: Publishers
+                .CombineLatest(periodStartSubject, periodEndSubject)
+                .map { ($0, $1) }
+                .eraseToAnyPublisher(),
             executionTimePublisher: executionTimeSubject
-                .map{ $0.description }
+                .map { $0.startAt }
                 .eraseToAnyPublisher(),
             isRoutineValid: checkRoutinePublisher.eraseToAnyPublisher())
     }
@@ -94,22 +82,25 @@ final class RoutineCreationViewModel: ViewModel {
             fetchRecommendedRoutine(id: id)
         case .configureName(let name):
             configureName(name: name)
-        case .addSubRoutine:
-            addSubRoutine()
-        case .deleteSubRoutine(let index):
-            deleteSubRoutine(index: index)
+        case .deleteAllSubRoutines:
+            subRoutinesSubject.send(["", "", ""])
         case .configureSubRoutine(let name, let index):
             configureSubroutine(name: name, index: index)
         case .configureRepeatType(let type):
             configureRepeatType(selectedType: type)
-        case .toggleRepeatDay(let weekDay):
-            configureWeekDay(weekDay: weekDay)
-        case .toggleRepeatAllDay:
-            configureExecutionTime(type: .allDay)
+        case .configureRepeatWeeks(let weeks):
+            configureWeeks(weeks: weeks)
+        case .toggleAllDay:
+            let midnight = Calendar.current.startOfDay(for: Date())
+            configureExecutionTime(time: .init(startAt: midnight))
         case .configureExecution(let startTime):
-            configureExecutionTime(type: startTime)
+            configureExecutionTime(time: startTime)
         case .registerRoutine:
             registerRoutine()
+        case .configureStartDate(let date):
+            periodStartSubject.send(date)
+        case .configureEndDate(let date):
+            periodEndSubject.send(date)
         }
         
         updateIsRoutineValid()
@@ -121,26 +112,25 @@ final class RoutineCreationViewModel: ViewModel {
                 // TODO: - routine fetch 실패 시 처리 방안 필요 (기획과 논의~)
                 guard let routine = try await routineUseCase.fetchRoutine(routineId: id) else { return }
 
-                let subRoutines = routine.subRoutineSearchResultDto.map {
-                    SubRoutineSummaryEntity(
-                        subRoutineId: $0.subRoutineId,
-                        subRoutineName: $0.subRoutineName,
-                        sortOrder: $0.sortOrder)
-                }
+                let subRoutines = routine.subRoutineSearchResultDto.map { $0.subRoutineName }
                 let weekDay = routine.repeatDay.compactMap { Week(rawValue: $0.rawValue) }
-                let repeatType: RepeatType = weekDay.count == Week.allCases.count ? .daily : .weekly
-                let executionType: ExecutionType
+                let repeatType: RepeatType?
 
-                if routine.executionTime == "00:00:00" {
-                    executionType = .allDay
+                if weekDay.isEmpty {
+                    repeatType = nil
+                } else if weekDay.count == Week.allCases.count {
+                    repeatType = .daily
                 } else {
-                    let time = Date.convertToDate(from: routine.executionTime, dateType: .amPmTimeShort)
-                    executionType = .time(startAt: time ?? Date())
+                    repeatType = .weekly(weeks: Set(weekDay))
                 }
+
+                let executionType: ExecutionTime
+
+                let time = Date.convertToDate(from: routine.executionTime, dateType: .amPmTimeShort)
+                executionType = .init(startAt: time ?? Date())
 
                 nameSubject.send(routine.routineName)
                 subRoutinesSubject.send(subRoutines)
-                weekDaySubject.send(Set(weekDay))
                 repeatTypeSubject.send(repeatType)
                 executionTimeSubject.send(executionType)
                 routineId = id
@@ -157,12 +147,7 @@ final class RoutineCreationViewModel: ViewModel {
             do {
                 guard let routine = try await recommenededRoutineUseCase.fetchRecommendedRoutine(id: id) else { return }
 
-                let subRoutines = routine.subRoutines.map {
-                    SubRoutineSummaryEntity(
-                        subRoutineId: nil,
-                        subRoutineName: $0.title,
-                        sortOrder: nil)
-                }
+                let subRoutines = routine.subRoutines.map { $0.title }
 
                 nameSubject.send(routine.title)
                 subRoutinesSubject.send(subRoutines)
@@ -177,36 +162,6 @@ final class RoutineCreationViewModel: ViewModel {
         nameSubject.send(name)
     }
 
-    private func addSubRoutine() {
-        var subRoutines = subRoutinesSubject.value
-        guard subRoutines.count <= 3 else { return }
-
-        let newSubRoutine = SubRoutineSummaryEntity(
-            subRoutineId: nil,
-            subRoutineName: "",
-            sortOrder: subRoutines.count + 1)
-
-        subRoutines.append(newSubRoutine)
-        subRoutinesSubject.send(subRoutines)
-    }
-
-    private func deleteSubRoutine(index: Int) {
-        var subRoutines = subRoutinesSubject.value
-        guard
-            index >= 0,
-            index < subRoutines.count
-        else { return }
-
-        let targetSubRoutine = subRoutines[index]
-
-        if targetSubRoutine.subRoutineId != nil {
-            deletedSubroutines.insert(targetSubRoutine)
-        }
-
-        subRoutines.remove(at: index)
-        subRoutinesSubject.send(subRoutines)
-    }
-
     private func configureSubroutine(name: String, index: Int) {
         var subRoutines = subRoutinesSubject.value
         guard
@@ -214,60 +169,55 @@ final class RoutineCreationViewModel: ViewModel {
             index < subRoutines.count
         else { return }
 
-        let originalSubRoutine = subRoutines[index]
-        let newSubRoutine = SubRoutineSummaryEntity(
-            subRoutineId: originalSubRoutine.subRoutineId,
-            subRoutineName: name,
-            sortOrder: originalSubRoutine.sortOrder)
-        subRoutines[index] = newSubRoutine
-
+        subRoutines[index] = name
         subRoutinesSubject.send(subRoutines)
     }
 
-    private func configureRepeatType(selectedType: RepeatType) {
-        let repeatType = repeatTypeSubject.value
+    private func configureRepeatType(selectedType: RepeatType?) {
+        let current = repeatTypeSubject.value
 
         switch selectedType {
         case .daily:
-            weekDaySubject.send(Set(Week.allCases))
-        case .weekly:
-            if repeatType == .daily {
-                weekDaySubject.send([])
+            if case .daily = current {
+                repeatTypeSubject.send(nil)
+            } else {
+                repeatTypeSubject.send(.daily)
             }
+        case .weekly:
+            if case .weekly = current {
+                repeatTypeSubject.send(nil)
+            } else {
+                repeatTypeSubject.send(.weekly(weeks: []))
+            }
+        case .none:
+            repeatTypeSubject.send(nil)
         }
-
-        repeatTypeSubject.send(selectedType)
     }
 
-    private func configureWeekDay(weekDay: Week) {
-        var weekDays = weekDaySubject.value
-
-        if weekDays.contains(weekDay) {
-            weekDays.remove(weekDay)
-        } else {
-            weekDays.insert(weekDay)
-        }
-
-        weekDaySubject.send(weekDays)
+    private func configureWeeks(weeks: [Week]) {
+        guard case .weekly = repeatTypeSubject.value else { return }
+        repeatTypeSubject.send(.weekly(weeks: Set(weeks)))
     }
 
-    private func configureExecutionTime(type: ExecutionType) {
+    private func configureExecutionTime(time: ExecutionTime) {
         if
-            type == .allDay,
-            executionTimeSubject.value == .allDay
+           let time = time.startAt,
+           let curTime = executionTimeSubject.value.startAt,
+           time.isMidnight,
+           curTime.isMidnight
         {
-            executionTimeSubject.send(.none)
+            executionTimeSubject.send(.init(startAt: nil))
             return
         }
 
-        executionTimeSubject.send(type)
+        executionTimeSubject.send(time)
     }
 
     private func updateIsRoutineValid() {
         guard
             let name = nameSubject.value,
             !name.isEmpty,
-            executionTimeSubject.value != .none
+            executionTimeSubject.value.startAt != nil
         else {
             checkRoutinePublisher.send(false)
             return
@@ -279,21 +229,21 @@ final class RoutineCreationViewModel: ViewModel {
     private func registerRoutine() {
         Task {
             do {
-                let repeatDay = weekDaySubject
-                    .value
-                    .sorted(by: { $0.id < $1.id })
-                    .map { $0.rawValue }
 
-                let executionTime: String
+                let repeatDay: [String]
 
-                switch executionTimeSubject.value {
-                case .time(let startAt):
-                    executionTime = startAt.convertToString(dateType: .time)
-                case .allDay:
-                    executionTime = "00:00:00"
+                switch repeatTypeSubject.value {
+                case .daily:
+                    repeatDay = Week.allCases.map { $0.rawValue }
+                case .weekly(let weeks):
+                    repeatDay = weeks.map { $0.rawValue }
                 case .none:
-                    return
+                    repeatDay = []
                 }
+
+                guard let startAt = executionTimeSubject.value.startAt else { return }
+
+                let executionTime = startAt.convertToString(dateType: .time)
 
                 let routineSummary = RoutineSummaryEntity(
                     routineId: routineId,
@@ -303,7 +253,7 @@ final class RoutineCreationViewModel: ViewModel {
 
                 try await routineUseCase.saveRoutine(
                     routineSummary: routineSummary,
-                    subRoutineSummaries: subRoutinesSubject.value,
+                    subRoutineSummaries: [], // TODO: - 수정 필요
                     deletedSubRoutineSummaries: Array(deletedSubroutines))
             } catch {
 

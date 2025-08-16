@@ -29,8 +29,8 @@ final class RoutineTimeContentView: UIView, RoutineCreationExpandable {
         case timeSetTapped
     }
 
-    struct Dependencies {
-        let startTime: Date
+    struct Dependency {
+        let startTime: Date?
     }
 
     private let timeLabel = UILabel()
@@ -62,8 +62,12 @@ final class RoutineTimeContentView: UIView, RoutineCreationExpandable {
         self.subviews.forEach { $0.isHidden = !expanded }
     }
 
-    func configure(dependencies: Dependencies) {
-        let time = dependencies.startTime
+    func configure(dependency: Dependency) {
+        guard let time = dependency.startTime else {
+            timeButton.setTitle("시간선택", for: .normal)
+            checkButtonImageView.image = BitnagilIcon.uncheckedIcon
+            return
+        }
 
         if time.isMidnight {
             timeButton.setTitle("하루종일", for: .normal)

@@ -16,7 +16,7 @@ fileprivate enum Layout {
     static let titleLabelSmallHeight: CGFloat = 20
     static let titleLabelTrailingSpacing: CGFloat = 5
     static let placeHolderLabelHeight: CGFloat = 20
-    static let contentLabelHeight: CGFloat = 24
+    static let subTitleLabelHeight: CGFloat = 24
     static let contentLabelStackViewSpacing: CGFloat = 1
     static let infoImageSize: CGFloat = 16
     static let asteriskImageSize: CGFloat = 12
@@ -130,7 +130,6 @@ final class RoutineCreationCardView<ContentView: UIView & RoutineCreationExpanda
             make.top.equalToSuperview().offset(Layout.edgeSpacing)
             make.leading.equalTo(titleImageView.snp.trailing).offset(Layout.titleImageTrailingSpacing)
             make.trailing.equalToSuperview().offset(-Layout.edgeSpacing)
-            make.height.equalTo(Layout.titleLabelSmallHeight).priority(800)
             labelStackViewBottomConstraint = make.bottom.equalToSuperview()
                 .offset(-Layout.edgeSpacing)
                 .priority(.medium)
@@ -165,7 +164,7 @@ final class RoutineCreationCardView<ContentView: UIView & RoutineCreationExpanda
         }
 
         divideLine.snp.makeConstraints { make in
-            make.top.equalTo(titleImageView.snp.bottom).offset(Layout.divideLineTopSpacing)
+            make.top.equalTo(labelStackView.snp.bottom).offset(Layout.divideLineTopSpacing)
             make.horizontalEdges.equalToSuperview().inset(Layout.edgeSpacing)
             make.height.equalTo(Layout.divideLineHeight)
         }
@@ -175,12 +174,37 @@ final class RoutineCreationCardView<ContentView: UIView & RoutineCreationExpanda
             make.horizontalEdges.equalToSuperview()
             make.bottom.equalToSuperview().offset(-Layout.edgeSpacing)
         }
-
-        labelStackViewBottomConstraint?.isActive = true
     }
 
-    func configure(dependencies: ContentView.Dependencies) {
-        contentView.configure(dependencies: dependencies)
+    func configure(subTitles: [String]) {
+        labelStackView.arrangedSubviews.dropFirst(2).forEach { subview in
+            labelStackView.removeArrangedSubview(subview)
+            subview.removeFromSuperview()
+        }
+
+        for text in subTitles {
+            let label = UILabel()
+            label.text = text
+            label.font = BitnagilFont(style: .body1, weight: .semiBold).font
+            label.textColor = BitnagilColor.gray10
+            label.numberOfLines = 1
+
+            labelStackView.addArrangedSubview(label)
+            label.snp.makeConstraints { make in
+                make.height.equalTo(Layout.subTitleLabelHeight)
+            }
+        }
+
+        titleLabel.snp.updateConstraints { make in
+            make.height.equalTo(subTitles.isEmpty ? Layout.titleLabelLargeHeight : Layout.titleLabelSmallHeight)
+        }
+
+        updateHeaderVisibility()
+        setNeedsLayout()
+    }
+
+    func configure(dependencies: ContentView.Dependency) {
+        contentView.configure(dependency: dependencies)
     }
 
     @objc private func handleTap(_ gestureRecognizer: UIGestureRecognizer) {
@@ -192,19 +216,16 @@ final class RoutineCreationCardView<ContentView: UIView & RoutineCreationExpanda
     }
 
     private func configureContents(contents: [String]) {
-        guard !contents.isEmpty else {
-            placeHolderLabel.isHidden = false
-            titleLabel.snp.updateConstraints { make in
-                make.height.equalTo(Layout.titleLabelLargeHeight)
-            }
-            return
+        defer {
+            updateHeaderVisibility()
+            setNeedsLayout()
         }
 
-        placeHolderLabel.isHidden = true
+        guard !contents.isEmpty else { return }
 
         labelStackView
             .arrangedSubviews
-            .dropFirst(2) // title, placeholder 제외한 label들 삭제
+            .dropFirst(2)
             .forEach { $0.removeFromSuperview() }
 
         contents.forEach {
@@ -215,12 +236,8 @@ final class RoutineCreationCardView<ContentView: UIView & RoutineCreationExpanda
 
             labelStackView.addArrangedSubview(label)
             label.snp.makeConstraints { make in
-                make.height.equalTo(Layout.contentLabelHeight)
+                make.height.equalTo(Layout.subTitleLabelHeight)
             }
-        }
-
-        titleLabel.snp.updateConstraints { make in
-            make.height.equalTo(Layout.titleLabelSmallHeight)
         }
     }
 
@@ -230,20 +247,45 @@ final class RoutineCreationCardView<ContentView: UIView & RoutineCreationExpanda
 
         if nextExpandedState {
             labelStackViewBottomConstraint?.isActive = false
-            placeHolderLabel.isHidden = true
             contentView.isHidden = false
             divideLine.isHidden = false
             chevronImageView.image = BitnagilIcon.chevronIcon(direction: .up)
         } else {
             labelStackViewBottomConstraint?.isActive = true
-            placeHolderLabel.isHidden = false
             contentView.isHidden = true
             divideLine.isHidden = true
             chevronImageView.image = BitnagilIcon.chevronIcon(direction: .down)
         }
 
         contentView.setExpanded(expanded: nextExpandedState)
+        updateHeaderVisibility()
 
         self.layoutIfNeeded()
+    }
+
+    private func updateHeaderVisibility() {
+        let arranged = labelStackView.arrangedSubviews
+        let subtitles = arranged.dropFirst(2)
+        let hasSubtitles = !subtitles.isEmpty
+        let isExpanded = !contentView.isHidden
+        let titleHeight: CGFloat = {
+            if isExpanded { return Layout.titleLabelLargeHeight }
+            return hasSubtitles ? Layout.titleLabelSmallHeight : Layout.titleLabelLargeHeight
+        }()
+
+        placeHolderLabel.isHidden = isExpanded || hasSubtitles
+        subtitles.forEach { $0.isHidden = isExpanded }
+
+        titleLabel.snp.updateConstraints { make in
+            make.height.equalTo(titleHeight)
+        }
+
+        if titleHeight == Layout.titleLabelLargeHeight {
+            titleLabel.font = isExpanded ? BitnagilFont.init(style: .body2, weight: .semiBold).font : BitnagilFont.init(style: .body1, weight: .semiBold).font
+            titleLabel.textColor = BitnagilColor.gray10
+        } else {
+            titleLabel.font = BitnagilFont.init(style: .body2, weight: .medium).font
+            titleLabel.textColor = BitnagilColor.gray50
+        }
     }
 }

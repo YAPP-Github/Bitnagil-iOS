@@ -17,8 +17,8 @@ final class RoutineNameContentView: UIView, RoutineCreationExpandable {
         static let textFieldHeight: CGFloat = 20
         static let divideLineHeight: CGFloat = 1.3
         static let textFieldTopSpacing: CGFloat = 23
-        static let checkButtonViewTopSpacing: CGFloat = 24
-        static let checkButtonViewSize: CGFloat = 18
+        static let checkButtonImageViewTopSpacing: CGFloat = 24
+        static let checkButtonImageViewSize: CGFloat = 18
         static let checkButtonLabelHeight: CGFloat = 20
         static let checkButtonLabelTrailingSpacing: CGFloat = 6
         static let foldedHeight: CGFloat = 0
@@ -29,7 +29,7 @@ final class RoutineNameContentView: UIView, RoutineCreationExpandable {
         case deleteAllSubroutines
     }
 
-    struct Dependencies {
+    struct Dependency {
         let subRoutines: [String]
     }
 
@@ -43,7 +43,7 @@ final class RoutineNameContentView: UIView, RoutineCreationExpandable {
     private let divideLine2 = UIImageView()
     private let divideLine3 = UIImageView()
     private let checkButtonLabel = UILabel()
-    private let checkButtonView = UIView()
+    private let checkButtonImageView = UIImageView()
     private let checkButton = UIButton()
     var heightConstraint: Constraint?
     var action: ((Action) -> Void)?
@@ -70,10 +70,10 @@ final class RoutineNameContentView: UIView, RoutineCreationExpandable {
         self.subviews.forEach { $0.isHidden = !expanded }
     }
 
-    func configure(dependencies: Dependencies) {
-        guard !dependencies.subRoutines.isEmpty else { return }
+    func configure(dependency: Dependency) {
+        guard !dependency.subRoutines.isEmpty else { return }
 
-        let subRoutines = dependencies.subRoutines
+        let subRoutines = dependency.subRoutines
         let subRoutineTextFields = [
             subRoutineTextField1,
             subRoutineTextField2,
@@ -82,6 +82,12 @@ final class RoutineNameContentView: UIView, RoutineCreationExpandable {
 
         zip(subRoutines, subRoutineTextFields).prefix(minCount).forEach {
             $1.text = $0
+        }
+
+        if dependency.subRoutines.filter({ !$0.isEmpty }).isEmpty {
+            checkButtonImageView.image = BitnagilIcon.checkedIcon
+        } else {
+            checkButtonImageView.image = BitnagilIcon.uncheckedIcon
         }
     }
 
@@ -100,15 +106,25 @@ final class RoutineNameContentView: UIView, RoutineCreationExpandable {
             subRoutineTextField2,
             subRoutineTextField3]
 
-        zip(textFields, placeholders).forEach { textField, placeholder in
-            let attributes: [NSAttributedString.Key: Any] = [
-                .font: BitnagilFont(style: .body2, weight: .medium).font,
-                .foregroundColor: BitnagilColor.gray90 ?? .systemGray]
+        zip(textFields, placeholders)
+            .enumerated()
+            .forEach {
+                let index = $0
+                let (textField, placeholder) = $1
 
-            textField.attributedPlaceholder = NSAttributedString(string: placeholder, attributes: attributes)
-            textField.font = BitnagilFont(style: .body2, weight: .medium).font
-            textField.textColor = BitnagilColor.gray30
-        }
+                let attributes: [NSAttributedString.Key: Any] = [
+                    .font: BitnagilFont(style: .body2, weight: .medium).font,
+                    .foregroundColor: BitnagilColor.gray90 ?? .systemGray
+                ]
+
+                textField.delegate = self
+                textField.attributedPlaceholder = NSAttributedString(string: placeholder, attributes: attributes)
+                textField.font = BitnagilFont(style: .body2, weight: .medium).font
+                textField.textColor = BitnagilColor.gray30
+                textField.tag = index
+                textField.returnKeyType = .done
+                textField.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
+            }
 
         divideLine1.image = BitnagilIcon.divideLineIcon
         divideLine2.image = BitnagilIcon.divideLineIcon
@@ -117,10 +133,16 @@ final class RoutineNameContentView: UIView, RoutineCreationExpandable {
         checkButtonLabel.text = "세부루틴 설정 안함"
         checkButtonLabel.font = BitnagilFont.init(style: .body2, weight: .medium).font
 
-        checkButtonView.layer.cornerRadius = 4
-        checkButtonView.layer.borderWidth = 1
-        checkButtonView.backgroundColor = .white
-        checkButtonView.layer.borderColor = BitnagilColor.gray95?.cgColor
+        checkButtonImageView.layer.cornerRadius = 4
+        checkButtonImageView.layer.masksToBounds = true
+        checkButtonImageView.layer.borderWidth = 1
+        checkButtonImageView.backgroundColor = .white
+        checkButtonImageView.layer.borderColor = BitnagilColor.gray95?.cgColor
+        checkButton.addAction(
+            UIAction { [weak self] _ in
+                self?.action?(.deleteAllSubroutines)
+            },
+            for: .touchUpInside)
     }
 
     private func configureLayout() {
@@ -134,7 +156,7 @@ final class RoutineNameContentView: UIView, RoutineCreationExpandable {
         addSubview(divideLine2)
         addSubview(divideLine3)
         addSubview(checkButtonLabel)
-        addSubview(checkButtonView)
+        addSubview(checkButtonImageView)
         addSubview(checkButton)
 
         self.snp.makeConstraints { make in
@@ -198,23 +220,33 @@ final class RoutineNameContentView: UIView, RoutineCreationExpandable {
             make.height.equalTo(Layout.divideLineHeight).priority(999)
         }
 
-        checkButtonView.snp.makeConstraints { make in
-            make.top.equalTo(divideLine3.snp.bottom).offset(Layout.checkButtonViewTopSpacing).priority(999)
+        checkButtonImageView.snp.makeConstraints { make in
+            make.top.equalTo(divideLine3.snp.bottom).offset(Layout.checkButtonImageViewTopSpacing).priority(999)
             make.bottom.equalToSuperview().offset(-Layout.edgeSpacing).priority(999)
             make.trailing.equalToSuperview().offset(-Layout.edgeSpacing)
-            make.size.equalTo(Layout.checkButtonViewSize).priority(999)
+            make.size.equalTo(Layout.checkButtonImageViewSize).priority(999)
         }
 
         checkButtonLabel.snp.makeConstraints { make in
-            make.trailing.equalTo(checkButtonView.snp.leading).offset(-Layout.checkButtonLabelTrailingSpacing)
-            make.centerY.equalTo(checkButtonView)
+            make.trailing.equalTo(checkButtonImageView.snp.leading).offset(-Layout.checkButtonLabelTrailingSpacing)
+            make.centerY.equalTo(checkButtonImageView)
         }
 
         checkButton.snp.makeConstraints { make in
-            make.verticalEdges.equalTo(checkButtonView)
+            make.verticalEdges.equalTo(checkButtonImageView)
             make.leading.equalTo(checkButtonLabel.snp.leading)
-            make.trailing.equalTo(checkButtonView.snp.trailing)
+            make.trailing.equalTo(checkButtonImageView.snp.trailing)
         }
     }
-        
+
+    @objc private func textFieldEditingChanged(_ sender: UITextField) {
+        action?(.subroutineChanged(index: sender.tag, text: sender.text ?? ""))
+    }
+}
+
+extension RoutineNameContentView: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
 }

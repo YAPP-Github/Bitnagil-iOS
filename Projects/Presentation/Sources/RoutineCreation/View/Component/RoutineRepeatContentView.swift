@@ -18,10 +18,6 @@ final class RoutineRepeatContentView: UIView, RoutineCreationExpandable {
         static let weekStackViewTopSpacing: CGFloat = 15
         static let weekStackViewHeight: CGFloat = 38
         static let weekStackViewSpacing: CGFloat = 5
-        static let checkButtonImageTopSpacing: CGFloat = 24
-        static let checkButtonImageSize: CGFloat = 18
-        static let checkButtonLabelHeight: CGFloat = 20
-        static let checkButtonLabelTrailingSpacing: CGFloat = 6
         static let foldedHeight: CGFloat = 0
     }
 
@@ -31,14 +27,14 @@ final class RoutineRepeatContentView: UIView, RoutineCreationExpandable {
         case setWeeks([Week])
     }
 
-    struct Dependencies {
+    struct Dependency {
         let repeatType: RepeatType?
-        let selectedWeeks: [Week]
     }
 
     private let dailyButton = UIButton()
     private let weeklyButton = UIButton()
     private let weekStackView = UIStackView()
+    private var buttonToWeek: [UIButton: Week] = [:]
     private var repeatButtonBottomConstraint: Constraint?
     var heightConstraint: Constraint?
     var action: ((Action) -> Void)?
@@ -54,49 +50,31 @@ final class RoutineRepeatContentView: UIView, RoutineCreationExpandable {
     }
 
     func setExpanded(expanded: Bool) {
-        guard heightConstraint?.isActive == expanded else { return }
+        let isCollapsed = (heightConstraint?.isActive ?? false)
+        if expanded == !isCollapsed { return }
 
-        subviews.forEach { $0.alpha = 0 }
-        defer { self.subviews.forEach { $0.alpha = 1 } }
+        heightConstraint?.isActive = !expanded
 
-        self.heightConstraint?.isActive = !expanded
-        self.subviews.forEach { $0.isHidden = !expanded }
+        subviews.forEach { $0.isHidden = !expanded }
 
-        if expanded {
-            weekStackView.isHidden = !weeklyButton.isSelected
-        }
+        updateWeekVisibility()
     }
 
-    func configure(dependencies: Dependencies) {
-        configureRepeatButton(selectedType: dependencies.repeatType)
-
-        let selectedWeeks = dependencies.selectedWeeks
-
-        weekStackView.subviews.forEach { button in
-            guard let button = button as? UIButton else { return }
-            button.isSelected = false
-            button.backgroundColor = .white
-            button.layer.borderColor = BitnagilColor.gray96?.cgColor
-        }
-
-        selectedWeeks.forEach {
-            let index = $0.id
-            guard let button = weekStackView.arrangedSubviews[index] as? UIButton else { return }
-
-            button.isSelected = true
-            button.backgroundColor = BitnagilColor.orange500
-            button.layer.borderColor = BitnagilColor.orange500?.cgColor
-        }
+    func configure(dependency: Dependency) {
+        applyRepeatType(repeatType: dependency.repeatType)
+        updateWeekButtons(repeatType: dependency.repeatType)
+        updateWeekVisibility()
     }
-    
+
     private func configureAttribute() {
         configureWeekStackView()
         weekStackView.isHidden = true
 
         dailyButton.setTitle("매일", for: .normal)
         weeklyButton.setTitle("요일 선택", for: .normal)
+
         [dailyButton, weeklyButton].forEach { button in
-            button.titleLabel?.font = BitnagilFont.init(style: .body2, weight: .medium).font
+            button.titleLabel?.font = BitnagilFont(style: .body2, weight: .medium).font
             button.setTitleColor(BitnagilColor.gray30, for: .normal)
             button.setTitleColor(.white, for: .selected)
             button.layer.cornerRadius = 12
@@ -108,15 +86,17 @@ final class RoutineRepeatContentView: UIView, RoutineCreationExpandable {
 
         dailyButton.addAction(
             UIAction { [weak self] _ in
-                self?.configureRepeatButton(selectedType: .daily)
+                self?.action?(.repeatDaily)
             },
-            for: .touchUpInside)
+            for: .touchUpInside
+        )
 
         weeklyButton.addAction(
             UIAction { [weak self] _ in
-                self?.configureRepeatButton(selectedType: .weekly)
+                self?.action?(.repeatWeekly)
             },
-            for: .touchUpInside)
+            for: .touchUpInside
+        )
     }
 
     private func configureLayout() {
@@ -124,12 +104,12 @@ final class RoutineRepeatContentView: UIView, RoutineCreationExpandable {
         addSubview(weeklyButton)
         addSubview(weekStackView)
 
-        self.snp.makeConstraints { make in
+        snp.makeConstraints { make in
             heightConstraint = make.height.equalTo(Layout.foldedHeight).constraint
         }
 
         dailyButton.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(Layout.edgeSpacing).priority(999)
+            make.top.equalToSuperview().offset(Layout.repeatButtonTopSpacing).priority(999)
             make.leading.equalToSuperview().offset(Layout.edgeSpacing)
             make.height.equalTo(Layout.repeatButtonHeight)
             repeatButtonBottomConstraint = make.bottom.equalToSuperview()
@@ -148,63 +128,71 @@ final class RoutineRepeatContentView: UIView, RoutineCreationExpandable {
         }
 
         weekStackView.snp.makeConstraints { make in
-            make.top.equalTo(dailyButton.snp.bottom).offset(Layout.weekStackViewTopSpacing)
             make.horizontalEdges.equalToSuperview().inset(Layout.edgeSpacing)
             make.height.equalTo(Layout.weekStackViewHeight)
             make.bottom.equalToSuperview().offset(-Layout.edgeSpacing).priority(999)
         }
     }
 
+    private func configureWeekButton(weekButton: UIButton) {
+        if weekButton.isSelected {
+            weekButton.backgroundColor = BitnagilColor.orange500
+            weekButton.layer.borderColor = BitnagilColor.orange500?.cgColor
+        } else {
+            weekButton.backgroundColor = .white
+            weekButton.layer.borderColor = BitnagilColor.gray96?.cgColor
+        }
+    }
+
     private func configureWeekStackView() {
         weekStackView.axis = .horizontal
-        weekStackView.spacing = 5
+        weekStackView.spacing = Layout.weekStackViewSpacing
         weekStackView.distribution = .fillEqually
 
-        Week.allCases.forEach {
+        Week.allCases.forEach { week in
             let button = UIButton()
-            let normalLayerColor = BitnagilColor.gray96?.cgColor
+
             button.layer.cornerRadius = 12
             button.layer.masksToBounds = true
-            button.titleLabel?.font = BitnagilFont.init(style: .body2, weight: .medium).font
+            button.titleLabel?.font = BitnagilFont(style: .body2, weight: .medium).font
             button.setTitleColor(BitnagilColor.gray30, for: .normal)
             button.setTitleColor(.white, for: .selected)
-            button.setTitle($0.koreanValue, for: .normal)
+            button.setTitle(week.koreanValue, for: .normal)
             button.layer.borderWidth = 1
-            button.layer.borderColor = normalLayerColor
+            button.layer.borderColor = BitnagilColor.gray96?.cgColor
             button.backgroundColor = .white
 
+            buttonToWeek[button] = week
+
             button.addAction(
-                UIAction { action in
-                    guard let sender = action.sender as? UIButton else { return }
+                UIAction { [weak self] action in
+                    guard
+                        let self,
+                        let sender = action.sender as? UIButton
+                    else { return }
 
                     sender.isSelected.toggle()
-                    if sender.isSelected {
-                        sender.backgroundColor = BitnagilColor.orange500
-                        sender.layer.borderColor = BitnagilColor.orange500?.cgColor
-                    } else {
-                        sender.backgroundColor = .white
-                        sender.layer.borderColor = normalLayerColor
-                    }
+                    configureWeekButton(weekButton: sender)
+                    self.emitSelectedWeeks()
                 },
-                for: .touchUpInside)
+                for: .touchUpInside
+            )
+
             weekStackView.addArrangedSubview(button)
         }
     }
 
-    private func configureRepeatButton(selectedType: RepeatType?) {
-        if let selectedType {
-            switch selectedType {
-            case .daily:
-                dailyButton.isSelected.toggle()
-                if dailyButton.isSelected {
-                    weeklyButton.isSelected = false
-                }
-            case .weekly:
-                weeklyButton.isSelected.toggle()
-                if weeklyButton.isSelected {
-                    dailyButton.isSelected = false
-                }
-            }
+    private func applyRepeatType(repeatType: RepeatType?) {
+        switch repeatType {
+        case .daily:
+            dailyButton.isSelected = true
+            weeklyButton.isSelected = false
+        case .weekly:
+            dailyButton.isSelected = false
+            weeklyButton.isSelected = true
+        case .none:
+            dailyButton.isSelected = false
+            weeklyButton.isSelected = false
         }
 
         [dailyButton, weeklyButton].forEach {
@@ -216,14 +204,61 @@ final class RoutineRepeatContentView: UIView, RoutineCreationExpandable {
                 $0.layer.borderColor = BitnagilColor.gray97?.cgColor
             }
         }
+    }
+
+    private func updateWeekButtons(repeatType: RepeatType?) {
+        switch repeatType {
+        case .weekly(let weeks):
+            weekStackView.arrangedSubviews
+                .compactMap { $0 as? UIButton }
+                .forEach { button in
+                    let isSelected = buttonToWeek[button].map { weeks.contains($0) } ?? false
+                    button.isSelected = isSelected
+                    configureWeekButton(weekButton: button)
+                }
+        default:
+            weekStackView.arrangedSubviews
+                .compactMap { $0 as? UIButton }
+                .forEach { button in
+                    button.isSelected = false
+                    configureWeekButton(weekButton: button)
+                }
+        }
+    }
+
+    private func updateWeekVisibility() {
+        let isCollapsed = (heightConstraint?.isActive ?? false)
+        guard !isCollapsed else {
+            weekStackView.isHidden = true
+            return
+        }
 
         if weeklyButton.isSelected {
-            let bottomSpacing = Layout.edgeSpacing + Layout.weekStackViewTopSpacing + Layout.weekStackViewHeight
             weekStackView.isHidden = false
+            let bottomSpacing = Layout.edgeSpacing + Layout.weekStackViewTopSpacing + Layout.weekStackViewHeight
             repeatButtonBottomConstraint?.update(offset: -bottomSpacing)
         } else {
             weekStackView.isHidden = true
-            repeatButtonBottomConstraint?.update(offset: -Layout.foldedHeight)
+            repeatButtonBottomConstraint?.update(offset: -Layout.edgeSpacing)
         }
+    }
+
+    private func emitSelectedWeeks() {
+        guard weeklyButton.isSelected else { return }
+
+        let weeks: [Week] = weekStackView
+            .arrangedSubviews
+            .compactMap { subview in
+                guard
+                    let button = subview as? UIButton,
+                    button.isSelected,
+                    let week = buttonToWeek[button]
+                else { return nil }
+
+                return week
+            }
+        .sorted { $0.id < $1.id }
+
+        action?(.setWeeks(weeks))
     }
 }

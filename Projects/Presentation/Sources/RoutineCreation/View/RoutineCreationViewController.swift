@@ -11,10 +11,15 @@ import SnapKit
 import UIKit
 
 final class RoutineCreationViewController: BaseViewController<RoutineCreationViewModel> {
+    private enum DateSelectionType {
+        case start
+        case end
+    }
+
     private enum Layout {
         static let horizontalSpacing: CGFloat = 20
         static let textFieldHeight: CGFloat = 24
-        static let textFieldTopSpacing: CGFloat = 51
+        static let textFieldTopSpacing: CGFloat = 90
         static let textFieldUnderLineTopSpacing: CGFloat = 12
         static let textFieldUnderLineHeight: CGFloat = 2
         static let clearButtonSize: CGFloat = 16
@@ -32,7 +37,8 @@ final class RoutineCreationViewController: BaseViewController<RoutineCreationVie
     private let routineTextField = UITextField()
     private let textViewUnderLineView = UIView()
     private let clearButton = UIButton()
-    
+    private var dateSelectionType: DateSelectionType?
+
     private let subRoutineNameView = RoutineCreationCardView<RoutineNameContentView>(
         title: "세부루틴",
         placeHolder: "ex) 일어나자마자 이불 개기",
@@ -100,10 +106,17 @@ final class RoutineCreationViewController: BaseViewController<RoutineCreationVie
         routineTextField.attributedPlaceholder = NSAttributedString(string: "루틴 제목을 입력해주세요.", attributes: attributes)
         routineTextField.font = BitnagilFont(style: .title3, weight: .semiBold).font
         routineTextField.textColor = BitnagilColor.gray10
-
+        routineTextField.addTarget(self, action: #selector(textFieldEditingChanged(_:)), for: .editingChanged)
+        routineTextField.delegate = self
         textViewUnderLineView.backgroundColor = BitnagilColor.gray90
 
         clearButton.setImage(BitnagilIcon.clearIcon, for: .normal)
+        clearButton.addAction(
+            UIAction { [weak self] _ in
+                self?.routineTextField.text = ""
+                self?.viewModel.action(input: .configureName(name: ""))
+            },
+            for: .touchUpInside)
 
         registerButton.layer.cornerRadius = 12
         registerButton.layer.masksToBounds = true
@@ -111,7 +124,6 @@ final class RoutineCreationViewController: BaseViewController<RoutineCreationVie
         registerButton.backgroundColor = BitnagilColor.gray95
         registerButton.setTitle("등록하기", for: .normal)
 
-        subRoutineNameView.configure(dependencies: .init(subRoutines: ["ㄴㄴㄴ", "ㅋㅋㅋ"]))
         bindCreationCardViews()
     }
 
@@ -187,11 +199,92 @@ final class RoutineCreationViewController: BaseViewController<RoutineCreationVie
     }
 
     override func bind() {
+        viewModel.output.subRoutinesPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] subroutines in
+                self?.subRoutineNameView.configure(dependencies: .init(subRoutines: subroutines))
+                self?.subRoutineNameView.configure(subTitles: subroutines.filter { !$0.isEmpty })
+            }
+            .store(in: &cancellables)
 
+        viewModel.output.repeatTypePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] repeatType in
+                guard let repeatType else {
+                    self?.repeatView.configure(dependencies: .init(repeatType: .none))
+                    self?.repeatView.configure(subTitles: [])
+                    return
+                }
+
+                switch repeatType {
+                case .daily:
+                    let subTitle = Week.allCases
+                        .map { $0.koreanValue }
+                        .joined(separator: ",")
+                    self?.repeatView.configure(dependencies: .init(repeatType: .daily))
+                    self?.repeatView.configure(subTitles: ["매주 \(subTitle)"])
+                case .weekly(let weeks):
+                    let subTitle = weeks
+                        .sorted(by: { $0.id < $1.id })
+                        .map { $0.koreanValue }
+                        .joined(separator: ",")
+                    self?.repeatView.configure(dependencies: .init(repeatType: .weekly(weeks: weeks)))
+                    self?.repeatView.configure(subTitles: weeks.isEmpty ? [] : ["매주 \(subTitle)"])
+                }
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.periodPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] (start, end) in
+                self?.periodView.configure(dependencies: .init(dates: (start, end)))
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.executionTimePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] startAt in
+                self?.timeView.configure(dependencies: .init(startTime: startAt))
+
+                if let startAt {
+                    let timeString = startAt.isMidnight ? "하루 종일" : startAt.convertToString(dateType: .amPmTime)
+                    self?.timeView.configure(subTitles: [timeString])
+                } else {
+                    self?.timeView.configure(subTitles: [])
+                }
+            }
+            .store(in: &cancellables)
     }
 
     private func bindCreationCardViews() {
+        subRoutineNameView.onAction = { [weak self] action in
+            switch action {
+            case .subroutineChanged(let index, let text):
+                self?.viewModel.action(input: .configureSubRoutine(name: text, index: index))
+            case .deleteAllSubroutines:
+                self?.viewModel.action(input: .deleteAllSubRoutines)
+            }
+        }
+
+        repeatView.onAction = { [weak self] action in
+            switch action {
+            case .repeatDaily:
+                self?.viewModel.action(input: .configureRepeatType(type: .daily))
+            case .repeatWeekly:
+                self?.viewModel.action(input: .configureRepeatType(type: .weekly(weeks: [])))
+            case .setWeeks(let weeks):
+                self?.viewModel.action(input: .configureRepeatWeeks(weeks: weeks))
+            }
+        }
+
         periodView.onAction = { [weak self] action in
+            switch action {
+            case .startDateSetTapped:
+                self?.dateSelectionType = .start
+            case .endDateSetTapped:
+                self?.dateSelectionType = .end
+            }
+
             let datePickerView = BitnagilCalendarView()
             datePickerView.delegate = self
 
@@ -201,7 +294,7 @@ final class RoutineCreationViewController: BaseViewController<RoutineCreationVie
         timeView.onAction = { [weak self] action in
             switch action {
             case .allDayTapped:
-                print()
+                self?.viewModel.action(input: .toggleAllDay)
             case .timeSetTapped:
                 let datePickerView = TimePickerView()
                 datePickerView.delegate = self
@@ -209,17 +302,36 @@ final class RoutineCreationViewController: BaseViewController<RoutineCreationVie
             }
         }
     }
+
+    @objc private func textFieldEditingChanged(_ sender: UITextField) {
+        viewModel.action(input: .configureName(name: sender.text ?? ""))
+    }
 }
 
 extension RoutineCreationViewController: TimePickerViewDelegate {
     func timePickerView(_ pickerView: TimePickerView, didSelectTime time: Date) {
-        viewModel.action(input: .configureExecution(type: .time(startAt: time)))
-        timeView.configure(dependencies: .init(startTime: time))
+        viewModel.action(input: .configureExecution(type: .init(startAt: time)))
     }
 }
 
 extension RoutineCreationViewController: BitnagilCalendarViewDelegate {
     func bitnagilCalendarView(_ sender: BitnagilCalendarView, didSelectDate date: Date) {
-        periodView.configure(dependencies: .init(start: date, end: date))
+        guard let dateSelectionType else { return }
+
+        switch dateSelectionType {
+        case .start:
+            viewModel.action(input: .configureStartDate(date: date))
+        case .end:
+            viewModel.action(input: .configureEndDate(date: date))
+        }
+        self.dateSelectionType = nil
+    }
+}
+
+
+extension RoutineCreationViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
 }
