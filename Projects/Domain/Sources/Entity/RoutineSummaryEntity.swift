@@ -8,7 +8,7 @@
 public struct RoutineSummaryEntity {
     public let routineId: String?
     public let routineName: String
-    public let repeatDay: [WeekType]
+    public let repeatDay: [Week]
     public let executionTime: String
 
     public init(
@@ -17,7 +17,7 @@ public struct RoutineSummaryEntity {
         repeatDay: [String]?,
         executionTime: String
     ) {
-        let weekType: [WeekType] = repeatDay?.compactMap(WeekType.init(rawValue:)) ?? []
+        let weekType: [Week] = repeatDay?.compactMap(Week.init(rawValue:)) ?? []
 
         self.routineId = routineId
         self.routineName = routineName

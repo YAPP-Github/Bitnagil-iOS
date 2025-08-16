@@ -9,7 +9,7 @@ public struct RoutineEntity {
     public let routineId: String?
     public let historySeq: Int
     public let routineName: String
-    public let repeatDay: [WeekType]
+    public let repeatDay: [Week]
     public let executionTime: String
     public let subRoutineSearchResultDto: [SubRoutineEntity]
     public let modifiedYn: Bool
@@ -29,7 +29,7 @@ public struct RoutineEntity {
         completeYn: Bool,
         routineType: String
     ) {
-        let weekType: [WeekType] = repeatDay?.compactMap(WeekType.init(rawValue:)) ?? []
+        let weekType: [Week] = repeatDay?.compactMap(Week.init(rawValue:)) ?? []
 
         self.routineId = routineId
         self.historySeq = historySeq

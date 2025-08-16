@@ -1,19 +1,12 @@
 //
-//  Week.swift
+//  Week+.swift
 //  Presentation
 //
 //  Created by 이동현 on 7/21/25.
 //
+import Domain
 
-enum Week: String, CaseIterable {
-    case monday = "MONDAY"
-    case tuesday = "TUESDAY"
-    case wednesday = "WEDNESDAY"
-    case thursday = "THURSDAY"
-    case friday = "FRIDAY"
-    case saturday = "SATURDAY"
-    case sunday = "SUNDAY"
-
+extension Week {
     var id: Int {
         switch self {
         case .monday: 0
