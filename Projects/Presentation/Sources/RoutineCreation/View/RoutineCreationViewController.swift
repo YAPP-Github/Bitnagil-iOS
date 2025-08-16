@@ -87,7 +87,7 @@ final class RoutineCreationViewController: BaseViewController<RoutineCreationVie
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        configureNavigationBar(navigationStyle: .withBackButton(title: navigationTitle))
+        configureCustomNavigationBar(navigationBarStyle: .withBackButton(title: navigationTitle))
     }
 
     override func configureAttribute() {
@@ -117,6 +117,7 @@ final class RoutineCreationViewController: BaseViewController<RoutineCreationVie
 
     override func configureLayout() {
         let safeArea = view.safeAreaLayoutGuide
+        navigationController?.setNavigationBarHidden(true, animated: false)
 
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
