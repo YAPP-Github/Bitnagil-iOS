@@ -49,7 +49,7 @@ final public class TabBarView: UITabBarController {
         else { fatalError("mypageViewModel 의존성이 등록되지 않았습니다.") }
 
         let homeView = HomeView(viewModel: homeViewModel)
-        let recommendView = RecommendedRoutineView(viewModel: recommendedRoutineViewModel)
+        let recommendView = RecommendedRoutineViewController(viewModel: recommendedRoutineViewModel)
         let mypageView = MypageView(viewModel: mypageViewModel)
 
         homeView.tabBarItem = UITabBarItem(

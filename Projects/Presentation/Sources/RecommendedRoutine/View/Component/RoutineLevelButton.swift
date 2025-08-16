@@ -9,7 +9,6 @@ import Domain
 import UIKit
 
 final class RoutineLevelButton: UIButton {
-
     private enum Layout {
         static let stackViewSpacing: CGFloat = 5
         static let buttonLabelHeight: CGFloat = 20
@@ -44,14 +43,14 @@ final class RoutineLevelButton: UIButton {
 
         buttonLabel.text = level?.title ?? "난이도 선택"
         buttonLabel.font = BitnagilFont(style: .body2, weight: .medium).font
-        buttonLabel.textColor = BitnagilColor.gray60
+        buttonLabel.textColor = BitnagilColor.gray40
 
         chevronIcon.image = BitnagilIcon
             .chevronIcon(direction: .down)?
             .resizeAspectFit(to: CGSize(width: Layout.chevronImageSize, height: Layout.chevronImageSize))?
             .withRenderingMode(.alwaysTemplate)
         chevronIcon.contentMode = .center
-        chevronIcon.tintColor = BitnagilColor.gray60
+        chevronIcon.tintColor = BitnagilColor.gray40
     }
 
     private func configureLayout() {

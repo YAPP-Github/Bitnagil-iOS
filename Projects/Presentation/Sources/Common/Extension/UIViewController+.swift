@@ -16,10 +16,11 @@ extension UIViewController {
         case withProgressBar(step: Int)     // 백버튼 + progress
     }
 
-    func configureCustomNavigationBar(navigationBarStyle: NavigationBarStyle) {
+    func configureCustomNavigationBar(navigationBarStyle: NavigationBarStyle, backgroundColor: UIColor? = .white) {
         let safeArea = self.view.safeAreaLayoutGuide
         let navigationBar: UIView = customNavigationBar(navigationBarStyle: navigationBarStyle)
 
+        navigationBar.backgroundColor = backgroundColor
         self.view.addSubview(navigationBar)
         navigationBar.snp.makeConstraints { make in
             make.top.horizontalEdges.equalTo(safeArea)
