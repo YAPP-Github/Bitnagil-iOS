@@ -41,6 +41,7 @@ final class RecommendedRoutineViewController: BaseViewController<RecommendedRout
     private let levelButton = RoutineLevelButton()
     private let levelView = SelectableItemTableView<RoutineLevelType>(items: RoutineLevelType.allCases.sorted(by: { $0.id < $1.id }))
 
+    private let testRoutineView = RoutineCardView()
     private let recommendedRoutineScrollView = UIScrollView()
     private let recommendedRoutineStackView = UIStackView()
     private var recommendedRoutineCards: [Int: RecommendedRoutineCardView] = [:]
@@ -221,6 +222,8 @@ final class RecommendedRoutineViewController: BaseViewController<RecommendedRout
         }
         recommendedRoutineCards.removeAll()
 
+        let testView = RoutineCardView()
+        recommendedRoutineStackView.addArrangedSubview(testView)
         for routine in recommendedRoutines {
             let routineCard = RecommendedRoutineCardView(recommendedRoutine: routine)
             recommendedRoutineCards[routine.id] = routineCard

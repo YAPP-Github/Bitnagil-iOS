@@ -6,6 +6,7 @@
 //
 
 import Domain
+import UIKit
 
 extension RoutineCategoryType {
     var id: Int {
@@ -29,6 +30,28 @@ extension RoutineCategoryType {
         case .connection: "연결해요"
         case .rest: "쉬어가요"
         case .growth: "성장해요"
+        }
+    }
+
+    var iconImage: UIImage? {
+        switch self {
+        case .recommendation: nil
+        case .outdoor, .outdoorReport: BitnagilIcon.outsideIcon
+        case .wakeup: BitnagilIcon.wakeupIcon
+        case .connection: BitnagilIcon.connectIcon
+        case .rest: BitnagilIcon.restIcon
+        case .growth: BitnagilIcon.growIcon
+        }
+    }
+
+    var iconBackgroundColor: UIColor? {
+        switch self {
+        case .recommendation: nil
+        case .outdoor, .outdoorReport: BitnagilColor.skyblue10
+        case .wakeup: BitnagilColor.orange25
+        case .connection: BitnagilColor.purple10
+        case .rest: BitnagilColor.green10
+        case .growth: BitnagilColor.pink10
         }
     }
 }

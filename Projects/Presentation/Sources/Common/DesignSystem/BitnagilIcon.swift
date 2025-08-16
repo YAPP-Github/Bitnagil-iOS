@@ -51,6 +51,14 @@ enum BitnagilIcon {
     static let divideLineIcon = UIImage(named: "divide_line_icon", in: bundle, with: nil)
     static let clearIcon = UIImage(named: "clear_icon", in: bundle, with: nil)
 
+    // MARK: - Routine Category Icons
+    static let wakeupIcon = UIImage(named: "wakeup_icon", in: bundle, with: nil)
+    static let shineIcon = UIImage(named: "shine_icon", in: bundle, with: nil)
+    static let growIcon = UIImage(named: "grow_icon", in: bundle, with: nil)
+    static let outsideIcon = UIImage(named: "outside_icon", in: bundle, with: nil)
+    static let connectIcon = UIImage(named: "connect_icon", in: bundle, with: nil)
+    static let restIcon = UIImage(named: "rest_icon", in: bundle, with: nil)
+
     // MARK: - Tab Bar Icons
     static let homeIcon = UIImage(named: "home_fill_icon", in: bundle, with: nil)
     static let recommendIcon = UIImage(named: "recommend_fill_icon",in: bundle, with: nil)
@@ -61,6 +69,7 @@ enum BitnagilIcon {
     // MARK: - Mypage Icons
     static let settingIcon = UIImage(named: "setting_icon", in: bundle, with: nil)
     static let exclamationFilledIcon = UIImage(named: "exclamation_filled_icon", in: bundle, with: nil)
+
     // MARK: - Routine Creation Icons
     static let asteriskIcon = UIImage(named: "asterisk_icon", in: bundle, with: nil)
     static let deleteIcon = UIImage(named: "delete_icon", in: bundle, with: nil)
