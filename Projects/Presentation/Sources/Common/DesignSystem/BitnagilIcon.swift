@@ -48,6 +48,8 @@ enum BitnagilIcon {
     static let ellipsisIcon = UIImage(named: "ellipsis_icon", in: bundle, with: nil)
     static let informationIcon = UIImage(named: "information_icon", in: bundle, with: nil)
     static let addRoutineIcon = UIImage(named: "add_routine_icon", in: bundle, with: nil)
+    static let divideLineIcon = UIImage(named: "divide_line_icon", in: bundle, with: nil)
+    static let clearIcon = UIImage(named: "clear_icon", in: bundle, with: nil)
 
     // MARK: - Tab Bar Icons
     static let homeIcon = UIImage(named: "home_fill_icon", in: bundle, with: nil)
@@ -72,6 +74,13 @@ enum BitnagilIcon {
     static let repeatIcon = UIImage(named: "repeat_icon", in: bundle, with: nil)
     static let editIcon = UIImage(named: "edit_icon", in: bundle, with: nil)
     static let trashIcon = UIImage(named: "trash_icon", in: bundle, with: nil)
+    static let routineTimeIcon = UIImage(named: "routine_creation_time_icon", in: bundle, with: nil)
+    static let routineListIcon = UIImage(named: "routine_creation_list_icon", in: bundle, with: nil)
+    static let routineDateIcon = UIImage(named: "routine_creation_date", in: bundle, with: nil)
+    static let routineRepeatIcon = UIImage(named: "routine_creation_repeat_icon", in: bundle, with: nil)
+    static let oneIcon = UIImage(named: "routine_creation_one_icon", in: bundle, with: nil)
+    static let twoIcon = UIImage(named: "routine_creation_two_icon", in: bundle, with: nil)
+    static let threeIcon = UIImage(named: "routine_creation_three_icon", in: bundle, with: nil)
 }
 
 enum Direction {
