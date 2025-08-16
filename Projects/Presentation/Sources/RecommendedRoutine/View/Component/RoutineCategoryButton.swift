@@ -10,7 +10,6 @@ import SnapKit
 import UIKit
 
 final class RoutineCategoryButton: UIButton {
-
     private let buttonHeight: CGFloat = 36
     private let routineCategory: RoutineCategoryType
     private let categoryLabel = UILabel()
@@ -33,11 +32,11 @@ final class RoutineCategoryButton: UIButton {
     }
 
     private func configureAttribute() {
-        backgroundColor = BitnagilColor.gray99
+        backgroundColor = .white
 
         categoryLabel.text = routineCategory.title
-        categoryLabel.font = BitnagilFont(style: .caption1, weight: .regular).font
-        categoryLabel.textColor = BitnagilColor.navy100
+        categoryLabel.font = BitnagilFont(style: .caption1, weight: .medium).font
+        categoryLabel.textColor = BitnagilColor.gray60
     }
 
     private func configureLayout() {
@@ -52,11 +51,11 @@ final class RoutineCategoryButton: UIButton {
 
     private func updateButtonAttribute() {
         let semiBoldFont = BitnagilFont(style: .caption1, weight: .semiBold).font
-        let regularFont = BitnagilFont(style: .caption1, weight: .regular).font
+        let mediumFont = BitnagilFont(style: .caption1, weight: .medium).font
 
-        backgroundColor = isChecked ? BitnagilColor.navy500 : BitnagilColor.gray99
-        categoryLabel.font = isChecked ? semiBoldFont : regularFont
-        categoryLabel.textColor = isChecked ? .white : BitnagilColor.navy100
+        backgroundColor = isChecked ? BitnagilColor.gray10 : .white
+        categoryLabel.font = isChecked ? semiBoldFont : mediumFont
+        categoryLabel.textColor = isChecked ? .white : BitnagilColor.gray60
     }
 
     func updateButtonState(isChecked: Bool) {
