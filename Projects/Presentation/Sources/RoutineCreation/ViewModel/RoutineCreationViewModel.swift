@@ -10,11 +10,6 @@ import Domain
 import Foundation
 
 final class RoutineCreationViewModel: ViewModel {
-    enum RepeatType {
-        case daily
-        case week
-    }
-
     enum RoutineExample: String, CaseIterable {
         case wakeUp = "아침에 개운하게 일어나기"
         case foldBlanket = "일어나자마자 이불 개기"
@@ -77,7 +72,7 @@ final class RoutineCreationViewModel: ViewModel {
     init(routineUseCase: RoutineUseCaseProtocol, recommenededRoutineUseCase: RecommendedRoutineUseCaseProtocol) {
         self.routineUseCase = routineUseCase
         self.recommenededRoutineUseCase = recommenededRoutineUseCase
-
+        
         output = Output(
             namePublisher: nameSubject.eraseToAnyPublisher(),
             subRoutinesPublisher: subRoutinesSubject
@@ -133,7 +128,7 @@ final class RoutineCreationViewModel: ViewModel {
                         sortOrder: $0.sortOrder)
                 }
                 let weekDay = routine.repeatDay.compactMap { Week(rawValue: $0.rawValue) }
-                let repeatType: RepeatType = weekDay.count == Week.allCases.count ? .daily : .week
+                let repeatType: RepeatType = weekDay.count == Week.allCases.count ? .daily : .weekly
                 let executionType: ExecutionType
 
                 if routine.executionTime == "00:00:00" {
@@ -235,7 +230,7 @@ final class RoutineCreationViewModel: ViewModel {
         switch selectedType {
         case .daily:
             weekDaySubject.send(Set(Week.allCases))
-        case .week:
+        case .weekly:
             if repeatType == .daily {
                 weekDaySubject.send([])
             }

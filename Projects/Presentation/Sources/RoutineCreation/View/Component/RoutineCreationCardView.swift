@@ -102,6 +102,7 @@ final class RoutineCreationCardView<ContentView: UIView & RoutineCreationExpanda
 
         divideLine.backgroundColor = BitnagilColor.gray96
 
+        contentView.isHidden = true
         contentView.action = { [weak self] in
             self?.onAction?($0)
         }

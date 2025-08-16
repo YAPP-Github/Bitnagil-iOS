@@ -25,8 +25,8 @@ final class RoutinePeriodContentView: UIView, RoutineCreationExpandable {
     }
 
     enum Action {
-        case startDateSet(date: Date)
-        case endDateSet(date: Date)
+        case startDateSetTapped
+        case endDateSetTapped
     }
 
     struct Dependencies {
@@ -68,6 +68,9 @@ final class RoutinePeriodContentView: UIView, RoutineCreationExpandable {
     func configure(dependencies: Dependencies) {
         let startString = dependencies.start.convertToString(dateType: .yearMonthDate)
         let endString = dependencies.end.convertToString(dateType: .yearMonthDate)
+
+        startButton.setTitle(startString, for: .normal)
+        endButton.setTitle(endString, for: .normal)
     }
 
     private func configureAttribute() {
@@ -88,6 +91,18 @@ final class RoutinePeriodContentView: UIView, RoutineCreationExpandable {
             $0.layer.borderColor = BitnagilColor.gray97?.cgColor
             $0.layer.borderWidth = 1
         }
+
+        startButton.addAction(
+            UIAction { [weak self] _ in
+                self?.action?(.startDateSetTapped)
+            },
+            for: .touchUpInside)
+
+        endButton.addAction(
+            UIAction { [weak self] _ in
+                self?.action?(.endDateSetTapped)
+            },
+            for: .touchUpInside)
     }
 
     private func configureLayout() {

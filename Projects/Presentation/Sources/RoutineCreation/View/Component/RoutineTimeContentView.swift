@@ -17,8 +17,8 @@ final class RoutineTimeContentView: UIView, RoutineCreationExpandable {
         static let timeButtonTopSpacing: CGFloat = 14
         static let timeButtonHeight: CGFloat = 39
         static let timeButtonWidth: CGFloat = 116
-        static let checkButtonViewTopSpacing: CGFloat = 21
-        static let checkButtonViewSize: CGFloat = 18
+        static let checkButtonImageViewTopSpacing: CGFloat = 21
+        static let checkButtonImageViewSize: CGFloat = 18
         static let checkButtonLabelHeight: CGFloat = 20
         static let checkButtonLabelTrailingSpacing: CGFloat = 6
         static let foldedHeight: CGFloat = 0
@@ -35,7 +35,7 @@ final class RoutineTimeContentView: UIView, RoutineCreationExpandable {
 
     private let timeLabel = UILabel()
     private let timeButton = UIButton()
-    private let checkButtonView = UIView()
+    private let checkButtonImageView = UIImageView()
     private let checkLabel = UILabel()
     private let checkButton = UIButton()
 
@@ -66,9 +66,11 @@ final class RoutineTimeContentView: UIView, RoutineCreationExpandable {
         let time = dependencies.startTime
 
         if time.isMidnight {
-            timeLabel.text = "하루 종일"
+            timeButton.setTitle("하루종일", for: .normal)
+            checkButtonImageView.image = BitnagilIcon.checkedIcon
         } else {
-            timeLabel.text = time.convertToString(dateType: .amPmTimeShort)
+            timeButton.setTitle(time.convertToString(dateType: .amPmTimeShort), for: .normal)
+            checkButtonImageView.image = UIImage()
         }
     }
 
@@ -86,10 +88,11 @@ final class RoutineTimeContentView: UIView, RoutineCreationExpandable {
         checkLabel.text = "하루종일"
         checkLabel.font = BitnagilFont.init(style: .body2, weight: .medium).font
 
-        checkButtonView.layer.cornerRadius = 4
-        checkButtonView.layer.borderWidth = 1
-        checkButtonView.backgroundColor = .white
-        checkButtonView.layer.borderColor = BitnagilColor.gray95?.cgColor
+        checkButtonImageView.layer.cornerRadius = 4
+        checkButtonImageView.layer.borderWidth = 1
+        checkButtonImageView.layer.masksToBounds = true
+        checkButtonImageView.backgroundColor = .white
+        checkButtonImageView.layer.borderColor = BitnagilColor.gray95?.cgColor
 
         timeButton.addAction(
             UIAction { [weak self] _ in
@@ -108,7 +111,7 @@ final class RoutineTimeContentView: UIView, RoutineCreationExpandable {
         addSubview(timeLabel)
         addSubview(timeButton)
         addSubview(checkLabel)
-        addSubview(checkButtonView)
+        addSubview(checkButtonImageView)
         addSubview(checkButton)
 
         self.snp.makeConstraints { make in
@@ -128,22 +131,22 @@ final class RoutineTimeContentView: UIView, RoutineCreationExpandable {
             make.width.equalTo(Layout.timeButtonWidth)
         }
 
-        checkButtonView.snp.makeConstraints { make in
-            make.top.equalTo(timeButton.snp.bottom).offset(Layout.checkButtonViewTopSpacing)
-            make.size.equalTo(Layout.checkButtonViewSize)
+        checkButtonImageView.snp.makeConstraints { make in
+            make.top.equalTo(timeButton.snp.bottom).offset(Layout.checkButtonImageViewTopSpacing)
+            make.size.equalTo(Layout.checkButtonImageViewSize)
             make.trailing.equalToSuperview().offset(-Layout.edgeSpacing)
             make.bottom.equalToSuperview().offset(-Layout.edgeSpacing).priority(999)
         }
 
         checkLabel.snp.makeConstraints { make in
-            make.centerY.equalTo(checkButtonView)
-            make.trailing.equalTo(checkButtonView.snp.leading).offset(-Layout.checkButtonLabelTrailingSpacing)
+            make.centerY.equalTo(checkButtonImageView)
+            make.trailing.equalTo(checkButtonImageView.snp.leading).offset(-Layout.checkButtonLabelTrailingSpacing)
         }
 
         checkButton.snp.makeConstraints { make in
             make.leading.equalTo(checkLabel)
-            make.verticalEdges.equalTo(checkButtonView)
-            make.trailing.equalTo(checkButtonView)
+            make.verticalEdges.equalTo(checkButtonImageView)
+            make.trailing.equalTo(checkButtonImageView)
         }
     }
 

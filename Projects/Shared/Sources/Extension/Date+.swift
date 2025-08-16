@@ -8,6 +8,11 @@
 import Foundation
 
 extension Date {
+    public var isMidnight: Bool {
+        let components = Calendar.current.dateComponents([.hour, .minute, .second], from: self)
+        return components.hour == 0 && components.minute == 0
+    }
+
     public func convertToString(dateType: DateType) -> String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "ko_KR")

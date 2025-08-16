@@ -129,11 +129,12 @@ final class RoutineRepeatContentView: UIView, RoutineCreationExpandable {
         }
 
         dailyButton.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(Layout.edgeSpacing)
+            make.top.equalToSuperview().offset(Layout.edgeSpacing).priority(999)
             make.leading.equalToSuperview().offset(Layout.edgeSpacing)
             make.height.equalTo(Layout.repeatButtonHeight)
             repeatButtonBottomConstraint = make.bottom.equalToSuperview()
                 .offset(-Layout.edgeSpacing)
+                .priority(999)
                 .constraint
         }
 
@@ -150,7 +151,7 @@ final class RoutineRepeatContentView: UIView, RoutineCreationExpandable {
             make.top.equalTo(dailyButton.snp.bottom).offset(Layout.weekStackViewTopSpacing)
             make.horizontalEdges.equalToSuperview().inset(Layout.edgeSpacing)
             make.height.equalTo(Layout.weekStackViewHeight)
-            make.bottom.equalToSuperview().offset(-Layout.edgeSpacing)
+            make.bottom.equalToSuperview().offset(-Layout.edgeSpacing).priority(999)
         }
     }
 

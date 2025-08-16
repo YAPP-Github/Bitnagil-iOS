@@ -303,7 +303,7 @@ extension RecommendedRoutineView: RecommendedRoutineCardViewDelegate {
             fatalError("routineCreationViewModel 의존성이 등록되지 않았습니다.")
         }
 
-        let routineCreationView = RoutineCreationView(viewModel: routineCreationViewModel, recommendRoutineId: routine.id)
+        let routineCreationView = RoutineCreationViewController(viewModel: routineCreationViewModel, recommendRoutineId: routine.id)
         routineCreationView.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(routineCreationView, animated: true)
     }
@@ -326,7 +326,7 @@ extension RecommendedRoutineView: FloatingMenuViewDelegate {
         guard let routineCreationViewModel = DIContainer.shared.resolve(type: RoutineCreationViewModel.self) else {
             fatalError("routineCreationViewModel 의존성이 등록되지 않았습니다.")
         }
-        let routineCreationView = RoutineCreationView(viewModel: routineCreationViewModel)
+        let routineCreationView = RoutineCreationViewController(viewModel: routineCreationViewModel)
         routineCreationView.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(routineCreationView, animated: true)
     }
