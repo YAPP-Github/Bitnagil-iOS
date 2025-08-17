@@ -7,5 +7,6 @@
 
 protocol SelectableItem {
     var id: Int { get }
-    var title: String { get }
+    var displayName: String? { get }
+    var description: String { get }
 }

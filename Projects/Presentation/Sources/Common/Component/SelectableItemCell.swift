@@ -5,6 +5,7 @@
 //  Created by 최정인 on 7/24/25.
 //
 
+import SnapKit
 import UIKit
 
 final class SelectableItemCell: UITableViewCell {
@@ -28,7 +29,7 @@ final class SelectableItemCell: UITableViewCell {
 
     private func configureAttribute() {
         titleLabel.font = BitnagilFont(style: .body1, weight: .regular).font
-        titleLabel.textColor = .black
+        titleLabel.textColor = BitnagilColor.gray10
 
         let checkImage = BitnagilIcon.checkIcon?
             .resizeAspectFit(to: CGSize(width: Layout.checkIconSize, height: Layout.checkIconSize))?
@@ -54,7 +55,24 @@ final class SelectableItemCell: UITableViewCell {
     }
 
     func configureCell(item: SelectableItem, isSelected: Bool) {
-        titleLabel.text = item.title
         checkIcon.isHidden = !isSelected
+
+        guard let displayName = item.displayName else {
+            titleLabel.text = item.description
+            return
+        }
+        let attributedString = NSMutableAttributedString(string: item.description)
+        attributedString.addAttribute(
+            .font,
+            value: BitnagilFont(style: .body1, weight: .regular).font,
+            range: NSRange(location: 0, length: item.description.count))
+
+        if let range = item.description.range(of: displayName) {
+            let nsRange = NSRange(range, in: item.description)
+            attributedString.addAttributes([
+                .font: BitnagilFont(style: .body1, weight: .semiBold).font
+            ], range: nsRange)
+        }
+        titleLabel.attributedText = attributedString
     }
 }

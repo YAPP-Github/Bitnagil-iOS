@@ -573,16 +573,6 @@ extension HomeView: RoutineViewDelegate {
     }
 }
 
-// MARK: SelectableItemTableViewDelegate
-extension HomeView: SelectableItemTableViewDelegate {
-    func selectableItemTableView<T: SelectableItem & CaseIterable & Equatable>(_ sender: SelectableItemTableView<T>, didSelectItem: T?) {
-        guard let sortType = didSelectItem as? RoutineSortType?
-        else { return }
-
-        viewModel.action(input: .selectRoutineSortType(routineSortType: sortType))
-    }
-}
-
 // MARK: WeekViewDelegate
 extension HomeView: WeekViewDelegate {
     func weekView(_ sender: WeekView, didSelectDate date: Date) {

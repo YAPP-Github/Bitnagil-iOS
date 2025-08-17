@@ -41,7 +41,7 @@ final class RoutineLevelButton: UIButton {
         stackView.axis = .horizontal
         stackView.spacing = Layout.stackViewSpacing
 
-        buttonLabel.text = level?.title ?? "난이도 선택"
+        buttonLabel.text = level?.displayName ?? "난이도 선택"
         buttonLabel.font = BitnagilFont(style: .body2, weight: .medium).font
         buttonLabel.textColor = BitnagilColor.gray40
 
@@ -73,7 +73,7 @@ final class RoutineLevelButton: UIButton {
     }
 
     private func updateButtonLabel() {
-        buttonLabel.text = level?.title ?? "난이도 선택"
+        buttonLabel.text = level?.displayName ?? "난이도 선택"
     }
 
     func updateButton(level: RoutineLevelType?) {

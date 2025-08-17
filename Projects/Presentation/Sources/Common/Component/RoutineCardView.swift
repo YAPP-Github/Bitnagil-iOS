@@ -42,7 +42,8 @@ final class RoutineCardView: UIView {
         titleLabel.font = BitnagilFont(style: .body1, weight: .semiBold).font
         titleLabel.textColor = BitnagilColor.gray10
 
-        plusButton.setImage(BitnagilIcon.plusIcon, for: .normal)
+        let plusImage = BitnagilIcon.plusIcon?.resizeAspectFit(to: CGSize(width: 24, height: 24))
+        plusButton.setImage(plusImage, for: .normal)
         plusButton.tintColor = BitnagilColor.gray10
 
         grayLine.backgroundColor = BitnagilColor.gray97
