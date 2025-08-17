@@ -10,6 +10,24 @@ import SnapKit
 import UIKit
 
 final class RoutineCardView: UIView {
+    private enum Layout {
+        static let horizontalMargin: CGFloat = 16
+        static let cornerRadius: CGFloat = 12
+        static let headerInfoStackViewSpacing: CGFloat = 10
+        static let headerInfoStackViewTopSpacing: CGFloat = 14
+        static let subRoutineStackViewSpacing: CGFloat = 2
+        static let subRoutineStackViewTopSpacing: CGFloat = 10
+        static let subRoutineStackViewBottomSpacing: CGFloat = 14
+        static let subRoutineLabelHeight: CGFloat = 20
+        static let categoryIconSize: CGFloat = 32
+        static let plusImageSize: CGFloat = 24
+        static let plusButtonTopSpacing: CGFloat = 14
+        static let plusButtonTrailingSpacing: CGFloat = 7
+        static let plusButtonSize: CGFloat = 32
+        static let grayLineTopSpacing: CGFloat = 10
+        static let grayLineHeight: CGFloat = 1
+    }
+
     private let headerInfoStackView = UIStackView()
     private let categoryIconView = RoutineCategoryIcon(routineCategory: .connection)
     private let titleLabel = UILabel()
@@ -33,29 +51,30 @@ final class RoutineCardView: UIView {
     private func configureAttribute() {
         backgroundColor = .white
         layer.masksToBounds = true
-        layer.cornerRadius = 12
+        layer.cornerRadius = Layout.cornerRadius
 
         headerInfoStackView.axis = .horizontal
-        headerInfoStackView.spacing = 10
+        headerInfoStackView.spacing = Layout.headerInfoStackViewSpacing
 
         titleLabel.text = "개운하게 일어나기"
         titleLabel.font = BitnagilFont(style: .body1, weight: .semiBold).font
         titleLabel.textColor = BitnagilColor.gray10
 
-        let plusImage = BitnagilIcon.plusIcon?.resizeAspectFit(to: CGSize(width: 24, height: 24))
+        let plusImage = BitnagilIcon.plusIcon?
+            .resizeAspectFit(to: CGSize(width: Layout.plusImageSize, height: Layout.plusImageSize))
         plusButton.setImage(plusImage, for: .normal)
         plusButton.tintColor = BitnagilColor.gray10
 
         grayLine.backgroundColor = BitnagilColor.gray97
 
         subRoutineStackView.axis = .vertical
-        subRoutineStackView.spacing = 2
+        subRoutineStackView.spacing = Layout.subRoutineStackViewSpacing
 
         subRoutineLabel.text = "세부 루틴"
         subRoutineLabel.font = BitnagilFont(style: .body2, weight: .medium).font
         subRoutineLabel.textColor = BitnagilColor.gray40
         subRoutineLabel.snp.makeConstraints { make in
-            make.height.equalTo(20)
+            make.height.equalTo(Layout.subRoutineLabelHeight)
         }
         subRoutineStackView.addArrangedSubview(subRoutineLabel)
 
@@ -65,7 +84,7 @@ final class RoutineCardView: UIView {
             subRoutineTitleLabel.font = BitnagilFont(style: .body2, weight: .medium).font
             subRoutineTitleLabel.textColor = BitnagilColor.gray40
             subRoutineTitleLabel.snp.makeConstraints { make in
-                make.height.equalTo(20)
+                make.height.equalTo(Layout.subRoutineLabelHeight)
             }
             subRoutineStackView.addArrangedSubview(subRoutineTitleLabel)
         }
@@ -81,37 +100,42 @@ final class RoutineCardView: UIView {
         addSubview(subRoutineStackView)
 
         categoryIconView.snp.makeConstraints { make in
-            make.size.equalTo(32)
+            make.size.equalTo(Layout.categoryIconSize)
         }
 
         headerInfoStackView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(14)
-            make.leading.equalToSuperview().offset(16)
+            make.top.equalToSuperview().offset(Layout.headerInfoStackViewTopSpacing)
+            make.leading.equalToSuperview().offset(Layout.horizontalMargin)
         }
 
         plusButton.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(14)
-            make.trailing.equalToSuperview().inset(7)
-            make.size.equalTo(32)
+            make.top.equalToSuperview().offset(Layout.plusButtonTopSpacing)
+            make.trailing.equalToSuperview().inset(Layout.plusButtonTrailingSpacing)
+            make.size.equalTo(Layout.plusButtonSize)
         }
 
         grayLine.snp.makeConstraints { make in
-            make.top.equalTo(headerInfoStackView.snp.bottom).offset(10)
-            make.leading.equalToSuperview().offset(16)
-            make.trailing.equalToSuperview().inset(16)
-            make.height.equalTo(1)
+            make.top.equalTo(headerInfoStackView.snp.bottom).offset(Layout.grayLineTopSpacing)
+            make.leading.equalToSuperview().offset(Layout.horizontalMargin)
+            make.trailing.equalToSuperview().inset(Layout.horizontalMargin)
+            make.height.equalTo(Layout.grayLineHeight)
         }
 
         subRoutineStackView.snp.makeConstraints { make in
-            make.top.equalTo(grayLine.snp.bottom).offset(10)
-            make.leading.equalToSuperview().offset(16)
-            make.trailing.equalToSuperview().inset(16)
-            make.bottom.equalToSuperview().inset(14)
+            make.top.equalTo(grayLine.snp.bottom).offset(Layout.subRoutineStackViewTopSpacing)
+            make.leading.equalToSuperview().offset(Layout.horizontalMargin)
+            make.trailing.equalToSuperview().inset(Layout.horizontalMargin)
+            make.bottom.equalToSuperview().inset(Layout.subRoutineStackViewBottomSpacing)
         }
     }
 }
 
-private class RoutineCategoryIcon: UIView {
+fileprivate class RoutineCategoryIcon: UIView {
+    private enum Layout {
+        static let cornerRadius: CGFloat = 3.76
+        static let iconSize: CGFloat = 24
+    }
+
     private let routineCategoryIcon = UIImageView()
     private let routineCategory: RoutineCategoryType
     init(routineCategory: RoutineCategoryType) {
@@ -120,14 +144,14 @@ private class RoutineCategoryIcon: UIView {
         configureAttribute()
         configureLayout()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
     private func configureAttribute() {
         layer.masksToBounds = true
-        layer.cornerRadius = 3.76
+        layer.cornerRadius = Layout.cornerRadius
         backgroundColor = routineCategory.iconBackgroundColor ?? BitnagilColor.yellow10
         routineCategoryIcon.image = routineCategory.iconImage ?? BitnagilIcon.shineIcon
     }
@@ -135,7 +159,7 @@ private class RoutineCategoryIcon: UIView {
     private func configureLayout() {
         addSubview(routineCategoryIcon)
         routineCategoryIcon.snp.makeConstraints { make in
-            make.size.equalTo(24)
+            make.size.equalTo(Layout.iconSize)
             make.center.equalToSuperview()
         }
     }

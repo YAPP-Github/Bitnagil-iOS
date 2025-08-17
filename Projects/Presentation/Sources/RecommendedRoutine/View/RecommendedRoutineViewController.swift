@@ -26,6 +26,7 @@ final class RecommendedRoutineViewController: BaseViewController<RecommendedRout
         static let recommendedRoutineScrollViewBottomSpacing: CGFloat = 10
         static let recommendedRoutineStackViewBottomSpacing: CGFloat = 50
         static let routineCardHeight: CGFloat = 80
+        static let registerEmotionButtonTopSpacing: CGFloat = 20
         static let registerEmotionButtonHeight: CGFloat = 66
         static let floatingButtonBottomSpacing: CGFloat = 19
         static let floatingButtonSize: CGFloat = 52
@@ -41,11 +42,11 @@ final class RecommendedRoutineViewController: BaseViewController<RecommendedRout
     private let levelButton = RoutineLevelButton()
     private let levelView = SelectableItemTableView<RoutineLevelType>(items: RoutineLevelType.allCases.sorted(by: { $0.id < $1.id }))
 
-    private let testRoutineView = RoutineCardView()
     private let recommendedRoutineScrollView = UIScrollView()
     private let recommendedRoutineStackView = UIStackView()
     private var recommendedRoutineCards: [Int: RecommendedRoutineCardView] = [:]
     private let registerEmotionButton = RegisterEmotionButtonView()
+    private let recommendedRoutineEmptyView = RecommendedRoutineEmptyView()
 
     private var isExistEmotion: Bool = false
     private var isShowingFloatingMenu: Bool = false
@@ -104,6 +105,8 @@ final class RecommendedRoutineViewController: BaseViewController<RecommendedRout
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tappedDimmedView))
         dimmedView.addGestureRecognizer(tapGesture)
+
+        recommendedRoutineEmptyView.isHidden = true
     }
 
     override func configureLayout() {
@@ -118,6 +121,7 @@ final class RecommendedRoutineViewController: BaseViewController<RecommendedRout
         [routineLabel, levelButton].forEach {
             headerStackView.addArrangedSubview($0)
         }
+        view.addSubview(recommendedRoutineEmptyView)
         view.addSubview(recommendedRoutineScrollView)
         recommendedRoutineScrollView.addSubview(recommendedRoutineStackView)
 
@@ -133,9 +137,9 @@ final class RecommendedRoutineViewController: BaseViewController<RecommendedRout
         }
 
         registerEmotionButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(20)
-            make.trailing.equalToSuperview().inset(20)
-            make.top.equalTo(categoryView.snp.bottom).offset(20)
+            make.leading.equalToSuperview().offset(Layout.horizontalMargin)
+            make.trailing.equalToSuperview().inset(Layout.horizontalMargin)
+            make.top.equalTo(categoryView.snp.bottom).offset(Layout.registerEmotionButtonTopSpacing)
             make.height.equalTo(Layout.registerEmotionButtonHeight)
         }
 
@@ -152,6 +156,11 @@ final class RecommendedRoutineViewController: BaseViewController<RecommendedRout
 
         levelButton.snp.makeConstraints { make in
             make.trailing.equalTo(headerStackView)
+        }
+
+        recommendedRoutineEmptyView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview().offset(Layout.headerStackViewHeight)
         }
 
         recommendedRoutineScrollView.snp.makeConstraints { make in
@@ -222,8 +231,9 @@ final class RecommendedRoutineViewController: BaseViewController<RecommendedRout
         }
         recommendedRoutineCards.removeAll()
 
-        let testView = RoutineCardView()
-        recommendedRoutineStackView.addArrangedSubview(testView)
+//        let testView = RoutineCardView()
+//        recommendedRoutineStackView.addArrangedSubview(testView)
+        recommendedRoutineEmptyView.isHidden = !recommendedRoutines.isEmpty
         for routine in recommendedRoutines {
             let routineCard = RecommendedRoutineCardView(recommendedRoutine: routine)
             recommendedRoutineCards[routine.id] = routineCard
