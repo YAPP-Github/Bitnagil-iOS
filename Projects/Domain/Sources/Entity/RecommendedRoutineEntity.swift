@@ -10,6 +10,7 @@ public struct RecommendedRoutineEntity {
     public let title: String
     public let description: String
     public let category: RoutineCategoryType?
+    public let type: RoutineCategoryType
     public let level: RoutineLevelType?
     public let subRoutines: [RecommendedSubRoutineEntity]
 
@@ -18,6 +19,7 @@ public struct RecommendedRoutineEntity {
         title: String,
         description: String,
         category: RoutineCategoryType?,
+        type: RoutineCategoryType,
         level: RoutineLevelType?,
         subRoutines: [RecommendedSubRoutineEntity]
     ) {
@@ -25,6 +27,7 @@ public struct RecommendedRoutineEntity {
         self.title = title
         self.description = description
         self.category = category
+        self.type = type
         self.level = level
         self.subRoutines = subRoutines
     }

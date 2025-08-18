@@ -11,20 +11,26 @@ public struct RecommendedRoutine: OnboardingChoiceProtocol, Hashable {
     let id: Int
     let mainTitle: String
     let subTitle: String?
+    let subRoutines: [String]
     let routineCategory: RoutineCategoryType
+    let routineType: RoutineCategoryType
     let routineLevel: RoutineLevelType
 
     init(
         id: Int,
         mainTitle: String,
         subTitle: String?,
+        subRoutines: [String],
         routineCategory: RoutineCategoryType,
+        routineType: RoutineCategoryType,
         routineLevel: RoutineLevelType
     ) {
         self.id = id
         self.mainTitle = mainTitle
         self.subTitle = subTitle
+        self.subRoutines = subRoutines
         self.routineCategory = routineCategory
+        self.routineType = routineType
         self.routineLevel = routineLevel
     }
 }
@@ -35,7 +41,9 @@ extension RecommendedRoutineEntity {
             id: id,
             mainTitle: title,
             subTitle: description,
+            subRoutines: subRoutines.map({ $0.title }),
             routineCategory: category ?? .recommendation,
+            routineType: type,
             routineLevel: level ?? .easy
         )
     }

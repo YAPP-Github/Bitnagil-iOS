@@ -29,7 +29,7 @@ final class RoutineCardView: UIView {
     }
 
     private let headerInfoStackView = UIStackView()
-    private let categoryIconView = RoutineCategoryIcon(routineCategory: .connection)
+    private lazy var categoryIconView = RoutineCategoryIcon(routineCategory: routine.routineType)
     private let titleLabel = UILabel()
     private let editButton = UIButton()
     private let deleteButton = UIButton()
@@ -38,7 +38,9 @@ final class RoutineCardView: UIView {
     private let subRoutineLabel = UILabel()
     private let subRoutineStackView = UIStackView()
 
-    init() {
+    private let routine: RecommendedRoutine
+    init(routine: RecommendedRoutine) {
+        self.routine = routine
         super.init(frame: .zero)
         configureAttribute()
         configureLayout()
@@ -56,7 +58,7 @@ final class RoutineCardView: UIView {
         headerInfoStackView.axis = .horizontal
         headerInfoStackView.spacing = Layout.headerInfoStackViewSpacing
 
-        titleLabel.text = "개운하게 일어나기"
+        titleLabel.text = routine.mainTitle
         titleLabel.font = BitnagilFont(style: .body1, weight: .semiBold).font
         titleLabel.textColor = BitnagilColor.gray10
 
@@ -78,7 +80,7 @@ final class RoutineCardView: UIView {
         }
         subRoutineStackView.addArrangedSubview(subRoutineLabel)
 
-        ["물 마시기", "물 마시기", "물 마시기"].forEach {
+        routine.subRoutines.forEach {
             let subRoutineTitleLabel = UILabel()
             subRoutineTitleLabel.text = "• \($0)"
             subRoutineTitleLabel.font = BitnagilFont(style: .body2, weight: .medium).font
