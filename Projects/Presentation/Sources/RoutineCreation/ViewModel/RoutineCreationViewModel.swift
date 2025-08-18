@@ -38,7 +38,7 @@ final class RoutineCreationViewModel: ViewModel {
         let namePublisher: AnyPublisher<String?, Never>
         let subRoutinesPublisher: AnyPublisher<[String], Never>
         let repeatTypePublisher: AnyPublisher<RepeatType?, Never>
-        let periodPublisher: AnyPublisher<(Date, Date), Never>
+        let periodPublisher: AnyPublisher<(Date?, Date?), Never>
         let executionTimePublisher: AnyPublisher<Date?, Never>
         let isRoutineValid: AnyPublisher<Bool, Never>
     }
@@ -47,14 +47,16 @@ final class RoutineCreationViewModel: ViewModel {
     private let nameSubject = CurrentValueSubject<String?, Never>("")
     private let subRoutinesSubject = CurrentValueSubject<[String], Never>([])
     private let repeatTypeSubject = CurrentValueSubject<RepeatType?, Never>(nil)
-    private let periodStartSubject = CurrentValueSubject<Date, Never>(Date())
-    private let periodEndSubject   = CurrentValueSubject<Date, Never>(Date())
+    private let periodStartSubject = CurrentValueSubject<Date?, Never>(nil)
+    private let periodEndSubject   = CurrentValueSubject<Date?, Never>(nil)
     private let executionTimeSubject = CurrentValueSubject<ExecutionTime, Never>(.init(startAt: nil))
     private let checkRoutinePublisher = PassthroughSubject<Bool, Never>()
     private let routineUseCase: RoutineUseCaseProtocol
     private let recommenededRoutineUseCase: RecommendedRoutineUseCaseProtocol
     private var deletedSubroutines = Set<SubRoutineSummaryEntity>()
     private var routineId: String?
+    private var routineType: RoutineCategoryType?
+    private var updateType: RoutineUpdateApplyDateType?
 
     init(routineUseCase: RoutineUseCaseProtocol, recommenededRoutineUseCase: RecommendedRoutineUseCaseProtocol) {
         self.routineUseCase = routineUseCase
@@ -129,6 +131,8 @@ final class RoutineCreationViewModel: ViewModel {
                 let time = Date.convertToDate(from: routine.executionTime, dateType: .amPmTimeShort)
                 executionType = .init(startAt: time ?? Date())
 
+                // TODO: - routine 엔티티 변경 이후 시작일자, 종료 일자 설정 필요 + 추천 타입 있으면 추천 타입도 설정 필요
+
                 nameSubject.send(routine.routineName)
                 subRoutinesSubject.send(subRoutines)
                 repeatTypeSubject.send(repeatType)
@@ -151,6 +155,7 @@ final class RoutineCreationViewModel: ViewModel {
 
                 nameSubject.send(routine.title)
                 subRoutinesSubject.send(subRoutines)
+                routineType = routine.type
 
                 updateIsRoutineValid()
             } catch {
@@ -217,7 +222,9 @@ final class RoutineCreationViewModel: ViewModel {
         guard
             let name = nameSubject.value,
             !name.isEmpty,
-            executionTimeSubject.value.startAt != nil
+            executionTimeSubject.value.startAt != nil,
+            periodStartSubject.value != nil,
+            periodEndSubject.value != nil
         else {
             checkRoutinePublisher.send(false)
             return
@@ -229,32 +236,39 @@ final class RoutineCreationViewModel: ViewModel {
     private func registerRoutine() {
         Task {
             do {
-
-                let repeatDay: [String]
+                guard
+                    let name = nameSubject.value,
+                    let startDate = periodStartSubject.value,
+                    let endDate = periodEndSubject.value,
+                    let executionTime = executionTimeSubject.value.startAt
+                else { return }
+                
+                let repeatDay: [Week]
+                let startDateString = startDate.convertToString(dateType: .yearMonthDate)
+                let endDateString = endDate.convertToString(dateType: .yearMonthDate)
+                let executionTimeString = executionTime.convertToString(dateType: .time)
 
                 switch repeatTypeSubject.value {
                 case .daily:
-                    repeatDay = Week.allCases.map { $0.rawValue }
+                    repeatDay = Week.allCases
                 case .weekly(let weeks):
-                    repeatDay = weeks.map { $0.rawValue }
+                    repeatDay = weeks.sorted { $0.id < $1.id }
                 case .none:
                     repeatDay = []
                 }
 
-                guard let startAt = executionTimeSubject.value.startAt else { return }
-
-                let executionTime = startAt.convertToString(dateType: .time)
-
-                let routineSummary = RoutineSummaryEntity(
-                    routineId: routineId,
-                    routineName: nameSubject.value ?? "",
+                let routine = RoutineCreationEntity(
+                    id: routineId,
+                    name: name,
                     repeatDay: repeatDay,
-                    executionTime: executionTime)
+                    startDate: startDateString,
+                    endDate: endDateString,
+                    executionTime: executionTimeString,
+                    subroutines: subRoutinesSubject.value,
+                    recommendedRoutineType: routineType,
+                    applyDateType: updateType)
 
-                try await routineUseCase.saveRoutine(
-                    routineSummary: routineSummary,
-                    subRoutineSummaries: [], // TODO: - 수정 필요
-                    deletedSubRoutineSummaries: Array(deletedSubroutines))
+                try await routineUseCase.saveRoutine(routine: routine)
             } catch {
 
             }

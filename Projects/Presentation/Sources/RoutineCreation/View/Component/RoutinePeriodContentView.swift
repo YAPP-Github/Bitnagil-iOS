@@ -30,7 +30,7 @@ final class RoutinePeriodContentView: UIView, RoutineCreationExpandable {
     }
 
     struct Dependency {
-        let dates: (start: Date, end: Date)
+        let dates: (start: Date?, end: Date?)
     }
 
     private let startLabel = UILabel()
@@ -65,17 +65,19 @@ final class RoutinePeriodContentView: UIView, RoutineCreationExpandable {
     }
 
     func configure(dependency: Dependency) {
-        let startString = dependency
-            .dates
-            .start
-            .convertToString(dateType: .yearMonthDate)
-        let endString = dependency
-            .dates
-            .end
-            .convertToString(dateType: .yearMonthDate)
+        if let startDate = dependency.dates.start {
+            let startString = startDate.convertToString(dateType: .yearMonthDate)
+            startButton.setTitle(startString, for: .normal)
+        } else {
+            startButton.setTitle("시작 일자 설정", for: .normal)
+        }
 
-        startButton.setTitle(startString, for: .normal)
-        endButton.setTitle(endString, for: .normal)
+        if let endDate = dependency.dates.end {
+            let endString = endDate.convertToString(dateType: .yearMonthDate)
+            endButton.setTitle(endString, for: .normal)
+        } else {
+            endButton.setTitle("종료 일자 설정", for: .normal)
+        }
     }
 
     private func configureAttribute() {

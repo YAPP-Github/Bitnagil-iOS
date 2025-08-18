@@ -9,9 +9,8 @@
 public protocol RoutineRepositoryProtocol {
     /// 루틴을 생성합니다.
     /// - Parameters:
-    ///   - routineSummary: 루틴 요약 정보
-    ///   - subRoutineSummaries: 서브 루틴 요약 정보 배열
-    func createRoutine(routineSummary: RoutineSummaryEntity, subRoutineSummaries: [SubRoutineSummaryEntity]) async throws
+    ///   - routine: 생성할 루틴 엔티티
+    func createRoutine(routine: RoutineCreationEntity) async throws
 
     /// 루틴을 조회합니다.
     /// - Parameter routineId: 조회할 루틴 id
@@ -26,9 +25,8 @@ public protocol RoutineRepositoryProtocol {
 
     /// 루틴을 수정합니다.
     /// - Parameters:
-    ///   - routineSummary: 루틴 요약 정보
-    ///   - subRoutineSummaries: 서브 루틴 요약 정보 배열
-    func updateRoutine(routineSummary: RoutineSummaryEntity, subRoutineSummaries: [SubRoutineSummaryEntity]) async throws
+    ///   - routine: 수정할 루틴
+    func updateRoutine(routine: RoutineCreationEntity) async throws
 
     /// 반복되는 루틴을 모두 제거합니다.
     /// - Parameter routineId: 삭제할 루틴 id

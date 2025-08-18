@@ -12,11 +12,7 @@ public protocol RoutineUseCaseProtocol {
 
     func fetchRoutines(startDate: Date, endDate: Date) async throws -> [String: [RoutineEntity]]
 
-    func saveRoutine(
-        routineSummary: RoutineSummaryEntity,
-        subRoutineSummaries: [SubRoutineSummaryEntity],
-        deletedSubRoutineSummaries: [SubRoutineSummaryEntity]
-    ) async throws
+    func saveRoutine(routine: RoutineCreationEntity) async throws
 
     func deleteAllRoutine(routineId: String) async throws
 

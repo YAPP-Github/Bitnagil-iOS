@@ -28,47 +28,31 @@ public final class RoutineUseCase: RoutineUseCaseProtocol {
         return routineEntities
     }
 
-    public func saveRoutine(
-        routineSummary: RoutineSummaryEntity,
-        subRoutineSummaries: [SubRoutineSummaryEntity],
-        deletedSubRoutineSummaries: [SubRoutineSummaryEntity]
-    ) async throws {
-        if routineSummary.routineId == nil { // 루틴 아이디가 있으면 수정, 없으면 생성
-            try await createRoutine(routineSummary: routineSummary, subRoutinesSummaries: subRoutineSummaries)
+    public func saveRoutine(routine: RoutineCreationEntity) async throws {
+        let routine = RoutineCreationEntity(
+            id: routine.id,
+            name: routine.name,
+            repeatDay: routine.repeatDay,
+            startDate: routine.startDate,
+            endDate: routine.endDate,
+            executionTime: routine.executionTime,
+            subroutines: routine.subroutines.filter { !$0.isEmpty },
+            recommendedRoutineType: routine.recommendedRoutineType,
+            applyDateType: routine.applyDateType)
+
+        if routine.id == nil { // 루틴 아이디가 있으면 수정, 없으면 생성
+            try await createRoutine(routine: routine)
         } else {
-            try await updateRoutine(
-                routineSummary: routineSummary,
-                subRoutineSummaries: subRoutineSummaries,
-                deletedSubRoutineSummaries: deletedSubRoutineSummaries)
+            try await updateRoutine(routine: routine)
         }
     }
 
-    private func createRoutine(routineSummary: RoutineSummaryEntity, subRoutinesSummaries: [SubRoutineSummaryEntity]) async throws {
-        try await routineRepository.createRoutine(routineSummary: routineSummary, subRoutineSummaries: subRoutinesSummaries)
+    private func createRoutine(routine: RoutineCreationEntity) async throws {
+        try await routineRepository.createRoutine(routine: routine)
     }
 
-    private func updateRoutine(
-        routineSummary: RoutineSummaryEntity,
-        subRoutineSummaries: [SubRoutineSummaryEntity],
-        deletedSubRoutineSummaries: [SubRoutineSummaryEntity]
-    ) async throws {
-        let updatedSubRoutines = subRoutineSummaries
-            .enumerated()
-            .map {
-                SubRoutineSummaryEntity(
-                    subRoutineId: $1.subRoutineId,
-                    subRoutineName: $1.subRoutineName,
-                    sortOrder: $0 + 1)
-            }
-        let deletedSubRoutines = deletedSubRoutineSummaries.map {
-            SubRoutineSummaryEntity(
-                subRoutineId: $0.subRoutineId,
-                subRoutineName: nil,
-                sortOrder: nil)
-        }
-        let finalSubRoutines = updatedSubRoutines + deletedSubRoutines
-
-        try await routineRepository.updateRoutine(routineSummary: routineSummary, subRoutineSummaries: finalSubRoutines)
+    private func updateRoutine(routine: RoutineCreationEntity) async throws {
+        try await routineRepository.updateRoutine(routine: routine)
     }
 
     public func deleteAllRoutine(routineId: String) async throws {
