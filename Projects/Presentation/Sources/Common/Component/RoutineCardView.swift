@@ -9,6 +9,10 @@ import Domain
 import SnapKit
 import UIKit
 
+protocol RoutineCardViewDelegate: AnyObject {
+    func routineCardView(_ sender: RoutineCardView, didTapPlusButton routine: RecommendedRoutine)
+}
+
 final class RoutineCardView: UIView {
     private enum Layout {
         static let horizontalMargin: CGFloat = 16
@@ -39,6 +43,7 @@ final class RoutineCardView: UIView {
     private let subRoutineStackView = UIStackView()
 
     private let routine: RecommendedRoutine
+    weak var delegate: RoutineCardViewDelegate?
     init(routine: RecommendedRoutine) {
         self.routine = routine
         super.init(frame: .zero)
@@ -66,6 +71,11 @@ final class RoutineCardView: UIView {
             .resizeAspectFit(to: CGSize(width: Layout.plusImageSize, height: Layout.plusImageSize))
         plusButton.setImage(plusImage, for: .normal)
         plusButton.tintColor = BitnagilColor.gray10
+        plusButton.addAction(
+            UIAction { [weak self] _ in
+                guard let self else { return }
+                delegate?.routineCardView(self, didTapPlusButton: routine)
+            }, for: .touchUpInside)
 
         grayLine.backgroundColor = BitnagilColor.gray97
 
