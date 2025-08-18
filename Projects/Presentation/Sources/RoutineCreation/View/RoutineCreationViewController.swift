@@ -81,6 +81,7 @@ final class RoutineCreationViewController: BaseViewController<RoutineCreationVie
         registerButton.setTitle(registerButtonTitle, for: .normal)
         if let updateInfo {
             viewModel.action(input: .fetchRoutine(id: updateInfo.routineId))
+            viewModel.action(input: .configureUpdateType(updateType: updateInfo.updateType))
         }
     }
 

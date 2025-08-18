@@ -20,6 +20,7 @@ final class RoutineCreationViewModel: ViewModel {
     }
 
     enum Input {
+        case configureUpdateType(updateType: RoutineUpdateApplyDateType)
         case fetchRoutine(id: String)
         case fetchRecommendedRoutine(id: Int)
         case configureName(name: String)
@@ -78,6 +79,8 @@ final class RoutineCreationViewModel: ViewModel {
 
     func action(input: Input) {
         switch input {
+        case .configureUpdateType(let updateType):
+            self.updateType = updateType
         case .fetchRoutine(let id):
             fetchRoutine(id: id)
         case .fetchRecommendedRoutine(let id):
