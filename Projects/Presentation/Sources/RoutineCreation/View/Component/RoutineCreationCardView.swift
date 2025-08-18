@@ -203,8 +203,8 @@ final class RoutineCreationCardView<ContentView: UIView & RoutineCreationExpanda
         setNeedsLayout()
     }
 
-    func configure(dependencies: ContentView.Dependency) {
-        contentView.configure(dependency: dependencies)
+    func configure(dependency: ContentView.Dependency) {
+        contentView.configure(dependency: dependency)
     }
 
     @objc private func handleTap(_ gestureRecognizer: UIGestureRecognizer) {

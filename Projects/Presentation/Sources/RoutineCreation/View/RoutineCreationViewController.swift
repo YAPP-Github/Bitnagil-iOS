@@ -218,7 +218,7 @@ final class RoutineCreationViewController: BaseViewController<RoutineCreationVie
         viewModel.output.subRoutinesPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] subroutines in
-                self?.subRoutineNameView.configure(dependencies: .init(subRoutines: subroutines))
+                self?.subRoutineNameView.configure(dependency: .init(subRoutines: subroutines))
                 self?.subRoutineNameView.configure(subTitles: subroutines.filter { !$0.isEmpty })
             }
             .store(in: &cancellables)
@@ -227,7 +227,7 @@ final class RoutineCreationViewController: BaseViewController<RoutineCreationVie
             .receive(on: DispatchQueue.main)
             .sink { [weak self] repeatType in
                 guard let repeatType else {
-                    self?.repeatView.configure(dependencies: .init(repeatType: .none))
+                    self?.repeatView.configure(dependency: .init(repeatType: .none))
                     self?.repeatView.configure(subTitles: [])
                     return
                 }
@@ -237,14 +237,14 @@ final class RoutineCreationViewController: BaseViewController<RoutineCreationVie
                     let subTitle = Week.allCases
                         .map { $0.koreanValue }
                         .joined(separator: ",")
-                    self?.repeatView.configure(dependencies: .init(repeatType: .daily))
+                    self?.repeatView.configure(dependency: .init(repeatType: .daily))
                     self?.repeatView.configure(subTitles: ["매주 \(subTitle)"])
                 case .weekly(let weeks):
                     let subTitle = weeks
                         .sorted(by: { $0.id < $1.id })
                         .map { $0.koreanValue }
                         .joined(separator: ",")
-                    self?.repeatView.configure(dependencies: .init(repeatType: .weekly(weeks: weeks)))
+                    self?.repeatView.configure(dependency: .init(repeatType: .weekly(weeks: weeks)))
                     self?.repeatView.configure(subTitles: weeks.isEmpty ? [] : ["매주 \(subTitle)"])
                 }
             }
@@ -253,14 +253,14 @@ final class RoutineCreationViewController: BaseViewController<RoutineCreationVie
         viewModel.output.periodPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] (start, end) in
-                self?.periodView.configure(dependencies: .init(dates: (start, end)))
+                self?.periodView.configure(dependency: .init(dates: (start, end)))
             }
             .store(in: &cancellables)
 
         viewModel.output.executionTimePublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] startAt in
-                self?.timeView.configure(dependencies: .init(startTime: startAt))
+                self?.timeView.configure(dependency: .init(startTime: startAt))
 
                 if let startAt {
                     let timeString = startAt.isMidnight ? "하루 종일" : startAt.convertToString(dateType: .amPmTime)
