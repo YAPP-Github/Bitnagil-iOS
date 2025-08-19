@@ -6,6 +6,6 @@
 //
 
 protocol OnboardingChoiceProtocol {
-    var mainTitle: String { get }
+    var title: String { get }
     var subTitle: String? { get }
 }

@@ -339,4 +339,7 @@ extension RecommendedRoutineViewController: RoutineCardViewDelegate {
         routineCreationView.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(routineCreationView, animated: true)
     }
+
+    func routineCardView(_ sender: RoutineCardView, didTapEditButton routine: newRoutine) { }
+    func routineCardView(_ sender: RoutineCardView, didTapDeleteButton routine: newRoutine) { }
 }

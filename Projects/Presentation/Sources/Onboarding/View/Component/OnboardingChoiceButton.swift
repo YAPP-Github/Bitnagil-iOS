@@ -53,7 +53,7 @@ final class OnboardingChoiceButton: UIButton {
         stackView.spacing = Layout.stackViewSpacing
         stackView.isUserInteractionEnabled = false
 
-        mainLabel.text = onboardingChoice.mainTitle
+        mainLabel.text = onboardingChoice.title
         mainLabel.font = BitnagilFont(style: .body1, weight: .semiBold).font
         mainLabel.textColor = BitnagilColor.gray50
 

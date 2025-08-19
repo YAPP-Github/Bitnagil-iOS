@@ -15,6 +15,7 @@ final class HomeViewModel: ViewModel {
         case loadEmotion
         case moveWeek(week: Int)
         case selectDate(date: Date)
+        case selectRoutineListDate
         case fetchRoutines
         case selectRoutine(routine: MainRoutine?)
         case deleteDailyRoutine
@@ -27,6 +28,7 @@ final class HomeViewModel: ViewModel {
         let nicknamePublisher: AnyPublisher<String, Never>
         let emotionPublisher: AnyPublisher<Emotion?, Never>
         let selectedDatePublisher: AnyPublisher<Date, Never>
+        let routineListDatePublisher: AnyPublisher<Date, Never>
         let fetchRoutineResultPublisher: AnyPublisher<Bool, Never>
         let routinesPublisher: AnyPublisher<[MainRoutine], Never>
         let deleteRoutineResultPublisher: AnyPublisher<Bool, Never>
@@ -38,6 +40,7 @@ final class HomeViewModel: ViewModel {
     private let nicknameSubject = CurrentValueSubject<String, Never>("")
     private let emotionSubject = CurrentValueSubject<Emotion?, Never>(nil)
     private let selectedDateSubject = CurrentValueSubject<Date, Never>(.now)
+    private let routineListDateSubject = PassthroughSubject<Date, Never>()
     private let fetchRoutineResultSubject = PassthroughSubject<Bool, Never>()
     private let routinesSubject = CurrentValueSubject<[MainRoutine], Never>([])
     private let selectedRoutineSubject = CurrentValueSubject<MainRoutine?, Never>(nil)
@@ -64,6 +67,7 @@ final class HomeViewModel: ViewModel {
             nicknamePublisher: nicknameSubject.eraseToAnyPublisher(),
             emotionPublisher: emotionSubject.eraseToAnyPublisher(),
             selectedDatePublisher: selectedDateSubject.eraseToAnyPublisher(),
+            routineListDatePublisher: routineListDateSubject.eraseToAnyPublisher(),
             fetchRoutineResultPublisher: fetchRoutineResultSubject.eraseToAnyPublisher(),
             routinesPublisher: routinesSubject.eraseToAnyPublisher(),
             deleteRoutineResultPublisher: deleteRoutineResultSubject.eraseToAnyPublisher(),
@@ -84,6 +88,10 @@ final class HomeViewModel: ViewModel {
 
         case .selectDate(let date):
             selectDate(date: date)
+
+        case .selectRoutineListDate:
+            let selectedDate = selectedDateSubject.value
+            routineListDateSubject.send(selectedDate)
 
         case .fetchRoutines:
             fetchRoutines()

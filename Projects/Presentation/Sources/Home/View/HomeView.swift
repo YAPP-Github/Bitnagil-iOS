@@ -179,6 +179,10 @@ final class HomeView: BaseViewController<HomeViewModel> {
             BitnagilFont(style: .caption1, weight: .semiBold).attributedString(text: "더보기"),
             for: .normal)
         routineListButton.setTitleColor(BitnagilColor.gray10, for: .normal)
+        routineListButton.addAction(
+            UIAction { [weak self] _ in
+                self?.viewModel.action(input: .selectRoutineListDate)
+            }, for: .touchUpInside)
 
         routineScrollView.showsVerticalScrollIndicator = false
         routineScrollView.showsHorizontalScrollIndicator = false
@@ -428,6 +432,20 @@ final class HomeView: BaseViewController<HomeViewModel> {
                     self?.viewModel.action(input: .refreshSelectedDateRoutine)
                     self?.hideIndicatorView()
                 }
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.routineListDatePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] selectedDate in
+                guard let self else { return }
+
+                guard let viewModel = DIContainer.shared.resolve(type: RoutineListViewModel.self)
+                else { return }
+
+                let routineListViewController = RoutineListViewController(viewModel: viewModel, selectedDate: selectedDate)
+                routineListViewController.hidesBottomBarWhenPushed = true
+                self.navigationController?.pushViewController(routineListViewController, animated: true)
             }
             .store(in: &cancellables)
     }

@@ -7,13 +7,13 @@
 
 import Domain
 
-public struct RecommendedRoutine: OnboardingChoiceProtocol, Hashable {
+public struct RecommendedRoutine: OnboardingChoiceProtocol, RoutineProtocol, Hashable {
     let id: Int
-    let mainTitle: String
+    let title: String
     let subTitle: String?
     let subRoutines: [String]
     let routineCategory: RoutineCategoryType
-    let routineType: RoutineCategoryType
+    let routineType: RoutineCategoryType?
     let routineLevel: RoutineLevelType
 
     init(
@@ -26,7 +26,7 @@ public struct RecommendedRoutine: OnboardingChoiceProtocol, Hashable {
         routineLevel: RoutineLevelType
     ) {
         self.id = id
-        self.mainTitle = mainTitle
+        self.title = mainTitle
         self.subTitle = subTitle
         self.subRoutines = subRoutines
         self.routineCategory = routineCategory

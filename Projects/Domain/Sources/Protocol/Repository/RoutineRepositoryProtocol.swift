@@ -23,6 +23,8 @@ public protocol RoutineRepositoryProtocol {
     ///   - endDate: 조회 종료 날짜
     func fetchRoutines(from startDate: String, to endDate: String) async throws -> [String: [RoutineEntity]]
 
+    func fetchRoutines2(from startDate: String, to endDate: String) async throws -> [String: (routine: [newRoutineEntity], allCompleted: Bool)]
+
     /// 루틴을 수정합니다.
     /// - Parameters:
     ///   - routine: 수정할 루틴

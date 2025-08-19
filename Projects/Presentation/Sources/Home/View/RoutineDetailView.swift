@@ -98,7 +98,7 @@ final class RoutineDetailView: UIViewController {
         mainRoutineLabel.font = BitnagilFont(style: .body2, weight: .medium).font
         mainRoutineLabel.textColor = BitnagilColor.gray50
 
-        mainRoutineIcon.image = BitnagilIcon.routineIcon
+//        mainRoutineIcon.image = BitnagilIcon.routineIcon
         mainRoutineIcon.contentMode = .scaleAspectFit
 
         mainRoutineTitleLabel.text = routine.title
@@ -118,7 +118,7 @@ final class RoutineDetailView: UIViewController {
         subRoutineLabel.font = BitnagilFont(style: .body2, weight: .medium).font
         subRoutineLabel.textColor = BitnagilColor.gray50
 
-        subRoutineIcon.image = BitnagilIcon.subRoutineIcon
+//        subRoutineIcon.image = BitnagilIcon.subRoutineIcon
         subRoutineIcon.contentMode = .scaleAspectFit
 
         subRoutineTitleLabel.text = "세부 루틴 없음"
@@ -139,7 +139,7 @@ final class RoutineDetailView: UIViewController {
         repeatRoutineLabel.font = BitnagilFont(style: .body2, weight: .medium).font
         repeatRoutineLabel.textColor = BitnagilColor.gray50
 
-        repeatRoutineIcon.image = BitnagilIcon.repeatIcon
+//        repeatRoutineIcon.image = BitnagilIcon.repeatIcon
         repeatRoutineIcon.contentMode = .scaleAspectFit
 
         repeatRoutineTitleLabel.text = "반복 안함"

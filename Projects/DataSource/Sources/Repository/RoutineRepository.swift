@@ -46,6 +46,20 @@ final class RoutineRepository: RoutineRepositoryProtocol {
         return result
     }
 
+    func fetchRoutines2(from startDate: String, to endDate: String) async throws -> [String: (routine: [newRoutineEntity], allCompleted: Bool)] {
+        let endpoint = RoutineEndpoint.fetchRoutines2(startDate: startDate, endDate: endDate)
+        guard let response = try await networkService.request(endpoint: endpoint, type: newRoutineListDTO.self)
+        else { return [:] }
+
+        var result: [String: ([newRoutineEntity], Bool)] = [:]
+        for (date, routineDTO) in response.routines {
+            let allCompleted = routineDTO.allCompleted
+            let routines = routineDTO.routineList.compactMap({ $0.toRoutineEntity() })
+            result[date] = (routines, allCompleted)
+        }
+        return result
+    }
+    
     func updateRoutine(routine: RoutineCreationEntity) async throws {
         let routineUpdateDTO = RoutineCreationDTO(
             routineId: routine.id,

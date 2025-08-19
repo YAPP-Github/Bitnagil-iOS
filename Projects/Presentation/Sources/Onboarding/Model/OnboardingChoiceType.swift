@@ -9,7 +9,7 @@ import Domain
 
 extension OnboardingChoiceType: OnboardingChoiceProtocol {
 
-    var mainTitle: String {
+    var title: String {
         switch self {
         case .morningTime: "아침을 잘 시작하고 싶어요."
         case .eveningTime: "저녁을 편안하게 마무리하고 싶어요."
