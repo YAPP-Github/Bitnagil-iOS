@@ -88,7 +88,6 @@ final class RoutineListViewModel: ViewModel {
             routinesSubject.send([])
             return
         }
-
         routinesSubject.send(dailyRoutines)
     }
 }
