@@ -12,24 +12,28 @@ import Foundation
 final class RoutineListViewModel: ViewModel {
     enum Input {
         case fetchRoutineList
+        case fetchDailyRoutine
         case selectDate(date: Date)
     }
 
     struct Output {
+        let fetchRoutinesResultPublisher: AnyPublisher<Bool, Never>
         let selectedDatePublisher: AnyPublisher<Date, Never>
-        let routinesPublisher: AnyPublisher<[newRoutine], Never>
+        let routinesPublisher: AnyPublisher<[Routine], Never>
     }
 
     private(set) var output: Output
+    private let fetchRoutinesResultSubject = PassthroughSubject<Bool, Never>()
     private let selectedDateSubject = CurrentValueSubject<Date, Never>(Date())
-    private let routinesSubject = CurrentValueSubject<[newRoutine], Never>([])
-    private var routines: [String: [newRoutine]] = [:]
+    private let routinesSubject = CurrentValueSubject<[Routine], Never>([])
+    private var routines: [String: [Routine]] = [:]
 
     private let calendar = Calendar.current
     private let routineRepository: RoutineRepositoryProtocol
     init(routineRepository: RoutineRepositoryProtocol) {
         self.routineRepository = routineRepository
         self.output = Output(
+            fetchRoutinesResultPublisher: fetchRoutinesResultSubject.eraseToAnyPublisher(),
             selectedDatePublisher: selectedDateSubject.eraseToAnyPublisher(),
             routinesPublisher: routinesSubject.eraseToAnyPublisher())
     }
@@ -38,6 +42,9 @@ final class RoutineListViewModel: ViewModel {
         switch input {
         case .fetchRoutineList:
            fetchRoutines()
+
+        case .fetchDailyRoutine:
+            fetchDailyRoutine()
 
         case .selectDate(let date):
             selectedDateSubject.send(date)
@@ -53,14 +60,15 @@ final class RoutineListViewModel: ViewModel {
                 let startDateString = startDate.convertToString(dateType: .yearMonthDate)
                 let endDateString = endDate.convertToString(dateType: .yearMonthDate)
 
-                let routinesDictionary = try await routineRepository.fetchRoutines2(from: startDateString, to: endDateString)
+                let routinesDictionary = try await routineRepository.fetchRoutines(from: startDateString, to: endDateString)
                 for dailyRoutine in routinesDictionary {
                     let date = dailyRoutine.key
-                    let routine = dailyRoutine.value.routine.map({ $0.toNewRoutine() })
+                    let routine = dailyRoutine.value.routines.map({ $0.toRoutine() })
                     self.routines[date] = routine
                 }
+                fetchRoutinesResultSubject.send(true)
             } catch {
-
+                fetchRoutinesResultSubject.send(false)
             }
         }
     }

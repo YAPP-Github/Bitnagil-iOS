@@ -1,5 +1,5 @@
 //
-//  newRoutineDTO.swift
+//  RoutineDTO.swift
 //  DataSource
 //
 //  Created by 최정인 on 8/19/25.
@@ -7,16 +7,16 @@
 
 import Domain
 
-struct newRoutineListDTO: Decodable {
+struct RoutineDictionaryDTO: Decodable {
     let routines: [String: RoutineDateDTO]
 }
 
 struct RoutineDateDTO: Decodable {
-    let routineList: [newRoutineDTO]
+    let routineList: [RoutineDTO]
     let allCompleted: Bool
 }
 
-struct newRoutineDTO: Decodable {
+struct RoutineDTO: Decodable {
     let routineId: String
     let routineName: String
     let repeatDay: [String]
@@ -29,8 +29,8 @@ struct newRoutineDTO: Decodable {
     let routineStartDate: String
     let routineEndDate: String
 
-    func toRoutineEntity() -> newRoutineEntity {
-        return newRoutineEntity(
+    func toRoutineEntity() -> RoutineEntity {
+        return RoutineEntity(
             routineId: routineId,
             routineName: routineName,
             repeatDay: repeatDay,

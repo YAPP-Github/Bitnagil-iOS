@@ -32,8 +32,8 @@ final class RoutineListViewController: BaseViewController<RoutineListViewModel> 
     init(viewModel: RoutineListViewModel, selectedDate: Date) {
         self.weekView = WeekView(date: selectedDate)
         cancellables = []
-        super.init(viewModel: viewModel)
         viewModel.action(input: .selectDate(date: selectedDate))
+        super.init(viewModel: viewModel)
     }
 
     required init?(coder: NSCoder) {
@@ -101,6 +101,15 @@ final class RoutineListViewController: BaseViewController<RoutineListViewModel> 
     }
 
     override func bind() {
+        viewModel.output.fetchRoutinesResultPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isFetchRoutines in
+                if isFetchRoutines {
+                    self?.viewModel.action(input: .fetchDailyRoutine)
+                }
+            }
+            .store(in: &cancellables)
+
         viewModel.output.selectedDatePublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] selectedDate in
@@ -116,7 +125,7 @@ final class RoutineListViewController: BaseViewController<RoutineListViewModel> 
             .store(in: &cancellables)
     }
 
-    private func updateRoutineStackView(routines: [newRoutine]) {
+    private func updateRoutineStackView(routines: [Routine]) {
         routineStackView.arrangedSubviews.forEach { view in
             routineStackView.removeArrangedSubview(view)
             view.removeFromSuperview()

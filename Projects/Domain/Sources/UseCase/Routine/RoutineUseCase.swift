@@ -20,7 +20,7 @@ public final class RoutineUseCase: RoutineUseCaseProtocol {
         return routineEnity
     }
 
-    public func fetchRoutines(startDate: Date, endDate: Date) async throws -> [String: [RoutineEntity]] {
+    public func fetchRoutines(startDate: Date, endDate: Date) async throws -> [String: (routines: [RoutineEntity], allCompleted: Bool)] {
         let start = startDate.convertToString(dateType: .yearMonthDate)
         let end = endDate.convertToString(dateType: .yearMonthDate)
 

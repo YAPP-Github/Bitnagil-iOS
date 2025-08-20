@@ -29,29 +29,17 @@ final class RoutineRepository: RoutineRepositoryProtocol {
     
     func fetchRoutine(routineId: String) async throws -> RoutineEntity? {
         let endpoint = RoutineEndpoint.fetchRoutine(routineId: routineId)
-        guard let response = try await networkService.request(endpoint: endpoint, type: RoutineResponseDTO.self) else { return nil }
+        guard let response = try await networkService.request(endpoint: endpoint, type: RoutineDTO.self) else { return nil }
         
         return response.toRoutineEntity()
     }
 
-    func fetchRoutines(from startDate: String, to endDate: String) async throws -> [String: [RoutineEntity]] {
+    func fetchRoutines(from startDate: String, to endDate: String) async throws -> [String: (routines: [RoutineEntity], allCompleted: Bool)] {
         let endpoint = RoutineEndpoint.fetchRoutines(startDate: startDate, endDate: endDate)
         guard let response = try await networkService.request(endpoint: endpoint, type: RoutineDictionaryDTO.self)
         else { return [:] }
 
-        var result: [String: [RoutineEntity]] = [:]
-        for (date, routineDTO) in response.routines {
-            result[date] = routineDTO.compactMap({ $0.toRoutineEntity() })
-        }
-        return result
-    }
-
-    func fetchRoutines2(from startDate: String, to endDate: String) async throws -> [String: (routine: [newRoutineEntity], allCompleted: Bool)] {
-        let endpoint = RoutineEndpoint.fetchRoutines2(startDate: startDate, endDate: endDate)
-        guard let response = try await networkService.request(endpoint: endpoint, type: newRoutineListDTO.self)
-        else { return [:] }
-
-        var result: [String: ([newRoutineEntity], Bool)] = [:]
+        var result: [String: ([RoutineEntity], Bool)] = [:]
         for (date, routineDTO) in response.routines {
             let allCompleted = routineDTO.allCompleted
             let routines = routineDTO.routineList.compactMap({ $0.toRoutineEntity() })

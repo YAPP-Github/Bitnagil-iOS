@@ -451,7 +451,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
     }
 
     // 해당 날짜의 Routine View를 설정합니다. (없다면 EmptyView)
-    private func updateRoutineView(routines: [MainRoutine]) {
+    private func updateRoutineView(routines: [Routine]) {
         routineStackView.arrangedSubviews.forEach {
             $0.removeFromSuperview()
         }
@@ -467,7 +467,6 @@ final class HomeView: BaseViewController<HomeViewModel> {
 
             for routine in routines {
                 let routineView = RoutineView(routine: routine)
-                routineView.delegate = self
                 routineStackView.addArrangedSubview(routineView)
             }
         }
@@ -575,19 +574,6 @@ final class HomeView: BaseViewController<HomeViewModel> {
         let emotionRegisterView = EmotionRegisterView(viewModel: emotionRegisterViewModel)
         emotionRegisterView.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(emotionRegisterView, animated: true)
-    }
-}
-
-// MARK: RoutineViewDelegate
-extension HomeView: RoutineViewDelegate {
-    func routineView(_ sender: RoutineView, didTapMainRoutineCheckButton mainRoutine: MainRoutine) {
-        showIndicatorView()
-        viewModel.action(input: .updateRoutineCompletion(updatedRoutine: mainRoutine))
-    }
-
-    func routineView(_ sender: RoutineView, didTapSubRoutineCheckButton subRoutine: SubRoutine) {
-        showIndicatorView()
-        viewModel.action(input: .updateRoutineCompletion(updatedRoutine: subRoutine))
     }
 }
 

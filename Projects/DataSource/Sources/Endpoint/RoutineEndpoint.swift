@@ -8,7 +8,6 @@
 enum RoutineEndpoint {
     case createRoutine(routine: RoutineCreationDTO)
     case fetchRoutine(routineId: String)
-    case fetchRoutines2(startDate: String, endDate: String)
     case fetchRoutines(startDate: String, endDate: String)
     case updateRoutine(routine: RoutineCreationDTO)
     case deleteAllRoutine(routineId: String)
@@ -19,7 +18,7 @@ enum RoutineEndpoint {
 extension RoutineEndpoint: Endpoint {
     var baseURL: String {
         switch self {
-        case .createRoutine, .updateRoutine, .fetchRoutines2:
+        case .createRoutine, .updateRoutine, .fetchRoutines:
             return AppProperties.baseURL + "/api/v2/routines"
         default:
             return AppProperties.baseURL + "/api/v1/routines"
@@ -45,7 +44,7 @@ extension RoutineEndpoint: Endpoint {
         switch self {
         case .createRoutine, .updateRoutineCompletion:
                 .post
-        case .fetchRoutine, .fetchRoutines, .fetchRoutines2:
+        case .fetchRoutine, .fetchRoutines:
                 .get
         case .updateRoutine:
                 .patch
@@ -65,10 +64,6 @@ extension RoutineEndpoint: Endpoint {
     var queryParameters: [String : String] {
         switch self {
         case .fetchRoutines(let startDate, let endDate):
-            return [
-                "startDate": startDate,
-                "endDate": endDate]
-        case .fetchRoutines2(let startDate, let endDate):
             return [
                 "startDate": startDate,
                 "endDate": endDate]

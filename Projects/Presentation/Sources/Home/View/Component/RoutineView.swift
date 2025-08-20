@@ -9,11 +9,6 @@ import Shared
 import SnapKit
 import UIKit
 
-protocol RoutineViewDelegate: AnyObject {
-    func routineView(_ sender: RoutineView, didTapMainRoutineCheckButton mainRoutine: MainRoutine)
-    func routineView(_ sender: RoutineView, didTapSubRoutineCheckButton subRoutine: SubRoutine)
-}
-
 final class RoutineView: UIView {
     private enum Layout {
         static let timeLabelHeight: CGFloat = 20
@@ -29,13 +24,13 @@ final class RoutineView: UIView {
 
     private var isLayoutConfigured: Bool = false
     private var mainRoutineHeightConstraint: Constraint?
-    private var routine: MainRoutine {
+    private var routine: Routine {
         didSet {
             updateRoutineState()
         }
     }
-    weak var delegate: RoutineViewDelegate?
-    init(routine: MainRoutine) {
+
+    init(routine: Routine) {
         self.routine = routine
         super.init(frame: .zero)
         configureAttribute()
@@ -82,7 +77,6 @@ final class RoutineView: UIView {
                 var updatedRoutine = routine
                 updatedRoutine.isDone.toggle()
                 self.routine = updatedRoutine
-                delegate?.routineView(self, didTapMainRoutineCheckButton: routine)
             },
             for: .touchUpInside)
 
@@ -140,7 +134,7 @@ final class RoutineView: UIView {
             make.height.equalTo(1)
         }
 
-        for subRoutine in routine.subRoutines {
+        for subRoutine in zip(routine.subRoutines, routine.subRoutineCompleted) {
             let subRoutineView = makeSubRoutineView(subRoutine: subRoutine)
             subRoutineView.snp.makeConstraints { make in
                 make.height.equalTo(24)
@@ -155,7 +149,7 @@ final class RoutineView: UIView {
         }
     }
 
-    private func makeSubRoutineView(subRoutine: SubRoutine) -> UIView {
+    private func makeSubRoutineView(subRoutine: (title: String, isDone: Bool)) -> UIView {
         let subRoutineView = UIView()
         let checkButton = UIButton()
         let subRoutineLabel = UILabel()

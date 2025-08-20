@@ -340,6 +340,6 @@ extension RecommendedRoutineViewController: RoutineCardViewDelegate {
         self.navigationController?.pushViewController(routineCreationView, animated: true)
     }
 
-    func routineCardView(_ sender: RoutineCardView, didTapEditButton routine: newRoutine) { }
-    func routineCardView(_ sender: RoutineCardView, didTapDeleteButton routine: newRoutine) { }
+    func routineCardView(_ sender: RoutineCardView, didTapEditButton routine: Routine) { }
+    func routineCardView(_ sender: RoutineCardView, didTapDeleteButton routine: Routine) { }
 }

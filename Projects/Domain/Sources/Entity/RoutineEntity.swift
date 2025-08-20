@@ -2,44 +2,45 @@
 //  RoutineEntity.swift
 //  Domain
 //
-//  Created by 최정인 on 7/30/25.
+//  Created by 최정인 on 8/19/25.
 //
 
 public struct RoutineEntity {
-    public let routineId: String?
-    public let historySeq: Int
+    public let routineId: String
     public let routineName: String
-    public let repeatDay: [Week]
+    public let repeatDay: [String]
     public let executionTime: String
-    public let subRoutineSearchResultDto: [SubRoutineEntity]
-    public let modifiedYn: Bool
-    public let routineCompletionId: Int?
-    public let completeYn: Bool
-    public let routineType: String
+    public let routineCompleteYn: Bool
+    public let subRoutineNames: [String]
+    public let subRoutineCompleteYn: [Bool]
+    public let recommendedRoutineType: String?
+    public let routineDeletedYn: Bool
+    public let routineStartDate: String
+    public let routineEndDate: String
 
     public init(
-        routineId: String?,
-        historySeq: Int,
+        routineId: String,
         routineName: String,
-        repeatDay: [String]?,
+        repeatDay: [String],
         executionTime: String,
-        subRoutineSearchResultDto: [SubRoutineEntity],
-        modifiedYn: Bool,
-        routineCompletionId: Int?,
-        completeYn: Bool,
-        routineType: String
+        routineCompleteYn: Bool,
+        subRoutineNames: [String],
+        subRoutineCompleteYn: [Bool],
+        recommendedRoutineType: String?,
+        routineDeletedYn: Bool,
+        routineStartDate: String,
+        routineEndDate: String
     ) {
-        let weekType: [Week] = repeatDay?.compactMap(Week.init(rawValue:)) ?? []
-
         self.routineId = routineId
-        self.historySeq = historySeq
         self.routineName = routineName
-        self.repeatDay = weekType
+        self.repeatDay = repeatDay
         self.executionTime = executionTime
-        self.subRoutineSearchResultDto = subRoutineSearchResultDto
-        self.modifiedYn = modifiedYn
-        self.routineCompletionId = routineCompletionId
-        self.completeYn = completeYn
-        self.routineType = routineType
+        self.routineCompleteYn = routineCompleteYn
+        self.subRoutineNames = subRoutineNames
+        self.subRoutineCompleteYn = subRoutineCompleteYn
+        self.recommendedRoutineType = recommendedRoutineType
+        self.routineDeletedYn = routineDeletedYn
+        self.routineStartDate = routineStartDate
+        self.routineEndDate = routineEndDate
     }
 }

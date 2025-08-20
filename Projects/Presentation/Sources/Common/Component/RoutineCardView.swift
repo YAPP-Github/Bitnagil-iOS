@@ -11,8 +11,8 @@ import UIKit
 
 protocol RoutineCardViewDelegate: AnyObject {
     func routineCardView(_ sender: RoutineCardView, didTapPlusButton routine: RecommendedRoutine)
-    func routineCardView(_ sender: RoutineCardView, didTapEditButton routine: newRoutine)
-    func routineCardView(_ sender: RoutineCardView, didTapDeleteButton routine: newRoutine)
+    func routineCardView(_ sender: RoutineCardView, didTapEditButton routine: Routine)
+    func routineCardView(_ sender: RoutineCardView, didTapDeleteButton routine: Routine)
 }
 
 final class RoutineCardView: UIView {
@@ -116,7 +116,7 @@ final class RoutineCardView: UIView {
             }
         }
 
-        if let mainRoutine = routine as? newRoutine {
+        if let mainRoutine = routine as? Routine {
             infoStackView.axis = .vertical
             infoStackView.spacing = Layout.subRoutineStackViewSpacing
 
@@ -198,7 +198,7 @@ final class RoutineCardView: UIView {
             }
         }
 
-        if let _ = routine as? newRoutine {
+        if let _ = routine as? Routine {
             addSubview(grayLine2)
             addSubview(infoStackView)
             addSubview(editButton)

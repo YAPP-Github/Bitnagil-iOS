@@ -10,7 +10,7 @@ import Foundation
 public protocol RoutineUseCaseProtocol {
     func fetchRoutine(routineId: String) async throws -> RoutineEntity?
 
-    func fetchRoutines(startDate: Date, endDate: Date) async throws -> [String: [RoutineEntity]]
+    func fetchRoutines(startDate: Date, endDate: Date) async throws -> [String: (routines: [RoutineEntity], allCompleted: Bool)]
 
     func saveRoutine(routine: RoutineCreationEntity) async throws
 

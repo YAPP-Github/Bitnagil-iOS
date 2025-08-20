@@ -117,8 +117,8 @@ final class RoutineCreationViewModel: ViewModel {
                 // TODO: - routine fetch 실패 시 처리 방안 필요 (기획과 논의~)
                 guard let routine = try await routineUseCase.fetchRoutine(routineId: id) else { return }
 
-                let subRoutines = routine.subRoutineSearchResultDto.map { $0.subRoutineName }
-                let weekDay = routine.repeatDay.compactMap { Week(rawValue: $0.rawValue) }
+                let subRoutines = routine.subRoutineNames
+                let weekDay = routine.repeatDay.compactMap { Week(rawValue: $0) }
                 let repeatType: RepeatType?
 
                 if weekDay.isEmpty {

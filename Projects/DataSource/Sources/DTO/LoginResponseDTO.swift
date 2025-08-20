@@ -1,5 +1,5 @@
 //
-//  TokenResponseDTO.swift
+//  LoginResponseDTO.swift
 //  DataSource
 //
 //  Created by 최정인 on 6/30/25.
