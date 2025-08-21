@@ -148,25 +148,15 @@ final class RoutineListViewController: BaseViewController<RoutineListViewModel> 
         }
     }
 
-    private func showRoutineDeleteAlertView() {
-        let routineDeleteViewController = RoutineDeleteViewController(viewModel: viewModel)
-        if let sheet = routineDeleteViewController.sheetPresentationController {
-            sheet.prefersGrabberVisible = false
-            if #available(iOS 16.0, *) {
-                sheet.detents = [.custom { _ in 270 }]
-            } else {
-                sheet.detents = [.medium()]
-            }
-            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
-            sheet.preferredCornerRadius = 20
-        }
+    private func goToRoutineCreationView(routineId: String, isApplyToday: Bool = true) {
+        guard let routineCreationViewModel = DIContainer.shared.resolve(type: RoutineCreationViewModel.self)
+        else { fatalError("routineCreationViewModel 의존성이 등록되지 않았습니다.") }
 
-        routineDeleteViewController.onDismiss = { [weak self] in
-            self?.dimmedView?.removeFromSuperview()
-            self?.dimmedView = nil
-        }
-
-        present(routineDeleteViewController, animated: true)
+        let routineCreationView = RoutineCreationViewController(
+            viewModel: routineCreationViewModel,
+            updateInfo: (routineId, isApplyToday ? .today : .tomorrow))
+        routineCreationView.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(routineCreationView, animated: true)
     }
 }
 
@@ -183,6 +173,42 @@ extension RoutineListViewController: RoutineCardViewDelegate {
 
     func routineCardView(_ sender: RoutineCardView, didTapEditButton routine: Routine) {
         viewModel.action(input: .seleteRoutine(routine: routine))
+
+        guard !routine.repeatDay.isEmpty else {
+            goToRoutineCreationView(routineId: routine.id)
+            return
+        }
+
+        dimmedView?.removeFromSuperview()
+
+        let newDimmedView = UIView()
+        newDimmedView.backgroundColor = .black.withAlphaComponent(0.7)
+        newDimmedView.frame = view.bounds
+        view.addSubview(newDimmedView)
+        dimmedView = newDimmedView
+
+        let routineEditAlertViewController = RoutineEditAlertViewController()
+        if let sheet = routineEditAlertViewController.sheetPresentationController {
+            sheet.prefersGrabberVisible = false
+            if #available(iOS 16.0, *) {
+                sheet.detents = [.custom { _ in 250 }]
+            } else {
+                sheet.detents = [.medium()]
+            }
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
+            sheet.preferredCornerRadius = 20
+        }
+
+        routineEditAlertViewController.onDismiss = { [weak self] in
+            self?.dimmedView?.removeFromSuperview()
+            self?.dimmedView = nil
+        }
+
+        routineEditAlertViewController.goToRoutineCreationView = { [weak self] isApplyToday in
+            self?.goToRoutineCreationView(routineId: routine.id, isApplyToday: isApplyToday)
+        }
+
+        present(routineEditAlertViewController, animated: true)
     }
     
     func routineCardView(_ sender: RoutineCardView, didTapDeleteButton routine: Routine) {
