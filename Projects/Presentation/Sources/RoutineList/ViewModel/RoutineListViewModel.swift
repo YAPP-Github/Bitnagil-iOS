@@ -14,18 +14,23 @@ final class RoutineListViewModel: ViewModel {
         case fetchRoutineList
         case fetchDailyRoutine
         case selectDate(date: Date)
+        case seleteRoutine(routine: Routine?)
+        case deleteRoutine(isDeleteAllRoutines: Bool)
     }
 
     struct Output {
         let fetchRoutinesResultPublisher: AnyPublisher<Bool, Never>
         let selectedDatePublisher: AnyPublisher<Date, Never>
         let routinesPublisher: AnyPublisher<[Routine], Never>
+        let deleteRoutineResultPublisher: AnyPublisher<Bool, Never>
     }
 
     private(set) var output: Output
     private let fetchRoutinesResultSubject = PassthroughSubject<Bool, Never>()
     private let selectedDateSubject = CurrentValueSubject<Date, Never>(Date())
     private let routinesSubject = CurrentValueSubject<[Routine], Never>([])
+    private let selectedRoutine = CurrentValueSubject<Routine?, Never>(nil)
+    private let deleteRoutineResultSubject = PassthroughSubject<Bool, Never>()
     private var routines: [String: [Routine]] = [:]
 
     private let calendar = Calendar.current
@@ -35,7 +40,8 @@ final class RoutineListViewModel: ViewModel {
         self.output = Output(
             fetchRoutinesResultPublisher: fetchRoutinesResultSubject.eraseToAnyPublisher(),
             selectedDatePublisher: selectedDateSubject.eraseToAnyPublisher(),
-            routinesPublisher: routinesSubject.eraseToAnyPublisher())
+            routinesPublisher: routinesSubject.eraseToAnyPublisher(),
+            deleteRoutineResultPublisher: deleteRoutineResultSubject.eraseToAnyPublisher())
     }
 
     func action(input: Input) {
@@ -49,6 +55,12 @@ final class RoutineListViewModel: ViewModel {
         case .selectDate(let date):
             selectedDateSubject.send(date)
             fetchDailyRoutine()
+
+        case .seleteRoutine(let routine):
+            selectedRoutine.value = routine
+
+        case .deleteRoutine(let isDeleteAllRoutines):
+            deleteRoutine(isDeleteAllRoutines: isDeleteAllRoutines)
         }
     }
 
@@ -89,5 +101,26 @@ final class RoutineListViewModel: ViewModel {
             return
         }
         routinesSubject.send(dailyRoutines)
+    }
+
+    private func deleteRoutine(isDeleteAllRoutines: Bool) {
+        guard let routineId = selectedRoutine.value?.id else {
+            deleteRoutineResultSubject.send(false)
+            return
+        }
+
+        Task {
+            do {
+                if isDeleteAllRoutines {
+                    try await routineRepository.deleteAllRoutine(routineId: routineId)
+                } else {
+                    try await routineRepository.deleteDailyRoutine(routineId: routineId)
+                }
+                deleteRoutineResultSubject.send(true)
+                fetchRoutines()
+            } catch {
+                deleteRoutineResultSubject.send(false)
+            }
+        }
     }
 }

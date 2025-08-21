@@ -11,17 +11,17 @@ enum RoutineEndpoint {
     case fetchRoutines(startDate: String, endDate: String)
     case updateRoutine(routine: RoutineCreationDTO)
     case deleteAllRoutine(routineId: String)
-    case deleteDailyRoutine(routine: DeleteRoutineDTO)
+    case deleteDailyRoutine(routineId: String)
     case updateRoutineCompletion(routines: RoutineCompletionListDTO)
 }
 
 extension RoutineEndpoint: Endpoint {
     var baseURL: String {
         switch self {
-        case .createRoutine, .updateRoutine, .fetchRoutines:
-            return AppProperties.baseURL + "/api/v2/routines"
-        default:
+        case .deleteAllRoutine:
             return AppProperties.baseURL + "/api/v1/routines"
+        default:
+            return AppProperties.baseURL + "/api/v2/routines"
         }
     }
 
@@ -31,8 +31,8 @@ extension RoutineEndpoint: Endpoint {
             "\(baseURL)/\(routineId)"
         case .deleteAllRoutine(let routineId):
             "\(baseURL)/\(routineId)"
-        case .deleteDailyRoutine:
-            "\(baseURL)/day"
+        case .deleteDailyRoutine(let routineId):
+            "\(baseURL)/day/\(routineId)"
         case .updateRoutineCompletion:
             "\(baseURL)/completions"
         default:
@@ -77,8 +77,6 @@ extension RoutineEndpoint: Endpoint {
         case .createRoutine(let routine):
             return routine.dictionary
         case .updateRoutine(let routine):
-            return routine.dictionary
-        case .deleteDailyRoutine(let routine):
             return routine.dictionary
         case .updateRoutineCompletion(let routines):
             return routines.dictionary

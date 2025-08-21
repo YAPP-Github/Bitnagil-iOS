@@ -27,6 +27,7 @@ final class RoutineListViewController: BaseViewController<RoutineListViewModel> 
     private let routineScrollView = UIScrollView()
     private let routineStackView = UIStackView()
     private var routineCardViews: [String: RoutineCardView] = [:]
+    private var dimmedView: UIView?
     private var cancellables: Set<AnyCancellable>
 
     init(viewModel: RoutineListViewModel, selectedDate: Date) {
@@ -43,6 +44,11 @@ final class RoutineListViewController: BaseViewController<RoutineListViewModel> 
     override func viewDidLoad() {
         super.viewDidLoad()
         viewModel.action(input: .fetchRoutineList)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        view.subviews.first(where: { $0.tag == 999 })?.removeFromSuperview()
     }
 
     override func configureAttribute() {
@@ -136,14 +142,98 @@ final class RoutineListViewController: BaseViewController<RoutineListViewModel> 
         routineScrollView.isHidden = routines.isEmpty
         for routine in routines {
             let routineCardView = RoutineCardView(routine: routine)
+            routineCardView.delegate = self
             routineCardViews[routine.id] = routineCardView
             routineStackView.addArrangedSubview(routineCardView)
         }
     }
+
+    private func showRoutineDeleteAlertView() {
+        let routineDeleteViewController = RoutineDeleteViewController(viewModel: viewModel)
+        if let sheet = routineDeleteViewController.sheetPresentationController {
+            sheet.prefersGrabberVisible = false
+            if #available(iOS 16.0, *) {
+                sheet.detents = [.custom { _ in 270 }]
+            } else {
+                sheet.detents = [.medium()]
+            }
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
+            sheet.preferredCornerRadius = 20
+        }
+
+        routineDeleteViewController.onDismiss = { [weak self] in
+            self?.dimmedView?.removeFromSuperview()
+            self?.dimmedView = nil
+        }
+
+        present(routineDeleteViewController, animated: true)
+    }
 }
 
+// MARK: WeekViewDelegate
 extension RoutineListViewController: WeekViewDelegate {
     func weekView(_ sender: WeekView, didSelectDate date: Date) {
         viewModel.action(input: .selectDate(date: date))
+    }
+}
+
+// MARK: RoutineCardViewDelegate
+extension RoutineListViewController: RoutineCardViewDelegate {
+    func routineCardView(_ sender: RoutineCardView, didTapPlusButton routine: RecommendedRoutine) { }
+
+    func routineCardView(_ sender: RoutineCardView, didTapEditButton routine: Routine) {
+        viewModel.action(input: .seleteRoutine(routine: routine))
+    }
+    
+    func routineCardView(_ sender: RoutineCardView, didTapDeleteButton routine: Routine) {
+        viewModel.action(input: .seleteRoutine(routine: routine))
+
+        dimmedView?.removeFromSuperview()
+
+        let newDimmedView = UIView()
+        newDimmedView.backgroundColor = .black.withAlphaComponent(0.7)
+        newDimmedView.frame = view.bounds
+        view.addSubview(newDimmedView)
+        dimmedView = newDimmedView
+
+        if routine.repeatDay.isEmpty {
+            let routineDeleteAlertViewController = RoutineDeleteAlertViewController(viewModel: viewModel, isDeleteAllRoutines: false)
+            if let sheet = routineDeleteAlertViewController.sheetPresentationController {
+                sheet.prefersGrabberVisible = false
+                if #available(iOS 16.0, *) {
+                    sheet.detents = [.custom { _ in 204 }]
+                } else {
+                    sheet.detents = [.medium()]
+                }
+                sheet.prefersScrollingExpandsWhenScrolledToEdge = false
+                sheet.preferredCornerRadius = 20
+            }
+
+            routineDeleteAlertViewController.onDismiss = { [weak self] in
+                self?.dimmedView?.removeFromSuperview()
+                self?.dimmedView = nil
+            }
+
+            present(routineDeleteAlertViewController, animated: true)
+        } else {
+            let routineDeleteViewController = RoutineDeleteViewController(viewModel: viewModel)
+            if let sheet = routineDeleteViewController.sheetPresentationController {
+                sheet.prefersGrabberVisible = false
+                if #available(iOS 16.0, *) {
+                    sheet.detents = [.custom { _ in 270 }]
+                } else {
+                    sheet.detents = [.medium()]
+                }
+                sheet.prefersScrollingExpandsWhenScrolledToEdge = false
+                sheet.preferredCornerRadius = 20
+            }
+
+            routineDeleteViewController.onDismiss = { [weak self] in
+                self?.dimmedView?.removeFromSuperview()
+                self?.dimmedView = nil
+            }
+
+            present(routineDeleteViewController, animated: true)
+        }
     }
 }

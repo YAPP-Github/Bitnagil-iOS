@@ -74,8 +74,26 @@ final class RoutineCardView: UIView {
         titleLabel.textColor = BitnagilColor.gray10
 
         editButton.setImage(BitnagilIcon.editIcon, for: .normal)
+        editButton.addAction(
+            UIAction { [weak self] _ in
+                guard
+                    let self,
+                    let routine = self.routine as? Routine
+                else { return }
+                self.delegate?.routineCardView(self, didTapEditButton: routine)
+            },
+            for: .touchUpInside)
 
         deleteButton.setImage(BitnagilIcon.trashIcon, for: .normal)
+        deleteButton.addAction(
+            UIAction { [weak self] _ in
+                guard
+                    let self,
+                    let routine = self.routine as? Routine
+                else { return }
+                self.delegate?.routineCardView(self, didTapDeleteButton: routine)
+            },
+            for: .touchUpInside)
 
         let plusImage = BitnagilIcon.plusIcon?
             .resizeAspectFit(to: CGSize(width: Layout.plusImageSize, height: Layout.plusImageSize))
@@ -88,7 +106,8 @@ final class RoutineCardView: UIView {
                     let routine = self.routine as? RecommendedRoutine
                 else { return }
                 self.delegate?.routineCardView(self, didTapPlusButton: routine)
-            }, for: .touchUpInside)
+            },
+            for: .touchUpInside)
 
         routineInfoStackView.axis = .vertical
         routineInfoStackView.spacing = Layout.routineInfoStackViewSpacing

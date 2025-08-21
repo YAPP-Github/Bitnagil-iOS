@@ -86,7 +86,6 @@ final class HomeView: BaseViewController<HomeViewModel> {
     private let dimmedView = UIView()
     private let floatingButton = FloatingButton()
     private let floatingMenu = FloatingMenuView()
-    private var bottomSheet: CustomBottomSheet?
 
     private var contentViewTopConstraint: Constraint?
     private var cancellables: Set<AnyCancellable>

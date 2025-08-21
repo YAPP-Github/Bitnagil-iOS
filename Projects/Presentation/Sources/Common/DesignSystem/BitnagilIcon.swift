@@ -86,6 +86,7 @@ enum BitnagilIcon {
     // MARK: - Routine List Icons
     static let editIcon = UIImage(named: "edit_icon", in: bundle, with: nil)
     static let trashIcon = UIImage(named: "trash_icon", in: bundle, with: nil)
+    static let closeIcon = UIImage(named: "close_icon", in: bundle, with: nil)
 }
 
 enum Direction {
