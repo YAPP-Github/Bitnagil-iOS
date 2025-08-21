@@ -18,8 +18,6 @@ final class HomeViewModel: ViewModel {
         case selectRoutineListDate
         case fetchRoutines
         case selectRoutine(routine: Routine?)
-        case deleteDailyRoutine
-        case deleteAllRoutine
         case updateRoutineCompletion(updatedRoutine: Routine)
         case refreshSelectedDateRoutine
     }
@@ -31,7 +29,6 @@ final class HomeViewModel: ViewModel {
         let routineListDatePublisher: AnyPublisher<Date, Never>
         let fetchRoutineResultPublisher: AnyPublisher<Bool, Never>
         let routinesPublisher: AnyPublisher<[Routine], Never>
-        let deleteRoutineResultPublisher: AnyPublisher<Bool, Never>
         let updateRoutineCompletionResultPublisher: AnyPublisher<Bool, Never>
     }
 
@@ -44,7 +41,6 @@ final class HomeViewModel: ViewModel {
     private let fetchRoutineResultSubject = PassthroughSubject<Bool, Never>()
     private let routinesSubject = CurrentValueSubject<[Routine], Never>([])
     private let selectedRoutineSubject = CurrentValueSubject<Routine?, Never>(nil)
-    private let deleteRoutineResultSubject = PassthroughSubject<Bool, Never>()
     private let updateRoutineCompletionResultSubject = PassthroughSubject<Bool, Never>()
 
     private let calendar = Calendar.current
@@ -70,7 +66,6 @@ final class HomeViewModel: ViewModel {
             routineListDatePublisher: routineListDateSubject.eraseToAnyPublisher(),
             fetchRoutineResultPublisher: fetchRoutineResultSubject.eraseToAnyPublisher(),
             routinesPublisher: routinesSubject.eraseToAnyPublisher(),
-            deleteRoutineResultPublisher: deleteRoutineResultSubject.eraseToAnyPublisher(),
             updateRoutineCompletionResultPublisher: updateRoutineCompletionResultSubject.eraseToAnyPublisher()
         )
     }
@@ -98,12 +93,6 @@ final class HomeViewModel: ViewModel {
 
         case .selectRoutine(let routine):
             selectedRoutineSubject.send(routine)
-
-        case .deleteDailyRoutine:
-            deleteDailyRoutine()
-
-        case .deleteAllRoutine:
-            deleteAllRoutine()
 
         case .updateRoutineCompletion(let updatedRoutine):
             updateRoutineCompletion(updatedRoutine: updatedRoutine)
@@ -207,51 +196,6 @@ final class HomeViewModel: ViewModel {
                 // TODO: 에러 처리
             }
         }
-    }
-
-    // 반복 루틴을 삭제합니다.
-    private func deleteAllRoutine() {
-        guard let routineId = selectedRoutineSubject.value?.id
-        else { return }
-
-        Task {
-            do {
-                try await routineUseCase.deleteAllRoutine(routineId: routineId)
-                selectedRoutineSubject.send(nil)
-                deleteRoutineResultSubject.send(true)
-                fetchRoutines()
-            } catch {
-                deleteRoutineResultSubject.send(false)
-            }
-        }
-    }
-
-    // 당일 루틴을 삭제합니다.
-    private func deleteDailyRoutine() {
-        /*
-        guard let routine = selectedRoutineSubject.value
-        else { return }
-
-        let deleteSubRoutineEntity = routine.subRoutines.map({
-            DeleteSubRoutineEntity(subRoutineId: $0.id, routineCompletionId: $0.completionId) })
-        let deleteRoutinEntity = DeleteRoutineEntity(
-            routineId: routine.id,
-            routineCompletionId: routine.completionId,
-            historySeq: routine.historySeq,
-            performedDate: selectedDateSubject.value.convertToString(dateType: .yearMonthDate),
-            routineType: routine.routineType,
-            subRoutineInfosForDelete: deleteSubRoutineEntity)
-
-        Task {
-            do {
-                try await routineUseCase.deleteDailyRoutine(routine: deleteRoutinEntity)
-                deleteRoutineResultSubject.send(true)
-                fetchRoutines()
-            } catch {
-                deleteRoutineResultSubject.send(false)
-            }
-        }
-         */
     }
 
     // 루틴의 완료 여부를 업데이트 합니다.

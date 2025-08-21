@@ -8,7 +8,6 @@
 import Domain
 
 extension OnboardingType {
-    
     var step: Int {
         switch self {
         case .time: 1

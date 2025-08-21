@@ -122,20 +122,20 @@ final class RoutineCardView: UIView {
             subRoutineLabel.text = "세부 루틴"
             subRoutineLabel.font = BitnagilFont(style: .body2, weight: .medium).font
             subRoutineLabel.textColor = BitnagilColor.gray40
+            subRoutineStackView.addArrangedSubview(subRoutineLabel)
             subRoutineLabel.snp.makeConstraints { make in
                 make.height.equalTo(Layout.subLabelHeight)
             }
-            subRoutineStackView.addArrangedSubview(subRoutineLabel)
 
             routine.subRoutines.forEach {
                 let subRoutineTitleLabel = UILabel()
                 subRoutineTitleLabel.text = "• \($0)"
                 subRoutineTitleLabel.font = BitnagilFont(style: .body2, weight: .medium).font
                 subRoutineTitleLabel.textColor = BitnagilColor.gray40
+                subRoutineStackView.addArrangedSubview(subRoutineTitleLabel)
                 subRoutineTitleLabel.snp.makeConstraints { make in
                     make.height.equalTo(Layout.subLabelHeight)
                 }
-                subRoutineStackView.addArrangedSubview(subRoutineTitleLabel)
             }
         } else {
             grayLine.isHidden = true
@@ -154,11 +154,10 @@ final class RoutineCardView: UIView {
             repeatDayLabel.text = "반복: \(repeatDayText)"
             repeatDayLabel.font = BitnagilFont(style: .body2, weight: .medium).font
             repeatDayLabel.textColor = BitnagilColor.gray40
+            infoStackView.addArrangedSubview(repeatDayLabel)
             repeatDayLabel.snp.makeConstraints { make in
                 make.height.equalTo(Layout.subLabelHeight)
             }
-            infoStackView.addArrangedSubview(repeatDayLabel)
-
 
             // 기간
             let periodLabel = UILabel()
@@ -168,11 +167,10 @@ final class RoutineCardView: UIView {
             periodLabel.text = "기간: \(periodText)"
             periodLabel.font = BitnagilFont(style: .body2, weight: .medium).font
             periodLabel.textColor = BitnagilColor.gray40
+            infoStackView.addArrangedSubview(periodLabel)
             periodLabel.snp.makeConstraints { make in
                 make.height.equalTo(Layout.subLabelHeight)
             }
-            infoStackView.addArrangedSubview(periodLabel)
-
 
             // 시간
             let timeLabel = UILabel()
@@ -180,10 +178,10 @@ final class RoutineCardView: UIView {
             timeLabel.text = "시간: \(textTime)"
             timeLabel.font = BitnagilFont(style: .body2, weight: .medium).font
             timeLabel.textColor = BitnagilColor.gray40
+            infoStackView.addArrangedSubview(timeLabel)
             timeLabel.snp.makeConstraints { make in
                 make.height.equalTo(Layout.subLabelHeight)
             }
-            infoStackView.addArrangedSubview(timeLabel)
         } else {
             grayLine2.isHidden = true
             infoStackView.isHidden = true
@@ -212,7 +210,7 @@ final class RoutineCardView: UIView {
 
         plusButton.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(Layout.plusButtonTopSpacing)
-            make.trailing.equalToSuperview().inset(Layout.buttonTrailingSpacing)
+            make.trailing.equalToSuperview().offset(-Layout.buttonTrailingSpacing)
             make.size.equalTo(Layout.plusButtonSize)
         }
 
@@ -242,7 +240,7 @@ final class RoutineCardView: UIView {
 
             editButton.snp.makeConstraints { make in
                 make.top.equalToSuperview().offset(Layout.plusButtonTopSpacing)
-                make.trailing.equalTo(deleteButton).inset(Layout.editButtonTrailingSpacing)
+                make.trailing.equalTo(deleteButton).offset(-Layout.editButtonTrailingSpacing)
                 make.size.equalTo(Layout.plusButtonSize)
             }
 

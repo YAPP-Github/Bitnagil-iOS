@@ -172,7 +172,7 @@ extension RoutineListViewController: RoutineCardViewDelegate {
     func routineCardView(_ sender: RoutineCardView, didTapPlusButton routine: RecommendedRoutine) { }
 
     func routineCardView(_ sender: RoutineCardView, didTapEditButton routine: Routine) {
-        viewModel.action(input: .seleteRoutine(routine: routine))
+        viewModel.action(input: .selectRoutine(routine: routine))
 
         guard !routine.repeatDay.isEmpty else {
             goToRoutineCreationView(routineId: routine.id)
@@ -212,7 +212,7 @@ extension RoutineListViewController: RoutineCardViewDelegate {
     }
     
     func routineCardView(_ sender: RoutineCardView, didTapDeleteButton routine: Routine) {
-        viewModel.action(input: .seleteRoutine(routine: routine))
+        viewModel.action(input: .selectRoutine(routine: routine))
 
         dimmedView?.removeFromSuperview()
 

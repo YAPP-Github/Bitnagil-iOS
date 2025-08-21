@@ -14,7 +14,7 @@ final class RoutineListViewModel: ViewModel {
         case fetchRoutineList
         case fetchDailyRoutine
         case selectDate(date: Date)
-        case seleteRoutine(routine: Routine?)
+        case selectRoutine(routine: Routine?)
         case deleteRoutine(isDeleteAllRoutines: Bool)
     }
 
@@ -56,7 +56,7 @@ final class RoutineListViewModel: ViewModel {
             selectedDateSubject.send(date)
             fetchDailyRoutine()
 
-        case .seleteRoutine(let routine):
+        case .selectRoutine(let routine):
             selectedRoutine.value = routine
 
         case .deleteRoutine(let isDeleteAllRoutines):

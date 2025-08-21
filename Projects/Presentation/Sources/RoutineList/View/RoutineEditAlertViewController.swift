@@ -58,7 +58,7 @@ final class RoutineEditAlertViewController: UIViewController {
         applyTodayButton.addAction(
             UIAction { [weak self] _ in
                 self?.dismiss(animated: true) {
-                    self?.goToRoutineCreationView?(false)
+                    self?.goToRoutineCreationView?(true)
                 }
             },
             for: .touchUpInside)
