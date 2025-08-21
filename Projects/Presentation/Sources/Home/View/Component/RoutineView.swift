@@ -11,19 +11,27 @@ import UIKit
 
 final class RoutineView: UIView {
     private enum Layout {
-        static let timeLabelHeight: CGFloat = 20
+        static let horizontalMargin: CGFloat = 16
+        static let routineContentStackViewSpacing: CGFloat = 10
+        static let routineContentStackViewVerticalMargin: CGFloat = 10
+        static let timeLabelWidth: CGFloat = 42
+        static let containerViewLeadingSpacing: CGFloat = 8
+        static let mainRoutineViewHeight: CGFloat = 28
+        static let mainRoutineLabelTrailingSpacing: CGFloat = 10
+        static let mainRoutineCheckButtonSize: CGFloat = 28
+        static let grayLineHeight: CGFloat = 1
+        static let subRoutineViewHeight: CGFloat = 24
+        static let subRoutineLabelLeadingSpacing: CGFloat = 10
+        static let subRoutineCheckButtonSize: CGFloat = 24
     }
 
     private let timeLabel = UILabel()
     private let containerView = UIView()
+    private let routineContentStackView = UIStackView()
     private let mainRoutineView = UIView()
     private let mainRoutineLabel = UILabel()
     private let mainRoutineCheckButton = UIButton()
     private let grayLine = UIView()
-    private let subRoutineStackView = UIStackView()
-
-    private var isLayoutConfigured: Bool = false
-    private var mainRoutineHeightConstraint: Constraint?
     private var routine: Routine {
         didSet {
             updateRoutineState()
@@ -41,36 +49,30 @@ final class RoutineView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func layoutSubviews() {
-        super.layoutSubviews()
-
-        guard !isLayoutConfigured else { return }
-        isLayoutConfigured = true
-    }
-
-    override var intrinsicContentSize: CGSize {
-        var baseHeight: CGFloat = 56
-        if !routine.subRoutines.isEmpty {
-            baseHeight = 100
-            baseHeight += (34.0 * CGFloat(routine.subRoutines.count - 1))
-        }
-        return CGSize(width: UIView.noIntrinsicMetric, height: baseHeight)
-    }
-
     private func configureAttribute() {
-        timeLabel.text = routine.startTime.convertToString(dateType: .time24hour)
+        var timeLabelText = routine.startTime.convertToString(dateType: .time24hour)
+        if timeLabelText == "00:00" {
+            timeLabelText = "하루 종일"
+        }
+        timeLabel.text = timeLabelText
         timeLabel.font = BitnagilFont(style: .body2, weight: .medium).font
         timeLabel.textColor = BitnagilColor.gray10
+        timeLabel.numberOfLines = 2
 
         containerView.backgroundColor = .white
         containerView.layer.masksToBounds = true
         containerView.layer.cornerRadius = 12
 
+        routineContentStackView.axis = .vertical
+        routineContentStackView.spacing = Layout.routineContentStackViewSpacing
+
         mainRoutineLabel.text = routine.title
         mainRoutineLabel.font = BitnagilFont(style: .body1, weight: .semiBold).font
         mainRoutineLabel.textColor = BitnagilColor.gray10
+        mainRoutineLabel.numberOfLines = 0
 
-        mainRoutineCheckButton.setImage(BitnagilIcon.uncheckedCircleIcon, for: .normal)
+        let mainRoutineCheckIcon = routine.isDone ? BitnagilIcon.checkedCircleIcon : BitnagilIcon.uncheckedCircleIcon
+        mainRoutineCheckButton.setImage(mainRoutineCheckIcon, for: .normal)
         mainRoutineCheckButton.addAction(
             UIAction { [weak self] _ in
                 guard let self else { return }
@@ -82,9 +84,6 @@ final class RoutineView: UIView {
 
         grayLine.backgroundColor = BitnagilColor.gray97
         grayLine.isHidden = routine.subRoutines.isEmpty
-
-        subRoutineStackView.axis = .vertical
-        subRoutineStackView.spacing = 10
     }
 
     private func configureLayout() {
@@ -94,58 +93,53 @@ final class RoutineView: UIView {
         [mainRoutineLabel, mainRoutineCheckButton].forEach {
             mainRoutineView.addSubview($0)
         }
-        containerView.addSubview(mainRoutineView)
-        containerView.addSubview(grayLine)
-        containerView.addSubview(subRoutineStackView)
+
+        [mainRoutineView, grayLine].forEach {
+            routineContentStackView.addArrangedSubview($0)
+        }
+
+        for subRoutine in zip(routine.subRoutines, routine.subRoutineCompleted) {
+            let subRoutineView = makeSubRoutineView(subRoutine: subRoutine)
+            routineContentStackView.addArrangedSubview(subRoutineView)
+        }
+
+        containerView.addSubview(routineContentStackView)
 
         timeLabel.snp.makeConstraints { make in
             make.top.leading.equalToSuperview()
-            make.height.equalTo(20)
+            make.width.equalTo(Layout.timeLabelWidth)
         }
 
         containerView.snp.makeConstraints { make in
             make.top.trailing.bottom.equalToSuperview()
-            make.leading.equalTo(timeLabel.snp.trailing).offset(8)
+            make.leading.equalTo(timeLabel.snp.trailing).offset(Layout.containerViewLeadingSpacing)
+        }
+
+        routineContentStackView.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(Layout.horizontalMargin)
+            make.trailing.equalToSuperview().inset(Layout.horizontalMargin)
+            make.top.equalToSuperview().offset(Layout.routineContentStackViewVerticalMargin)
+            make.bottom.equalToSuperview().inset(Layout.routineContentStackViewVerticalMargin)
         }
 
         mainRoutineView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(8)
-            make.leading.equalToSuperview().offset(16)
-            make.trailing.equalToSuperview().inset(8)
-            make.height.equalTo(40)
+            make.height.greaterThanOrEqualTo(Layout.mainRoutineViewHeight)
         }
 
         mainRoutineLabel.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
             make.leading.equalToSuperview()
-            make.width.equalTo(211)
+            make.trailing.equalTo(mainRoutineCheckButton.snp.leading).offset(-Layout.mainRoutineLabelTrailingSpacing)
         }
 
         mainRoutineCheckButton.snp.makeConstraints { make in
-            make.leading.equalTo(mainRoutineLabel.snp.trailing).offset(10)
-            mainRoutineHeightConstraint = make.height.equalTo(40).constraint
-            make.size.equalTo(40)
+            make.centerY.equalToSuperview()
+            make.trailing.equalToSuperview()
+            make.size.equalTo(Layout.mainRoutineCheckButtonSize)
         }
 
         grayLine.snp.makeConstraints { make in
-            make.top.equalTo(mainRoutineView.snp.bottom).offset(4)
-            make.leading.equalToSuperview().offset(16)
-            make.trailing.equalToSuperview().inset(16)
-            make.height.equalTo(1)
-        }
-
-        for subRoutine in zip(routine.subRoutines, routine.subRoutineCompleted) {
-            let subRoutineView = makeSubRoutineView(subRoutine: subRoutine)
-            subRoutineView.snp.makeConstraints { make in
-                make.height.equalTo(24)
-            }
-            subRoutineStackView.addArrangedSubview(subRoutineView)
-        }
-
-        subRoutineStackView.snp.makeConstraints { make in
-            make.top.equalTo(grayLine.snp.bottom).offset(10)
-            make.leading.equalToSuperview().offset(16)
-            make.trailing.equalToSuperview().inset(16)
+            make.height.equalTo(Layout.grayLineHeight)
         }
     }
 
@@ -157,22 +151,28 @@ final class RoutineView: UIView {
         subRoutineView.addSubview(checkButton)
         subRoutineView.addSubview(subRoutineLabel)
 
-        let checkedIcon = BitnagilIcon.checkedCircleSmallIcon
-        let uncheckedIcon = BitnagilIcon.uncheckedCircleSmallIcon
-        checkButton.setImage(subRoutine.isDone ? checkedIcon : uncheckedIcon, for: .normal)
-
-        checkButton.snp.makeConstraints { make in
-            make.top.leading.equalToSuperview()
-            make.size.equalTo(24)
-        }
+        let subRoutineCheckIcon = subRoutine.isDone ? BitnagilIcon.checkedCircleSmallIcon : BitnagilIcon.uncheckedCircleSmallIcon
+        checkButton.setImage(subRoutineCheckIcon, for: .normal)
 
         subRoutineLabel.text = subRoutine.title
         subRoutineLabel.font = BitnagilFont(style: .body2, weight: .medium).font
         subRoutineLabel.textColor = BitnagilColor.gray40
+        subRoutineLabel.numberOfLines = 0
+
+        checkButton.snp.makeConstraints { make in
+            make.leading.equalToSuperview()
+            make.centerY.equalTo(subRoutineLabel)
+            make.size.equalTo(Layout.subRoutineCheckButtonSize)
+        }
 
         subRoutineLabel.snp.makeConstraints { make in
-            make.leading.equalTo(checkButton.snp.trailing).offset(10)
-            make.centerY.equalToSuperview()
+            make.leading.equalTo(checkButton.snp.trailing).offset(Layout.subRoutineLabelLeadingSpacing)
+            make.trailing.equalToSuperview()
+            make.verticalEdges.equalToSuperview()
+        }
+
+        subRoutineView.snp.makeConstraints { make in
+            make.height.greaterThanOrEqualTo(Layout.subRoutineViewHeight)
         }
 
         return subRoutineView
