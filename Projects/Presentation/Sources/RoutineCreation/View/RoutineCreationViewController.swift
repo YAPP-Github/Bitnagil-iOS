@@ -108,9 +108,14 @@ final class RoutineCreationViewController: BaseViewController<RoutineCreationVie
         let attributes: [NSAttributedString.Key: Any] = [
             .font: BitnagilFont(style: .title3, weight: .semiBold).font,
             .foregroundColor: BitnagilColor.gray90 ?? .systemGray]
+        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tap.cancelsTouchesInView = false
+        tap.delegate = self
 
         view.backgroundColor = .white
+        view.addGestureRecognizer(tap)
 
+        scrollView.keyboardDismissMode = .interactive
         nameTextField.attributedPlaceholder = NSAttributedString(string: "루틴 제목을 입력해주세요.", attributes: attributes)
         nameTextField.font = BitnagilFont(style: .title3, weight: .semiBold).font
         nameTextField.textColor = BitnagilColor.gray10
@@ -132,6 +137,7 @@ final class RoutineCreationViewController: BaseViewController<RoutineCreationVie
         registerButton.addAction(
             UIAction { [weak self] _ in
                 self?.viewModel.action(input: .registerRoutine)
+                self?.navigationController?.popViewController(animated: true)
             },
             for: .touchUpInside)
         bindCreationCardViews()
@@ -335,6 +341,10 @@ final class RoutineCreationViewController: BaseViewController<RoutineCreationVie
         }
     }
 
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
+    }
+
     @objc private func textFieldEditingChanged(_ sender: UITextField) {
         viewModel.action(input: .configureName(name: sender.text ?? ""))
     }
@@ -365,5 +375,11 @@ extension RoutineCreationViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
+    }
+}
+
+extension RoutineCreationViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        return !(touch.view is UIControl)
     }
 }

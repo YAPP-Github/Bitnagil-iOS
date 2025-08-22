@@ -46,12 +46,12 @@ final class RoutineCreationViewModel: ViewModel {
 
     private(set) var output: Output
     private let nameSubject = CurrentValueSubject<String?, Never>("")
-    private let subRoutinesSubject = CurrentValueSubject<[String], Never>([])
+    private let subRoutinesSubject = CurrentValueSubject<[String], Never>(["", "", ""])
     private let repeatTypeSubject = CurrentValueSubject<RepeatType?, Never>(nil)
     private let periodStartSubject = CurrentValueSubject<Date?, Never>(nil)
     private let periodEndSubject   = CurrentValueSubject<Date?, Never>(nil)
     private let executionTimeSubject = CurrentValueSubject<ExecutionTime, Never>(.init(startAt: nil))
-    private let checkRoutinePublisher = PassthroughSubject<Bool, Never>()
+    private let checkRoutinePublisher = CurrentValueSubject<Bool, Never>(false)
     private let routineUseCase: RoutineUseCaseProtocol
     private let recommenededRoutineUseCase: RecommendedRoutineUseCaseProtocol
     private var deletedSubroutines = Set<SubRoutineSummaryEntity>()
@@ -62,7 +62,7 @@ final class RoutineCreationViewModel: ViewModel {
     init(routineUseCase: RoutineUseCaseProtocol, recommenededRoutineUseCase: RecommendedRoutineUseCaseProtocol) {
         self.routineUseCase = routineUseCase
         self.recommenededRoutineUseCase = recommenededRoutineUseCase
-
+        
         output = Output(
             namePublisher: nameSubject.eraseToAnyPublisher(),
             subRoutinesPublisher: subRoutinesSubject.eraseToAnyPublisher(),
@@ -75,6 +75,8 @@ final class RoutineCreationViewModel: ViewModel {
                 .map { $0.startAt }
                 .eraseToAnyPublisher(),
             isRoutineValid: checkRoutinePublisher.eraseToAnyPublisher())
+        
+        updateIsRoutineValid()
     }
 
     func action(input: Input) {
