@@ -454,6 +454,13 @@ final class HomeViewController: BaseViewController<HomeViewModel> {
                 self.navigationController?.pushViewController(routineListViewController, animated: true)
             }
             .store(in: &cancellables)
+
+        viewModel.output.allCompletedRoutineDatePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] allCompletedDates in
+                self?.weekView.updateAllCompletedState(allCompletedDates: allCompletedDates)
+            }
+            .store(in: &cancellables)
     }
 
     // 해당 날짜의 Routine View를 설정합니다. (없다면 EmptyView)

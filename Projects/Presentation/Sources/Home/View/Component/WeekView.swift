@@ -24,6 +24,7 @@ final class WeekView: UIView {
     private var dateViews: [Date: DateView] = [:]
     private let calendar = Calendar.current
     private var selectedDate: Date
+    private var allCompletedDates: [Date] = []
     weak var delegate: WeekViewDelegate?
 
     init(date: Date = Date()) {
@@ -88,6 +89,10 @@ final class WeekView: UIView {
                 isSelected: isSelected,
                 isToday: isToday)
 
+            let isAllCompleted = allCompletedDates.contains(date)
+            if isAllCompleted {
+                dateView.updateAllCompleted()
+            }
             dateView.didTapDateButton = { [weak self] date in
                 self?.selectDate(date: date)
             }
@@ -96,6 +101,15 @@ final class WeekView: UIView {
             dateStackView.addArrangedSubview(dateView)
             dateView.snp.makeConstraints { make in
                 make.height.equalTo(Layout.dateViewHeight)
+            }
+        }
+    }
+
+    func updateAllCompletedState(allCompletedDates: [Date]) {
+        self.allCompletedDates = allCompletedDates
+        for dateView in dateViews {
+            if allCompletedDates.contains(dateView.key) {
+                dateView.value.updateAllCompleted()
             }
         }
     }

@@ -30,11 +30,12 @@ final class HomeViewModel: ViewModel {
         let fetchRoutineResultPublisher: AnyPublisher<Bool, Never>
         let routinesPublisher: AnyPublisher<[Routine], Never>
         let updateRoutineCompletionResultPublisher: AnyPublisher<Bool, Never>
+        let allCompletedRoutineDatePublisher: AnyPublisher<[Date], Never>
     }
 
     private(set) var output: Output
     private var routines: [String: [Routine]] = [:]
-    private var routineCompleted: [String: Bool] = [:]
+    private var routinesCompleted: [String: Bool] = [:]
     private let nicknameSubject = CurrentValueSubject<String, Never>("")
     private let emotionSubject = CurrentValueSubject<Emotion?, Never>(nil)
     private let selectedDateSubject = CurrentValueSubject<Date, Never>(.now)
@@ -43,6 +44,7 @@ final class HomeViewModel: ViewModel {
     private let routinesSubject = CurrentValueSubject<[Routine], Never>([])
     private let selectedRoutineSubject = CurrentValueSubject<Routine?, Never>(nil)
     private let updateRoutineCompletionResultSubject = PassthroughSubject<Bool, Never>()
+    private let allCompletedRoutineDateSubject = CurrentValueSubject<[Date], Never>([])
 
     private let calendar = Calendar.current
     private let today = Date()
@@ -67,8 +69,8 @@ final class HomeViewModel: ViewModel {
             routineListDatePublisher: routineListDateSubject.eraseToAnyPublisher(),
             fetchRoutineResultPublisher: fetchRoutineResultSubject.eraseToAnyPublisher(),
             routinesPublisher: routinesSubject.eraseToAnyPublisher(),
-            updateRoutineCompletionResultPublisher: updateRoutineCompletionResultSubject.eraseToAnyPublisher()
-        )
+            updateRoutineCompletionResultPublisher: updateRoutineCompletionResultSubject.eraseToAnyPublisher(),
+            allCompletedRoutineDatePublisher: allCompletedRoutineDateSubject.eraseToAnyPublisher())
     }
 
     func action(input: Input) {
@@ -132,16 +134,41 @@ final class HomeViewModel: ViewModel {
     // MARK: - 날짜
     private func moveWeek(by week: Int) {
         let currentDate = selectedDateSubject.value
-        guard let weekStartDate = calendar.date(byAdding: .weekOfYear, value: week, to: currentDate)
+        guard let nextWeekDate = calendar.date(byAdding: .weekOfYear, value: week, to: currentDate)
         else { return }
+        let weekStartDate = calculateWeekStartDate(for: nextWeekDate)
         selectedDateSubject.send(weekStartDate)
         fetchDailyRoutine(for: weekStartDate)
+        fetchAllCompletedRoutine()
+    }
+
+    // 현재 주의 첫째 날(월요일)을 계산해줍니다.
+    private func calculateWeekStartDate(for date: Date) -> Date {
+        let weekday = calendar.component(.weekday, from: date)
+        let daysFromMonday = (weekday == 1) ? 6 : weekday - 2
+        return calendar.date(byAdding: .day, value: -daysFromMonday, to: date) ?? date
     }
 
     // 날짜를 선택하고 그 날에 해당하는 루틴을 불러옵니다.
     private func selectDate(date: Date) {
         selectedDateSubject.send(date)
         fetchDailyRoutine(for: date)
+    }
+
+    private func fetchAllCompletedRoutine() {
+        let selectedDate = selectedDateSubject.value
+        let weekStartDate = calculateWeekStartDate(for: selectedDate)
+        var allCompletedDates: [Date] = []
+        for i in 0..<7 {
+            guard let date = calendar.date(byAdding: .day, value: i, to: weekStartDate)
+            else { continue }
+            guard
+                let isAllCompleted = routinesCompleted[date.convertToString(dateType: .yearMonthDate)],
+                isAllCompleted
+            else { continue }
+            allCompletedDates.append(date)
+        }
+        allCompletedRoutineDateSubject.send(allCompletedDates)
     }
 
     // MARK: - 루틴
@@ -163,8 +190,9 @@ final class HomeViewModel: ViewModel {
                     let routineEntities = values.routines
                     let allCompleted = values.allCompleted
                     routines[date] = routineEntities.map({ $0.toRoutine() })
-                    routineCompleted[date] = allCompleted
+                    routinesCompleted[date] = allCompleted
                 }
+                fetchAllCompletedRoutine()
                 fetchRoutineResultSubject.send(true)
             } catch {
                 fetchRoutineResultSubject.send(false)
@@ -218,6 +246,7 @@ final class HomeViewModel: ViewModel {
         Task {
             fetchRoutines(startDate: selectedDate, endDate: selectedDate)
             fetchDailyRoutine(for: selectedDate)
+            fetchAllCompletedRoutine()
         }
     }
 
