@@ -16,11 +16,13 @@ final class DateView: UIView {
         static let dateButtonTopSpacing: CGFloat = 7
         static let dateButtonSize: CGFloat = 30
         static let dateLabelHeight: CGFloat = 17
+        static let allCompletedIconTopSpacing: CGFloat = 5
     }
 
     private let dayLabel = UILabel()
     private let dateButton = UIButton()
     private let dateLabel = UILabel()
+    private let allCompletedIcon = UIImageView()
     private let date: Date
     private let isToday: Bool
     private var isSelected: Bool {
@@ -28,7 +30,7 @@ final class DateView: UIView {
             updateAttribute()
         }
     }
-    var didTappedDateButton: ((Date) -> Void)?
+    var didTapDateButton: ((Date) -> Void)?
 
     init(
         date: Date,
@@ -66,12 +68,16 @@ final class DateView: UIView {
         dateLabel.text = "\(date.convertToString(dateType: .date))"
         dateLabel.font = BitnagilFont(style: .body2, weight: .medium).font
         dateLabel.textColor = BitnagilColor.gray70
+
+        allCompletedIcon.image = BitnagilIcon.asteriskIcon
+        allCompletedIcon.isHidden = true
     }
 
     private func configureLayout() {
         addSubview(dayLabel)
         addSubview(dateButton)
         dateButton.addSubview(dateLabel)
+        addSubview(allCompletedIcon)
 
         dayLabel.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
@@ -88,6 +94,11 @@ final class DateView: UIView {
         dateLabel.snp.makeConstraints { make in
             make.center.equalToSuperview()
             make.height.equalTo(Layout.dateLabelHeight)
+        }
+
+        allCompletedIcon.snp.makeConstraints { make in
+            make.top.equalTo(dateButton.snp.bottom).offset(Layout.allCompletedIconTopSpacing)
+            make.centerX.equalToSuperview()
         }
     }
 
@@ -106,10 +117,14 @@ final class DateView: UIView {
     }
 
     private func selectDate() {
-        didTappedDateButton?(date)
+        didTapDateButton?(date)
     }
 
     func updateSelectState(isSelected: Bool) {
         self.isSelected = isSelected
+    }
+
+    func updateAllCompleted() {
+        allCompletedIcon.isHidden.toggle()
     }
 }

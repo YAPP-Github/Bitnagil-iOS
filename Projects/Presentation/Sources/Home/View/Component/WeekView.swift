@@ -88,7 +88,7 @@ final class WeekView: UIView {
                 isSelected: isSelected,
                 isToday: isToday)
 
-            dateView.didTappedDateButton = { [weak self] date in
+            dateView.didTapDateButton = { [weak self] date in
                 self?.selectDate(date: date)
             }
             

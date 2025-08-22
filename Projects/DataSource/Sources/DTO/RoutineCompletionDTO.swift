@@ -6,13 +6,11 @@
 //
 
 struct RoutineCompletionListDTO: Encodable {
-    let performedDate: String
     let routineCompletionInfos: [RoutineCompletionDTO]
 }
 
 struct RoutineCompletionDTO: Encodable {
     let routineId: String
-    let completeYn: Bool
-    let historySeq: Int
-    let routineType: String
+    let routineCompleteYn: Bool
+    let subRoutineCompleteYn: [Bool]
 }

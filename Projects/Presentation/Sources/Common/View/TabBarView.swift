@@ -48,7 +48,7 @@ final public class TabBarView: UITabBarController {
         guard let mypageViewModel = DIContainer.shared.resolve(type: MypageViewModel.self)
         else { fatalError("mypageViewModel 의존성이 등록되지 않았습니다.") }
 
-        let homeView = HomeView(viewModel: homeViewModel)
+        let homeView = HomeViewController(viewModel: homeViewModel)
         let recommendView = RecommendedRoutineViewController(viewModel: recommendedRoutineViewModel)
         let mypageView = MypageView(viewModel: mypageViewModel)
 

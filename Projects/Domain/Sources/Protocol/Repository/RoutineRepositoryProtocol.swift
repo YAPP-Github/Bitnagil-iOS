@@ -38,5 +38,5 @@ public protocol RoutineRepositoryProtocol {
 
     /// 루틴 완료 여부를 업데이트 합니다.
     /// - Parameter routines: 완료 여부를 업데이트할 루틴 배열
-    func updateRoutineCompletions(routines: [RoutineCompletionEntity]) async throws
+    func updateRoutineCompletions(routines: [RoutineEntity]) async throws
 }

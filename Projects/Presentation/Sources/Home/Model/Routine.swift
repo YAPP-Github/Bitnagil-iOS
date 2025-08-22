@@ -20,6 +20,21 @@ struct Routine: RoutineProtocol {
     let isDeleted: Bool
     let startDate: Date
     let endDate: Date
+
+    func toRoutineEntity() -> RoutineEntity {
+        return RoutineEntity(
+            routineId: id,
+            routineName: title,
+            repeatDay: repeatDay.map({ $0.rawValue }),
+            executionTime: startTime.convertToString(dateType: .time),
+            routineCompleteYn: isDone,
+            subRoutineNames: subRoutines,
+            subRoutineCompleteYn: subRoutineCompleted,
+            recommendedRoutineType: routineType?.rawValue,
+            routineDeletedYn: isDeleted,
+            routineStartDate: startDate.convertToString(dateType: .yearMonthDate),
+            routineEndDate: endDate.convertToString(dateType: .yearMonthDate))
+    }
 }
 
 extension RoutineEntity {

@@ -42,8 +42,10 @@ extension RoutineEndpoint: Endpoint {
     
     var method: HTTPMethod {
         switch self {
-        case .createRoutine, .updateRoutineCompletion:
+        case .createRoutine:
                 .post
+        case .updateRoutineCompletion:
+                .put
         case .fetchRoutine, .fetchRoutines:
                 .get
         case .updateRoutine:

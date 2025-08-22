@@ -9,6 +9,11 @@ import Shared
 import SnapKit
 import UIKit
 
+protocol RoutineViewDelegate: AnyObject {
+    func routineView(_ sender: RoutineView, didTapMainRoutine routine: Routine)
+    func routineView(_ sender: RoutineView, didTapSubRoutine routine: Routine)
+}
+
 final class RoutineView: UIView {
     private enum Layout {
         static let horizontalMargin: CGFloat = 16
@@ -16,13 +21,11 @@ final class RoutineView: UIView {
         static let routineContentStackViewVerticalMargin: CGFloat = 10
         static let timeLabelWidth: CGFloat = 42
         static let containerViewLeadingSpacing: CGFloat = 8
-        static let mainRoutineViewHeight: CGFloat = 28
+        static let mainRoutineViewHeight: CGFloat = 40
         static let mainRoutineLabelTrailingSpacing: CGFloat = 10
         static let mainRoutineCheckButtonSize: CGFloat = 28
-        static let grayLineHeight: CGFloat = 1
         static let subRoutineViewHeight: CGFloat = 24
-        static let subRoutineLabelLeadingSpacing: CGFloat = 10
-        static let subRoutineCheckButtonSize: CGFloat = 24
+        static let grayLineHeight: CGFloat = 1
     }
 
     private let timeLabel = UILabel()
@@ -32,12 +35,14 @@ final class RoutineView: UIView {
     private let mainRoutineLabel = UILabel()
     private let mainRoutineCheckButton = UIButton()
     private let grayLine = UIView()
+    private var subRoutineViews: [Int: SubRoutineView] = [:]
     private var routine: Routine {
         didSet {
             updateRoutineState()
         }
     }
 
+    weak var delegate: RoutineViewDelegate?
     init(routine: Routine) {
         self.routine = routine
         super.init(frame: .zero)
@@ -79,6 +84,7 @@ final class RoutineView: UIView {
                 var updatedRoutine = routine
                 updatedRoutine.isDone.toggle()
                 self.routine = updatedRoutine
+                self.delegate?.routineView(self, didTapMainRoutine: self.routine)
             },
             for: .touchUpInside)
 
@@ -98,9 +104,14 @@ final class RoutineView: UIView {
             routineContentStackView.addArrangedSubview($0)
         }
 
-        for subRoutine in zip(routine.subRoutines, routine.subRoutineCompleted) {
-            let subRoutineView = makeSubRoutineView(subRoutine: subRoutine)
+        for (index, subRoutine) in zip(routine.subRoutines, routine.subRoutineCompleted).enumerated() {
+            let subRoutineView = SubRoutineView(subRoutine: subRoutine, index: index)
             routineContentStackView.addArrangedSubview(subRoutineView)
+            subRoutineView.snp.makeConstraints { make in
+                make.height.greaterThanOrEqualTo(Layout.subRoutineViewHeight)
+            }
+            subRoutineView.delegate = self
+            subRoutineViews[index] = subRoutineView
         }
 
         containerView.addSubview(routineContentStackView)
@@ -143,43 +154,17 @@ final class RoutineView: UIView {
         }
     }
 
-    private func makeSubRoutineView(subRoutine: (title: String, isDone: Bool)) -> UIView {
-        let subRoutineView = UIView()
-        let checkButton = UIButton()
-        let subRoutineLabel = UILabel()
-
-        subRoutineView.addSubview(checkButton)
-        subRoutineView.addSubview(subRoutineLabel)
-
-        let subRoutineCheckIcon = subRoutine.isDone ? BitnagilIcon.checkedCircleSmallIcon : BitnagilIcon.uncheckedCircleSmallIcon
-        checkButton.setImage(subRoutineCheckIcon, for: .normal)
-
-        subRoutineLabel.text = subRoutine.title
-        subRoutineLabel.font = BitnagilFont(style: .body2, weight: .medium).font
-        subRoutineLabel.textColor = BitnagilColor.gray40
-        subRoutineLabel.numberOfLines = 0
-
-        checkButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview()
-            make.centerY.equalTo(subRoutineLabel)
-            make.size.equalTo(Layout.subRoutineCheckButtonSize)
-        }
-
-        subRoutineLabel.snp.makeConstraints { make in
-            make.leading.equalTo(checkButton.snp.trailing).offset(Layout.subRoutineLabelLeadingSpacing)
-            make.trailing.equalToSuperview()
-            make.verticalEdges.equalToSuperview()
-        }
-
-        subRoutineView.snp.makeConstraints { make in
-            make.height.greaterThanOrEqualTo(Layout.subRoutineViewHeight)
-        }
-
-        return subRoutineView
-    }
-
     func updateRoutineState() {
         let isDone = routine.isDone
         mainRoutineCheckButton.setImage(isDone ? BitnagilIcon.checkedCircleIcon : BitnagilIcon.uncheckedCircleIcon, for: .normal)
+    }
+}
+
+extension RoutineView: SubRoutineViewDelegate {
+    func subRoutineView(_ sender: SubRoutineView, didTapSubRoutine index: Int) {
+        var updatedRoutine = routine
+        updatedRoutine.subRoutineCompleted[index].toggle()
+        self.routine = updatedRoutine
+        self.delegate?.routineView(self, didTapSubRoutine: routine)
     }
 }

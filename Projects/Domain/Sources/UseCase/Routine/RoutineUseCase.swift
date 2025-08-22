@@ -63,7 +63,7 @@ public final class RoutineUseCase: RoutineUseCaseProtocol {
         try await routineRepository.deleteDailyRoutine(routineId: routineId)
     }
 
-    public func updateRoutineCompletions(routines: [RoutineCompletionEntity]) async throws {
+    public func updateRoutineCompletions(routines: [RoutineEntity]) async throws {
         try await routineRepository.updateRoutineCompletions(routines: routines)
     }
 }

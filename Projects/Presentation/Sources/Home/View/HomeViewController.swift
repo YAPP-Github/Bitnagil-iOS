@@ -11,7 +11,7 @@ import Shared
 import SnapKit
 import UIKit
 
-final class HomeView: BaseViewController<HomeViewModel> {
+final class HomeViewController: BaseViewController<HomeViewModel> {
     private enum Layout {
         static let horizontalMargin: CGFloat = 20
         static let headerViewHeight: CGFloat = 48
@@ -191,9 +191,11 @@ final class HomeView: BaseViewController<HomeViewModel> {
         routineStackView.alignment = .fill
         routineStackView.distribution = .fill
 
-        floatingButton.addAction(UIAction { [weak self] _ in
-            self?.toggleFloatingButton()
-        }, for: .touchUpInside)
+        floatingButton.addAction(
+            UIAction { [weak self] _ in
+                self?.toggleFloatingButton()
+            },
+            for: .touchUpInside)
 
         floatingMenu.isHidden = true
         floatingMenu.delegate = self
@@ -224,17 +226,22 @@ final class HomeView: BaseViewController<HomeViewModel> {
         view.addSubview(registerEmotionButton)
 
         view.addSubview(contentView)
+
         [monthLabel, previousWeekButton, nextWeekButton].forEach {
             weekHeaderView.addSubview($0)
         }
+
         [weekHeaderView, weekView].forEach {
             weekStackView.addArrangedSubview($0)
         }
+
         contentView.addSubview(weekStackView)
         contentView.addSubview(emptyView)
+
         [routineListLabel, routineListButton].forEach {
             routineHeaderView.addSubview($0)
         }
+
         contentView.addSubview(routineHeaderView)
         contentView.addSubview(routineScrollView)
         routineScrollView.addSubview(routineStackView)
@@ -403,7 +410,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] fetchRoutineResult in
                 if fetchRoutineResult {
-                    self?.viewModel.action(input: .refreshSelectedDateRoutine)
+                    self?.viewModel.action(input: .fetchDailyRoutine)
                 }
                 self?.hideIndicatorView()
             }
@@ -428,9 +435,9 @@ final class HomeView: BaseViewController<HomeViewModel> {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isUpdateRoutineCompletion in
                 if isUpdateRoutineCompletion {
-                    self?.viewModel.action(input: .refreshSelectedDateRoutine)
-                    self?.hideIndicatorView()
+                    self?.viewModel.action(input: .refreshDailyRoutine)
                 }
+                self?.hideIndicatorView()
             }
             .store(in: &cancellables)
 
@@ -466,6 +473,7 @@ final class HomeView: BaseViewController<HomeViewModel> {
 
             for routine in routines {
                 let routineView = RoutineView(routine: routine)
+                routineView.delegate = self
                 routineStackView.addArrangedSubview(routineView)
             }
         }
@@ -577,14 +585,38 @@ final class HomeView: BaseViewController<HomeViewModel> {
 }
 
 // MARK: WeekViewDelegate
-extension HomeView: WeekViewDelegate {
+extension HomeViewController: WeekViewDelegate {
     func weekView(_ sender: WeekView, didSelectDate date: Date) {
         viewModel.action(input: .selectDate(date: date))
     }
 }
 
+// MARK: RoutineViewDelegate
+extension HomeViewController: RoutineViewDelegate {
+    func routineView(_ sender: RoutineView, didTapMainRoutine routine: Routine) {
+        var updatedRoutine = routine
+        if updatedRoutine.isDone {
+            updatedRoutine.subRoutineCompleted = Array(repeating: true, count: updatedRoutine.subRoutineCompleted.count)
+        } else {
+            updatedRoutine.subRoutineCompleted = Array(repeating: false, count: updatedRoutine.subRoutineCompleted.count)
+        }
+        viewModel.action(input: .updateRoutineCompletion(updatedRoutine: updatedRoutine))
+    }
+    
+    func routineView(_ sender: RoutineView, didTapSubRoutine routine: Routine) {
+        var updatedRoutine = routine
+        let subRoutineCount = updatedRoutine.subRoutines.count
+        if updatedRoutine.subRoutineCompleted.filter({ $0 }).count == subRoutineCount {
+            updatedRoutine.isDone = true
+        } else {
+            updatedRoutine.isDone = false
+        }
+        viewModel.action(input: .updateRoutineCompletion(updatedRoutine: updatedRoutine))
+    }
+}
+
 // MARK: FloatingMenuViewDelegate
-extension HomeView: FloatingMenuViewDelegate {
+extension HomeViewController: FloatingMenuViewDelegate {
     func floatingMenuDidTapRegisterRoutineButton(_ sender: FloatingMenuView) {
         toggleFloatingButton()
         guard let routineCreationViewModel = DIContainer.shared.resolve(type: RoutineCreationViewModel.self) else {
