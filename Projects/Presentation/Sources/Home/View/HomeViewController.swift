@@ -623,9 +623,11 @@ final class HomeViewController: BaseViewController<HomeViewModel> {
         guard let emotionRegisterViewModel = DIContainer.shared.resolve(type: EmotionRegisterViewModel.self) else {
             fatalError("emotionRegisterViewModel 의존성이 등록되지 않았습니다.")
         }
-        let emotionRegisterView = EmotionRegisterView(viewModel: emotionRegisterViewModel)
-        emotionRegisterView.hidesBottomBarWhenPushed = true
-        navigationController?.pushViewController(emotionRegisterView, animated: true)
+
+        let emotionRegistrationViewController = EmotionRegistrationViewController(viewModel: emotionRegisterViewModel)
+
+        emotionRegistrationViewController.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(emotionRegistrationViewController, animated: true)
     }
 }
 
