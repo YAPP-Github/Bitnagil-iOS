@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "default_emotion_graphic.png",
+      "filename" : "marble_red_graphic@1x.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "default_emotion_graphic@2x.png",
+      "filename" : "marble_red_graphic@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "default_emotion_graphic@3x.png",
+      "filename" : "marble_red_graphic@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

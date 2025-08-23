@@ -35,9 +35,7 @@ enum BitnagilColor {
     static let gray99 = UIColor(named: "Gray99", in: bundle, compatibleWith: nil)
 
     // MARK: - Category Color
-    static let green10 = UIColor(named: "Green10", in: bundle, compatibleWith: nil)
     static let pink10 = UIColor(named: "Pink10", in: bundle, compatibleWith: nil)
-    static let purple10 = UIColor(named: "Purple10", in: bundle, compatibleWith: nil)
     static let skyblue10 = UIColor(named: "Skyblue10", in: bundle, compatibleWith: nil)
     static let yellow10 = UIColor(named: "Yellow10", in: bundle, compatibleWith: nil)
 
@@ -53,6 +51,24 @@ enum BitnagilColor {
     static let orange700 = UIColor(named: "Orange700", in: bundle, compatibleWith: nil)
     static let orange800 = UIColor(named: "Orange800", in: bundle, compatibleWith: nil)
     static let orange900 = UIColor(named: "Orange900", in: bundle, compatibleWith: nil)
+
+    // MARK: - Red Colors
+    static let red10 = UIColor(named: "Red10", in: bundle, compatibleWith: nil)
+    static let red500 = UIColor(named: "Red500", in: bundle, compatibleWith: nil)
+
+    // MARK: - Green Colors
+    static let green5 = UIColor(named: "Green5", in: bundle, compatibleWith: nil)
+    static let green10 = UIColor(named: "Green10", in: bundle, compatibleWith: nil)
+    static let green500 = UIColor(named: "Green500", in: bundle, compatibleWith: nil)
+
+    // MARK: - Purple Colors
+    static let purple5 = UIColor(named: "Purple5", in: bundle, compatibleWith: nil)
+    static let purple10 = UIColor(named: "Purple10", in: bundle, compatibleWith: nil)
+    static let purple500 = UIColor(named: "Purple500", in: bundle, compatibleWith: nil)
+
+    // MARK: - Mint Colors
+    static let mint10 = UIColor(named: "Mint10", in: bundle, compatibleWith: nil)
+    static let mint500 = UIColor(named: "Mint500", in: bundle, compatibleWith: nil)
 
     // MARK: - Gradient
     static let gradientLeft = UIColor(named: "GradientLeft", in: bundle, compatibleWith: nil)

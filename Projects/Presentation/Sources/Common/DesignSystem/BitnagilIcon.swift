@@ -90,6 +90,12 @@ enum BitnagilIcon {
     static let editIcon = UIImage(named: "edit_icon", in: bundle, with: nil)
     static let trashIcon = UIImage(named: "trash_icon", in: bundle, with: nil)
     static let closeIcon = UIImage(named: "close_icon", in: bundle, with: nil)
+
+    // MARK: - Routine Creation
+    static let doubleChevronIcon = UIImage(named: "double_chevron_icon", in: bundle, with: nil)
+    static func doubleChevronIcon(direction: Direction) -> UIImage? {
+        return BitnagilIcon.doubleChevronIcon?.rotate(degrees: direction.rotation)?.withRenderingMode(.alwaysTemplate)
+    }
 }
 
 enum Direction {
