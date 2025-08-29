@@ -49,8 +49,8 @@ final class BitnagilButtonTableViewCell: BitnagilBaseTableViewCell {
         button.isEnabled = isButtonEnabled
 
         if isButtonEnabled {
-            button.backgroundColor = BitnagilColor.lightBlue100
-            button.setTitleColor(BitnagilColor.navy500, for: .normal)
+            button.backgroundColor = BitnagilColor.orange50
+            button.setTitleColor(BitnagilColor.orange500, for: .normal)
         } else {
             button.backgroundColor = BitnagilColor.gray98
             button.setTitleColor(BitnagilColor.gray70, for: .disabled)

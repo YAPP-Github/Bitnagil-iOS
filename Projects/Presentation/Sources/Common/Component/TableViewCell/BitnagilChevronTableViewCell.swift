@@ -29,7 +29,7 @@ final class BitnagilChevronTableViewCell: BitnagilBaseTableViewCell {
 
         chevronImageView.tintColor = .black
         chevronImageView.image = BitnagilIcon
-            .chevronIcon(direction: .right)?
+            .bitnagilChevronIcon(direction: .right)?
             .withRenderingMode(.alwaysTemplate)
     }
 

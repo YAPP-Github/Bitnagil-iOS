@@ -49,6 +49,7 @@ final class MypageView: BaseViewController<MypageViewModel> {
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
         navigationController?.navigationBar.compactAppearance = appearance
+        navigationController?.navigationBar.isHidden = false
     }
 
     override func configureAttribute() {
@@ -58,11 +59,7 @@ final class MypageView: BaseViewController<MypageViewModel> {
 
         settingButton.action = #selector(settingButtonTapped)
         settingButton.target = self
-        settingButton.tintColor = .black
-        settingButton.image = BitnagilIcon
-            .settingIcon?
-            .withRenderingMode(.alwaysTemplate)
-
+        settingButton.image = BitnagilIcon.settingIcon?.withRenderingMode(.alwaysOriginal)
         profileImageView.image = BitnagilGraphic.profileGraphic
 
         nicknameLabel.font = BitnagilFont(style: .title3, weight: .semiBold).font
@@ -112,12 +109,14 @@ final class MypageView: BaseViewController<MypageViewModel> {
 
     override func bind() {
         viewModel.output.nickNamePublisher
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] nickname in
                 self?.nicknameLabel.text = nickname
             }
             .store(in: &cancellables)
 
         viewModel.output.externalURLPublisher
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] url in
                 let safariView = SFSafariViewController(url: url)
                 self?.present(safariView, animated: true)

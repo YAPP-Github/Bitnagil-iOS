@@ -14,7 +14,7 @@ import UIKit
 
 final class SettingView: BaseViewController<SettingViewModel> {
     private enum Layout {
-        static let tableViewTopSpacing: CGFloat = 32
+        static let tableViewTopSpacing: CGFloat = 80
         static let tableViewHeaderHeight: CGFloat = 48
         static let tableViewRowHeight: CGFloat = 48
         static let tableViewFooterHeight: CGFloat = .zero
@@ -110,7 +110,8 @@ final class SettingView: BaseViewController<SettingViewModel> {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-//        configureNavigationBar(navigationStyle: .withBackButton(title: "설정"))
+        navigationController?.navigationBar.isHidden = true
+        configureCustomNavigationBar(navigationBarStyle: .withBackButton(title: "설정"))
     }
 
     override func configureAttribute() {
@@ -134,10 +135,13 @@ final class SettingView: BaseViewController<SettingViewModel> {
     }
 
     override func configureLayout() {
+        let safeArea = view.safeAreaLayoutGuide
+
         view.addSubview(tableView)
 
         tableView.snp.makeConstraints { make in
-            make.edges.horizontalEdges.equalToSuperview()
+            make.top.equalTo(safeArea.snp.top).offset(Layout.tableViewTopSpacing)
+            make.bottom.horizontalEdges.equalToSuperview()
         }
     }
 
@@ -337,9 +341,8 @@ extension SettingView: UITableViewDataSource {
 //            view.backgroundColor = .white
 //            return view
         case .information:
-            let view = UIView()
-            view.backgroundColor = .white
-            return view
+            headerView.configure(shouldShowDivider: false, title: section.title)
+            return headerView
         default:
             headerView.configure(shouldShowDivider: true, title: section.title)
             return headerView
