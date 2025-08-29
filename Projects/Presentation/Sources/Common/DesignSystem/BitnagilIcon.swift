@@ -15,7 +15,10 @@ enum BitnagilIcon {
     // MARK: - Common Icons
     static let backButtonIcon = UIImage(named: "back_button_icon", in: bundle, with: nil)
     static let plusIcon = UIImage(named: "plus_icon", in: bundle, with: nil)?.withRenderingMode(.alwaysTemplate)
-
+    static let bitnagilChevronIcon = UIImage(named: "chevron_icon", in: bundle, with: nil)
+    static func bitnagilChevronIcon(direction: Direction) -> UIImage? {
+        return BitnagilIcon.bitnagilChevronIcon?.rotate(degrees: direction.rotation)?.withRenderingMode(.alwaysTemplate)
+    }
     // MARK: - Login Icons
     static let kakaoIcon = UIImage(named: "kakao_icon", in: bundle, with: nil)
     static let appleIcon = UIImage(named: "apple_icon", in: bundle, with: nil)
