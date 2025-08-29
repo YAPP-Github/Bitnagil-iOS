@@ -28,10 +28,15 @@ public struct PresentationDependencyAssembler: DependencyAssemblerProtocol {
             guard let emotionUseCase = container.resolve(type: EmotionUseCaseProtocol.self)
             else { fatalError("emotionUseCase 의존성이 등록되지 않았습니다.") }
 
+            guard let appConfigRepository = container.resolve(type: AppConfigRepositoryProtocol.self)
+            else { fatalError("appConfigRepository 의존성이 등록되지 않았습니다.") }
+
+
             return HomeViewModel(
                 routineUseCase: routineUseCase,
                 userDataUseCase: userDataUseCase,
-                emotionUseCase: emotionUseCase)
+                emotionUseCase: emotionUseCase,
+                appConfigRepository: appConfigRepository)
         }
 
         DIContainer.shared.register(type: LoginViewModel.self) { container in

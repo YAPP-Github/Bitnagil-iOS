@@ -103,6 +103,7 @@ final class HomeViewController: BaseViewController<HomeViewModel> {
         super.viewDidLoad()
         showIndicatorView()
         viewModel.action(input: .loadNickname)
+        viewModel.action(input: .fetchVersion)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -459,6 +460,35 @@ final class HomeViewController: BaseViewController<HomeViewModel> {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] allCompletedDates in
                 self?.weekView.updateAllCompletedState(allCompletedDates: allCompletedDates)
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.updateVersionPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] updateURL in
+                guard let updateURL else { return }
+
+                let alert = UIAlertController(
+                    title: "업데이트가 필요합니다",
+                    message: "원활한 이용을 위해, 빛나길을 업데이트 해주세요!",
+                    preferredStyle: .alert
+                )
+
+                let cancel = UIAlertAction(
+                    title: "취소",
+                    style: .default,
+                    handler: { _ in exit(0) })
+                let update = UIAlertAction(
+                    title: "업데이트",
+                    style: .default,
+                    handler: { _ in
+                        UIApplication.shared.open(updateURL, options: [:], completionHandler: { _ in exit(0) })
+                    })
+
+                alert.addAction(cancel)
+                alert.addAction(update)
+                alert.preferredAction = update
+                self?.present(alert, animated: true)
             }
             .store(in: &cancellables)
     }

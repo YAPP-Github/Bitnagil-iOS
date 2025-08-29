@@ -20,6 +20,7 @@ final class HomeViewModel: ViewModel {
         case fetchDailyRoutine
         case refreshDailyRoutine
         case updateRoutineCompletion(updatedRoutine: Routine)
+        case fetchVersion
     }
 
     struct Output {
@@ -31,6 +32,7 @@ final class HomeViewModel: ViewModel {
         let routinesPublisher: AnyPublisher<[Routine], Never>
         let updateRoutineCompletionResultPublisher: AnyPublisher<Bool, Never>
         let allCompletedRoutineDatePublisher: AnyPublisher<[Date], Never>
+        let updateVersionPublisher: AnyPublisher<URL?, Never>
     }
 
     private(set) var output: Output
@@ -45,6 +47,7 @@ final class HomeViewModel: ViewModel {
     private let selectedRoutineSubject = CurrentValueSubject<Routine?, Never>(nil)
     private let updateRoutineCompletionResultSubject = PassthroughSubject<Bool, Never>()
     private let allCompletedRoutineDateSubject = CurrentValueSubject<[Date], Never>([])
+    private let updateVersionSubject = PassthroughSubject<URL?, Never>()
 
     private let calendar = Calendar.current
     private let today = Date()
@@ -54,14 +57,18 @@ final class HomeViewModel: ViewModel {
     private let routineUseCase: RoutineUseCaseProtocol
     private let userDataUseCase: UserDataUseCaseProtocol
     private let emotionUseCase: EmotionUseCaseProtocol
+    private let appConfigRepository: AppConfigRepositoryProtocol
+
     init(
         routineUseCase: RoutineUseCaseProtocol,
         userDataUseCase: UserDataUseCaseProtocol,
-        emotionUseCase: EmotionUseCaseProtocol
+        emotionUseCase: EmotionUseCaseProtocol,
+        appConfigRepository: AppConfigRepositoryProtocol
     ) {
         self.routineUseCase = routineUseCase
         self.userDataUseCase = userDataUseCase
         self.emotionUseCase = emotionUseCase
+        self.appConfigRepository = appConfigRepository
         self.output = Output(
             nicknamePublisher: nicknameSubject.eraseToAnyPublisher(),
             emotionPublisher: emotionSubject.eraseToAnyPublisher(),
@@ -70,7 +77,8 @@ final class HomeViewModel: ViewModel {
             fetchRoutineResultPublisher: fetchRoutineResultSubject.eraseToAnyPublisher(),
             routinesPublisher: routinesSubject.eraseToAnyPublisher(),
             updateRoutineCompletionResultPublisher: updateRoutineCompletionResultSubject.eraseToAnyPublisher(),
-            allCompletedRoutineDatePublisher: allCompletedRoutineDateSubject.eraseToAnyPublisher())
+            allCompletedRoutineDatePublisher: allCompletedRoutineDateSubject.eraseToAnyPublisher(),
+            updateVersionPublisher: updateVersionSubject.eraseToAnyPublisher())
     }
 
     func action(input: Input) {
@@ -102,6 +110,9 @@ final class HomeViewModel: ViewModel {
 
         case .refreshDailyRoutine:
             refreshSelectedDateRoutines()
+
+        case .fetchVersion:
+            checkVersion()
         }
     }
 
@@ -259,6 +270,28 @@ final class HomeViewModel: ViewModel {
                 updateRoutineCompletionResultSubject.send(true)
             } catch {
                 // TODO: 에러 처리
+            }
+        }
+    }
+
+    private func checkVersion() {
+        let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
+        let major = currentVersion?.split(separator: ".").first
+
+        Task {
+            do {
+                let appStoreAppVersion = try await appConfigRepository.fetchAppVersion()
+                let appStoreMajor = appStoreAppVersion?.split(separator: ".").first
+
+                if major != appStoreMajor {
+                    let url = URL(string: "itms-apps://itunes.apple.com/app/id6749437799")
+                    updateVersionSubject.send(url)
+                } else {
+                    updateVersionSubject.send(nil)
+                }
+
+            } catch {
+
             }
         }
     }
