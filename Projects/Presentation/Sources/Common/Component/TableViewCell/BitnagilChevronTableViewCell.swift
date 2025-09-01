@@ -10,8 +10,9 @@ import UIKit
 
 final class BitnagilChevronTableViewCell: BitnagilBaseTableViewCell {
     private enum Layout {
-        static let chevronImageViewTrailingSpacing: CGFloat = 16
-        static let chevronImageViewSize: CGFloat = 16
+        static let chevronImageViewTrailingSpacing: CGFloat = 20
+        static let chevronImageWidth: CGFloat = 7
+        static let chevronImageHeight: CGFloat = 11
     }
 
     private let chevronImageView = UIImageView()
@@ -41,7 +42,8 @@ final class BitnagilChevronTableViewCell: BitnagilBaseTableViewCell {
         chevronImageView.snp.makeConstraints { make in
             make.centerY.equalToSuperview()
             make.trailing.equalToSuperview().inset(Layout.chevronImageViewTrailingSpacing)
-            make.size.equalTo(Layout.chevronImageViewSize)
+            make.width.equalTo(Layout.chevronImageWidth)
+            make.height.equalTo(Layout.chevronImageHeight)
         }
     }
 }

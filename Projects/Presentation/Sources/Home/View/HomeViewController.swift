@@ -471,13 +471,13 @@ final class HomeViewController: BaseViewController<HomeViewModel> {
                 let alert = UIAlertController(
                     title: "업데이트가 필요합니다",
                     message: "원활한 이용을 위해, 빛나길을 업데이트 해주세요!",
-                    preferredStyle: .alert
-                )
+                    preferredStyle: .alert)
 
                 let cancel = UIAlertAction(
                     title: "취소",
                     style: .default,
                     handler: { _ in exit(0) })
+
                 let update = UIAlertAction(
                     title: "업데이트",
                     style: .default,

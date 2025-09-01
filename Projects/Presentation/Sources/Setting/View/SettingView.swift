@@ -141,7 +141,8 @@ final class SettingView: BaseViewController<SettingViewModel> {
 
         tableView.snp.makeConstraints { make in
             make.top.equalTo(safeArea.snp.top).offset(Layout.tableViewTopSpacing)
-            make.bottom.horizontalEdges.equalToSuperview()
+            make.horizontalEdges.equalToSuperview()
+            make.bottom.equalTo(safeArea.snp.bottom)
         }
     }
 
