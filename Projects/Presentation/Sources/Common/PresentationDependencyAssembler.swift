@@ -50,7 +50,10 @@ public struct PresentationDependencyAssembler: DependencyAssemblerProtocol {
             guard let userDataRepository = container.resolve(type: UserDataRepositoryProtocol.self)
             else { fatalError("userDataRepository 의존성이 등록되지 않았습니다.") }
 
-            return OnboardingViewModel(userDataRepository: userDataRepository)
+            guard let onboardingRepository = container.resolve(type: OnboardingRepositoryProtocol.self)
+            else { fatalError("userDataRepository 의존성이 등록되지 않았습니다.") }
+
+            return OnboardingViewModel(userDataRepository: userDataRepository, onboardingRepository: onboardingRepository)
         }
 
         DIContainer.shared.register(type: RecommendedRoutineViewModel.self) { container in

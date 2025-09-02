@@ -167,14 +167,10 @@ extension MypageView: UITableViewDataSource {
             return
         }
 
-        guard let onboardingViewModel = DIContainer.shared.resolve(type: OnboardingViewModel.self) else {
-            fatalError("onboardingViewModel 의존성이 등록되지 않았습니다.")
-        }
+        guard let onboardingViewModel = DIContainer.shared.resolve(type: OnboardingViewModel.self)
+        else { fatalError("onboardingViewModel 의존성이 등록되지 않았습니다.") }
 
-        let onboardingView = OnboardingViewController(
-            viewModel: onboardingViewModel,
-            onboarding: .time,
-            isFromMypage: true)
+        let onboardingView = OnboardingResultViewController(viewModel: onboardingViewModel, entryPoint: .myPagePrevious)
         onboardingView.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(onboardingView, animated: true)
     }

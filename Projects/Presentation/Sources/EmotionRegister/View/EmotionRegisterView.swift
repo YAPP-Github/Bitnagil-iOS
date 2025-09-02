@@ -127,7 +127,7 @@ extension EmotionRegisterView: UICollectionViewDelegate {
         else { fatalError("resultRecommendedRoutineViewModel 의존성이 등록되지 않았습니다.") }
         resultRecommendedRoutineViewModel.configure(viewModelType: .emotion(emotion: selectedEmotion))
 
-        let resultRecommendedRoutineView = ResultRecommendedRoutineView(entryPoint: .emotion, viewModel: resultRecommendedRoutineViewModel)
+        let resultRecommendedRoutineView = ResultRecommendedRoutineViewController(entryPoint: .emotion, viewModel: resultRecommendedRoutineViewModel)
         self.navigationController?.pushViewController(resultRecommendedRoutineView, animated: true)
     }
 }

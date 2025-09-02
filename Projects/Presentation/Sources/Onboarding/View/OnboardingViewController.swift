@@ -239,7 +239,11 @@ final class OnboardingViewController: BaseViewController<OnboardingViewModel> {
                 onboarding: nextStep,
                 isFromMypage: isFromMypage)
         } else {
-            nextView = OnboardingResultViewController(viewModel: viewModel, isFromMypage: isFromMypage)
+            if isFromMypage {
+                nextView = OnboardingResultViewController(viewModel: viewModel, entryPoint: .myPageResult)
+            } else {
+                nextView = OnboardingResultViewController(viewModel: viewModel, entryPoint: .onboarding)
+            }
         }
         guard let nextView else { return }
         self.navigationController?.pushViewController(nextView, animated: true)

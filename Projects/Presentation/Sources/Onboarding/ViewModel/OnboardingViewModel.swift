@@ -15,6 +15,7 @@ final class OnboardingViewModel: ViewModel {
         case selectOnboardingChoice(selectedChoice: OnboardingChoiceType)
         case fetchOnboardingChoice(onboarding: OnboardingType)
         case fetchOnboardingChoices
+        case loadOnboardingResult
         case makeOnboardingResult
     }
 
@@ -25,7 +26,7 @@ final class OnboardingViewModel: ViewModel {
         let feelingOnboardingChoicePublisher: AnyPublisher<Set<OnboardingChoiceType>, Never>
         let outdoorOnboardingChoicePublisher: AnyPublisher<OnboardingChoiceType?, Never>
         let onboardingResultPublisher: AnyPublisher<[String], Never>
-        let onboardingChoicesPublisher: AnyPublisher<[OnboardingChoiceType], Never>
+        let onboardingChoicesPublisher: AnyPublisher<OnboardingEntity, Never>
         let nextButtonPublisher: AnyPublisher<Bool, Never>
     }
 
@@ -36,12 +37,14 @@ final class OnboardingViewModel: ViewModel {
     private let feelingOnboardingChoiceSubject = CurrentValueSubject<Set<OnboardingChoiceType>, Never>([])
     private let outdoorOnboardingChoiceSubject = CurrentValueSubject<OnboardingChoiceType?, Never>(nil)
     private let onboardingResultSubject = CurrentValueSubject<[String], Never>([])
-    private let onboardingChoicesSubject = PassthroughSubject<[OnboardingChoiceType], Never>()
+    private let onboardingChoicesSubject = PassthroughSubject<OnboardingEntity, Never>()
     private let nextButtonSubject = PassthroughSubject<Bool, Never>()
 
     private let userDataRepository: UserDataRepositoryProtocol
-    init(userDataRepository: UserDataRepositoryProtocol) {
+    private let onboardingRepository: OnboardingRepositoryProtocol
+    init(userDataRepository: UserDataRepositoryProtocol, onboardingRepository: OnboardingRepositoryProtocol) {
         self.userDataRepository = userDataRepository
+        self.onboardingRepository = onboardingRepository
         self.output = Output(
             nicknamePublisher: nicknameSubject.eraseToAnyPublisher(),
             timeOnboardingChoicePublisher: timeOnboardingChoiceSubject.eraseToAnyPublisher(),
@@ -67,6 +70,9 @@ final class OnboardingViewModel: ViewModel {
 
         case .fetchOnboardingChoices:
             makeOnboardingChoices()
+
+        case .loadOnboardingResult:
+            loadOnboardingResult()
 
         case .makeOnboardingResult:
             makeOnboardingResult()
@@ -166,6 +172,30 @@ final class OnboardingViewModel: ViewModel {
         nextButtonSubject.send(result)
     }
 
+    // 이전 온보딩 선택 결과를 불러옵니다.
+    private func loadOnboardingResult() {
+        Task {
+            do {
+                let onboardingEntity = try await onboardingRepository.loadOnboardingResult()
+
+                let feelingOnboardingChoices = onboardingEntity.feeling.compactMap({ OnboardingChoiceType(rawValue: $0 )})
+                let feelingResult = feelingOnboardingChoices.compactMap({ $0.resultTitle }).joined(separator: ", ")
+
+                guard
+                    let timeOnboardingChoice = OnboardingChoiceType(rawValue: onboardingEntity.time),
+                    let outdoorOnboardingChoice = OnboardingChoiceType(rawValue: onboardingEntity.outdoor),
+                    let timeResult = timeOnboardingChoice.resultTitle,
+                    let outdoorResult = outdoorOnboardingChoice.resultTitle
+                else { return }
+
+                let result = [timeResult, feelingResult, outdoorResult]
+                onboardingResultSubject.send(result)
+            } catch {
+                // TODO: 에러 처리
+            }
+        }
+    }
+
     // 온보딩 결과 텍스트를 만듭니다.
     private func makeOnboardingResult() {
         let feelingOnboardingChoice = feelingOnboardingChoiceSubject.value
@@ -186,8 +216,6 @@ final class OnboardingViewModel: ViewModel {
 
     // 온보딩 선택지를 통합합니다.
     private func makeOnboardingChoices() {
-        var onboardingChoices: [OnboardingChoiceType] = []
-
         let feelingOnboarding = Array(feelingOnboardingChoiceSubject.value)
         guard
             let timeOnboarding = timeOnboardingChoiceSubject.value,
@@ -196,11 +224,12 @@ final class OnboardingViewModel: ViewModel {
             let outdoorOnboarding = outdoorOnboardingChoiceSubject.value
         else { return }
 
-        onboardingChoices.append(timeOnboarding)
-        onboardingChoices += feelingOnboarding
-        onboardingChoices.append(frequencyOnboarding)
-        onboardingChoices.append(outdoorOnboarding)
+        let onboardingEntity = OnboardingEntity(
+            time: timeOnboarding.rawValue,
+            feeling: feelingOnboarding.map({ $0.rawValue }),
+            frequency: frequencyOnboarding.rawValue,
+            outdoor: outdoorOnboarding.rawValue)
 
-        onboardingChoicesSubject.send(onboardingChoices)
+        onboardingChoicesSubject.send(onboardingEntity)
     }
 }

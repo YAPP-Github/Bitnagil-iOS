@@ -12,6 +12,12 @@ import SnapKit
 import UIKit
 
 final class OnboardingResultViewController: BaseViewController<OnboardingViewModel> {
+    enum EntryPoint {
+        case onboarding
+        case myPagePrevious
+        case myPageResult
+    }
+
     private enum Layout {
         static let horizontalMargin: CGFloat = 20
         static let mainLabelMinTopSpacing: CGFloat = 60
@@ -42,17 +48,17 @@ final class OnboardingResultViewController: BaseViewController<OnboardingViewMod
     private let rectangleImageView = UIImageView()
     private let nameLabel = UILabel()
     private let resultStackView = UIStackView()
-    private let nextButton = PrimaryButton(buttonState: .default, buttonTitle: "다음")
+    private var nextButton = PrimaryButton(buttonState: .default, buttonTitle: "다음")
 
     private var isLayoutConfigured: Bool = false
     private var mainLabelTopConstraint: Constraint?
     private var resultGraphicViewTopConstraint: Constraint?
     private var rectangleHeightConstraint: Constraint?
 
-    private let isFromMypage: Bool
+    private let entryPoint: EntryPoint
     private var cancellables: Set<AnyCancellable>
-    init(viewModel: OnboardingViewModel, isFromMypage: Bool = false) {
-        self.isFromMypage = isFromMypage
+    init(viewModel: OnboardingViewModel, entryPoint: EntryPoint = .onboarding) {
+        self.entryPoint = entryPoint
         cancellables = []
         super.init(viewModel: viewModel)
     }
@@ -64,7 +70,14 @@ final class OnboardingResultViewController: BaseViewController<OnboardingViewMod
     override func viewDidLoad() {
         super.viewDidLoad()
         viewModel.action(input: .loadNickname)
-        viewModel.action(input: .makeOnboardingResult)
+
+        switch entryPoint {
+        case .onboarding, .myPageResult:
+            viewModel.action(input: .makeOnboardingResult)
+
+        case .myPagePrevious:
+            viewModel.action(input: .loadOnboardingResult)
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -88,7 +101,10 @@ final class OnboardingResultViewController: BaseViewController<OnboardingViewMod
     }
 
     override func configureAttribute() {
-        let text = "이제 포모가 당신에게\n꼭 맞는 루틴을 찾아줄거예요."
+        var text = "이제 포모가 당신에게\n꼭 맞는 루틴을 찾아줄거예요."
+        if entryPoint == .myPagePrevious {
+            text = "이전에 설정한 목표에요!\n변경하시겠어요?"
+        }
         mainLabel.attributedText = BitnagilFont(style: .title2, weight: .bold).attributedString(text: text)
         mainLabel.textColor = BitnagilColor.gray10
         mainLabel.numberOfLines = 2
@@ -104,9 +120,24 @@ final class OnboardingResultViewController: BaseViewController<OnboardingViewMod
         resultStackView.axis = .vertical
         resultStackView.spacing = Layout.resultStackViewSpacing
 
+        if entryPoint == .myPagePrevious {
+            nextButton = PrimaryButton(buttonState: .default, buttonTitle: "변경하기")
+        }
+
         nextButton.addAction(
             UIAction { [weak self] _ in
-                self?.viewModel.action(input: .fetchOnboardingChoices)
+                guard let self else { return }
+                switch self.entryPoint {
+                case .onboarding, .myPageResult:
+                    self.viewModel.action(input: .fetchOnboardingChoices)
+
+                case .myPagePrevious:
+                    let onboardingView = OnboardingViewController(
+                        viewModel: self.viewModel,
+                        onboarding: .time,
+                        isFromMypage: true)
+                    self.navigationController?.pushViewController(onboardingView, animated: true)
+                }
             }, for: .touchUpInside)
     }
 
@@ -114,7 +145,13 @@ final class OnboardingResultViewController: BaseViewController<OnboardingViewMod
         let safeArea = view.safeAreaLayoutGuide
         view.backgroundColor = .systemBackground
         navigationController?.setNavigationBarHidden(true, animated: false)
-        configureCustomNavigationBar(navigationBarStyle: .withProgressBar(step: OnboardingType.allCases.count + 1))
+
+        switch entryPoint {
+        case .onboarding, .myPageResult:
+            configureCustomNavigationBar(navigationBarStyle: .withProgressBar(step: OnboardingType.allCases.count + 1))
+        case .myPagePrevious:
+            configureCustomNavigationBar(navigationBarStyle: .withBackButton(title: ""))
+        }
 
         view.addSubview(mainLabel)
         view.addSubview(resultGraphicView)
@@ -180,8 +217,8 @@ final class OnboardingResultViewController: BaseViewController<OnboardingViewMod
 
         viewModel.output.onboardingChoicesPublisher
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] onboardingChoices in
-                self?.goToResultRecommendedRoutineView(onboardingChoices: onboardingChoices)
+            .sink { [weak self] onboardingEntity in
+                self?.goToResultRecommendedRoutineView(onboardingEntity: onboardingEntity)
             }
             .store(in: &cancellables)
     }
@@ -217,6 +254,7 @@ final class OnboardingResultViewController: BaseViewController<OnboardingViewMod
             rectangleHeightConstraint?.update(offset: Layout.rectangleImageViewMaxHeight)
             resultGraphicViewTopConstraint?.update(offset: Layout.resultGraphicViewTopMinSpacing)
         }
+
         feelingResultStackView.snp.makeConstraints { make in
             make.height.equalTo(ifNeedExpandFeelingResult ? Layout.resultLabelMaxHeight : Layout.resultLabelHeight)
         }
@@ -232,18 +270,28 @@ final class OnboardingResultViewController: BaseViewController<OnboardingViewMod
         }
     }
 
-    private func goToResultRecommendedRoutineView(onboardingChoices: [OnboardingChoiceType]) {
-        guard let resultRecommendedRoutineViewModel = DIContainer.shared.resolve(type: ResultRecommendedRoutineViewModel.self)
-        else{ fatalError("resultRecommendedRoutineViewModel 의존성이 등록되지 않았습니다.") }
+    private func goToResultRecommendedRoutineView(onboardingEntity: OnboardingEntity) {
+        var nextView: UIViewController?
+        switch entryPoint {
+        case .onboarding:
+            guard let resultRecommendedRoutineViewModel = DIContainer.shared.resolve(type: ResultRecommendedRoutineViewModel.self)
+            else { fatalError("resultRecommendedRoutineViewModel 의존성이 등록되지 않았습니다.") }
 
-        var resultRecommendedView: ResultRecommendedRoutineView
-        if isFromMypage {
-            resultRecommendedRoutineViewModel.configure(viewModelType: .mypage(onboardingChoices: onboardingChoices))
-            resultRecommendedView = ResultRecommendedRoutineView(entryPoint: .mypage, viewModel: resultRecommendedRoutineViewModel)
-        } else {
-            resultRecommendedRoutineViewModel.configure(viewModelType: .onboarding(onboardingChoices: onboardingChoices))
-            resultRecommendedView = ResultRecommendedRoutineView(entryPoint: .onboarding, viewModel: resultRecommendedRoutineViewModel)
+            resultRecommendedRoutineViewModel.configure(viewModelType: .onboarding(onboardingEntity: onboardingEntity))
+            nextView = ResultRecommendedRoutineViewController(entryPoint: .onboarding, viewModel: resultRecommendedRoutineViewModel)
+
+        case .myPagePrevious:
+            break
+
+        case .myPageResult:
+            guard let resultRecommendedRoutineViewModel = DIContainer.shared.resolve(type: ResultRecommendedRoutineViewModel.self)
+            else{ fatalError("resultRecommendedRoutineViewModel 의존성이 등록되지 않았습니다.") }
+
+            resultRecommendedRoutineViewModel.configure(viewModelType: .mypage(onboardingEntity: onboardingEntity))
+            nextView = ResultRecommendedRoutineViewController(entryPoint: .mypage, viewModel: resultRecommendedRoutineViewModel)
         }
-        self.navigationController?.pushViewController(resultRecommendedView, animated: true)
+
+        guard let nextView else { return }
+        self.navigationController?.pushViewController(nextView, animated: true)
     }
 }
