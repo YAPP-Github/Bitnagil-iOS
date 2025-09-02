@@ -120,11 +120,12 @@ final class TermsAgreementViewController: BaseViewController<LoginViewModel> {
                 guard let self else { return }
                 if agreementResult {
                     BitnagilLogger.log(logType: .debug, message: "약관 동의 성공")
-                    guard let onboardingViewModel = DIContainer.shared.resolve(type: OnboardingViewModel.self) else {
-                        fatalError("onboardingViewModel 의존성이 등록되지 않았습니다.")
-                    }
-                    let onboardingView = OnboardingViewController(viewModel: onboardingViewModel, onboarding: .time)
-                    self.navigationController?.pushViewController(onboardingView, animated: true)
+
+                    guard let introViewModel = DIContainer.shared.resolve(type: IntroViewModel.self)
+                    else { fatalError("introViewModel 의존성이 등록되지 않았습니다.") }
+
+                    let introView = IntroViewController(viewModel: introViewModel)
+                    self.navigationController?.pushViewController(introView, animated: true)
                 } else {
                     // TODO: 약관 동의 실패 시, 에러 처리를 해야 합니다.
                     BitnagilLogger.log(logType: .error, message: "약관 동의 실패")
