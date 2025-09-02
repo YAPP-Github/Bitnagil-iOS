@@ -7,6 +7,7 @@
 
 import Combine
 import Domain
+import Foundation
 import Shared
 
 final class ResultRecommendedRoutineViewModel: ViewModel {
@@ -21,6 +22,7 @@ final class ResultRecommendedRoutineViewModel: ViewModel {
         case fetchSelectedRoutineId
         case selectRecommendedRoutine(routine: RecommendedRoutine)
         case registerRecommendedRoutine
+        case showRecommendedRoutineToastMessageView
     }
 
     struct Output {
@@ -65,6 +67,9 @@ final class ResultRecommendedRoutineViewModel: ViewModel {
 
         case .registerRecommendedRoutine:
             registerRecommendedRoutine()
+
+        case .showRecommendedRoutineToastMessageView:
+            showRecommendedRoutineToastMessageView()
         }
     }
 
@@ -150,6 +155,15 @@ final class ResultRecommendedRoutineViewModel: ViewModel {
                 BitnagilLogger.log(logType: .error, message: "\(error.localizedDescription)")
                 registerRoutineResultSubject.send(false)
             }
+        }
+    }
+
+    private func showRecommendedRoutineToastMessageView() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            NotificationCenter.default.post(
+                name: .showRecommendedRoutineToast,
+                object: nil,
+                userInfo: nil)
         }
     }
 }

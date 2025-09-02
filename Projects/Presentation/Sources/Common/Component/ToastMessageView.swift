@@ -39,7 +39,7 @@ public final class ToastMessageView: UIView {
         self.alpha = 0
         self.isHidden = true
 
-        backgroundColor = BitnagilColor.navy400
+        backgroundColor = BitnagilColor.gray30
         layer.cornerRadius = 8
         layer.masksToBounds = true
 

@@ -343,6 +343,7 @@ final class ResultRecommendedRoutineViewController: BaseViewController<ResultRec
                 self.navigationController?.popToRootViewController(animated: false)
                 tabBarView.selectedIndex = 1
             }
+            viewModel.action(input: .showRecommendedRoutineToastMessageView)
 
         case .emotion:
             viewModel.action(input: .fetchSelectedRoutineId)

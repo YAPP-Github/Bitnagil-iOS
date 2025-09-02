@@ -32,7 +32,8 @@ final class RecommendedRoutineViewController: BaseViewController<RecommendedRout
         static let floatingMenuBottomSpacing: CGFloat = 15
         static let floatingMenuHeight: CGFloat = 64
         static let floatingMenuWidth: CGFloat = 144
-        static let toastMessageBottomSpacing: CGFloat = 19
+        static let toastMessageViewHeight: CGFloat = 52
+        static let toastMessageViewBottomSpacing: CGFloat = 38
     }
 
     private let categoryView = RoutineCategoryView()
@@ -52,6 +53,7 @@ final class RecommendedRoutineViewController: BaseViewController<RecommendedRout
     private let dimmedView = UIView()
     private let floatingButton = FloatingButton()
     private let floatingMenu = FloatingMenuView()
+    private let toastMessageView = ToastView(message: "맞춤 추천 루틴이 변경되었습니다.")
     private var cancellables: Set<AnyCancellable>
 
     public override init(viewModel: RecommendedRoutineViewModel) {
@@ -128,6 +130,8 @@ final class RecommendedRoutineViewController: BaseViewController<RecommendedRout
         view.addSubview(floatingMenu)
         view.addSubview(floatingButton)
 
+        view.addSubview(toastMessageView)
+
         categoryView.snp.makeConstraints { make in
             make.leading.equalTo(safeArea)
             make.trailing.equalTo(safeArea)
@@ -191,6 +195,13 @@ final class RecommendedRoutineViewController: BaseViewController<RecommendedRout
         dimmedView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+
+        toastMessageView.snp.makeConstraints { make in
+            make.leading.equalTo(safeArea).offset(Layout.horizontalMargin)
+            make.trailing.equalTo(safeArea).inset(Layout.horizontalMargin)
+            make.height.equalTo(Layout.toastMessageViewHeight)
+            make.bottom.equalTo(safeArea).inset(Layout.toastMessageViewBottomSpacing)
+        }
     }
 
     override func bind() {
@@ -217,6 +228,13 @@ final class RecommendedRoutineViewController: BaseViewController<RecommendedRout
                     self?.isExistEmotion = isExistEmotion
                     self?.showEmotionButton(isShowEmotionButton: false)
                 }
+            }
+            .store(in: &cancellables)
+
+        NotificationCenter.default.publisher(for: .showRecommendedRoutineToast)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.toastMessageView.showToastMessageView()
             }
             .store(in: &cancellables)
     }

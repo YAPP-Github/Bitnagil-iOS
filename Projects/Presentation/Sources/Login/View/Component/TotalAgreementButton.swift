@@ -46,7 +46,7 @@ final class TotalAgreementButton: UIButton {
         stackView.isUserInteractionEnabled = false
 
         checkButton.image = BitnagilIcon.checkIcon
-        checkButton.tintColor = BitnagilColor.navy100
+        checkButton.tintColor = BitnagilColor.gray90
         checkButton.contentMode = .scaleAspectFit
 
         buttonLabel.text = "전체동의"
