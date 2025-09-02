@@ -5,25 +5,25 @@
 //  Created by 최정인 on 7/15/25.
 //
 
-public enum OnboardingChoiceType: CaseIterable {
-    case morningTime
-    case eveningTime
-    case allTime
+public enum OnboardingChoiceType: String, CaseIterable {
+    case morningTime = "08:00:00"
+    case eveningTime = "20:00:00"
+    case allTime = "00:00:00"
 
-    case never
-    case rarely
-    case sometimes
-    case often
+    case never = "NEVER"
+    case rarely = "SHORT"
+    case sometimes = "SOMETIMES"
+    case often = "OFTEN"
 
-    case stability
-    case connection
-    case growth
-    case vitality
+    case stability = "STABILITY"
+    case connection = "CONNECTEDNESS"
+    case growth = "GROWTH"
+    case vitality = "VITALITY"
 
-    case once
-    case twoToThree
-    case fourOrMore
-    case notSure
+    case once = "ONE_PER_WEEK"
+    case twoToThree = "TWO_TO_THREE_PER_WEEK"
+    case fourOrMore = "MORE_THAN_FOUR_PER_WEEK"
+    case notSure = "UNKNOWN"
 
     public var onboardingType: OnboardingType {
         switch self {
@@ -45,29 +45,6 @@ public enum OnboardingChoiceType: CaseIterable {
         case .twoToThree: .outdoor
         case .fourOrMore: .outdoor
         case .notSure: .outdoor
-        }
-    }
-
-    var value: String {
-        switch self {
-        case .morningTime: "08:00:00"
-        case .eveningTime: "20:00:00"
-        case .allTime: "00:00:00"
-
-        case .never: "NEVER"
-        case .rarely: "SHORT"
-        case .sometimes: "SOMETIMES"
-        case .often: "OFTEN"
-
-        case .stability: "STABILITY"
-        case .connection: "CONNECTEDNESS"
-        case .growth: "GROWTH"
-        case .vitality: "VITALITY"
-
-        case .once: "ONE_PER_WEEK"
-        case .twoToThree: "TWO_TO_THREE_PER_WEEK"
-        case .fourOrMore: "MORE_THAN_FOUR_PER_WEEK"
-        case .notSure: "UNKNOWN"
         }
     }
 }

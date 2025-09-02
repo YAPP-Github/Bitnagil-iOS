@@ -43,7 +43,7 @@ extension RecommendedRoutineEntity {
             subTitle: description,
             subRoutines: subRoutines.map({ $0.title }),
             routineCategory: category ?? .recommendation,
-            routineType: type,
+            routineType: type ?? .recommendation,
             routineLevel: level ?? .easy
         )
     }

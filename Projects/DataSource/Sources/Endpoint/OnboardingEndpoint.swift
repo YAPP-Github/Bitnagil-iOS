@@ -6,29 +6,32 @@
 //
 
 enum OnboardingEndpoint {
-    case registerOnboarding(choices: [String: String])
+    case loadOnboardingResult
+    case registerOnboarding(onboarding: OnboardingDTO)
     case registerRecommendedRoutine(selectedRoutines: [Int])
 }
 
 extension OnboardingEndpoint: Endpoint {
     var baseURL: String {
-        switch self {
-        case .registerOnboarding:
-            return AppProperties.baseURL + "/api/v1/onboardings"
-        case .registerRecommendedRoutine:
-            return AppProperties.baseURL + "/api/v2/onboardings"
-        }
+        return AppProperties.baseURL + "/api/v2/onboardings"
     }
 
     var path: String {
         switch self {
-        case .registerOnboarding: baseURL
-        case .registerRecommendedRoutine: baseURL + "/routines"
+        case .registerOnboarding, .loadOnboardingResult:
+            return baseURL
+        case .registerRecommendedRoutine: 
+            return baseURL + "/routines"
         }
     }
     
     var method: HTTPMethod {
-        return .post
+        switch self {
+        case .loadOnboardingResult:
+            return .get
+        case .registerOnboarding, .registerRecommendedRoutine:
+            return .post
+        }
     }
     
     var headers: [String : String] {
@@ -45,10 +48,12 @@ extension OnboardingEndpoint: Endpoint {
     
     var bodyParameters: [String : Any] {
         switch self {
-        case .registerOnboarding(let choices):
-            return choices
+        case .registerOnboarding(let onboarding):
+            return onboarding.dictionary
         case .registerRecommendedRoutine(let selectedRoutines):
             return ["recommendedRoutineIds": selectedRoutines]
+        default:
+            return [:]
         }
     }
 

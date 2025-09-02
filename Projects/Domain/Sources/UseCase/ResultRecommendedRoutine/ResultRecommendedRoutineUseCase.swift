@@ -15,9 +15,8 @@ public final class ResultRecommendedRoutineUseCase: ResultRecommendedRoutineUseC
         self.emotionRepository = emotionRepository
     }
 
-    public func fetchResultRecommendedRoutines(onboardingChoices: [OnboardingChoiceType]) async throws -> [RecommendedRoutineEntity] {
-        let choices = convertToDictionary(onboardingChoices: onboardingChoices)
-        let recommendedRoutines = try await onboardingRepository.registerOnboarding(onboardingChoices: choices)
+    public func fetchResultRecommendedRoutines(onboardingEntity: OnboardingEntity) async throws -> [RecommendedRoutineEntity] {
+        let recommendedRoutines = try await onboardingRepository.registerOnboarding(onboardingEntity: onboardingEntity)
         return recommendedRoutines
     }
 
@@ -28,16 +27,5 @@ public final class ResultRecommendedRoutineUseCase: ResultRecommendedRoutineUseC
 
     public func registerRecommendedRoutines(selectedRoutines: [Int]) async throws {
         try await onboardingRepository.registerRecommendedRoutines(selectedRoutines: selectedRoutines)
-    }
-
-    private func convertToDictionary(onboardingChoices: [OnboardingChoiceType]) -> [String: String] {
-        var result: [String: String] = [:]
-        let onboardingTypes: [OnboardingType] = [.time, .frequency, .feeling, .outdoor]
-        for type in onboardingTypes {
-            guard let choice = onboardingChoices.first(where: { $0.onboardingType == type })
-            else { break }
-            result[choice.onboardingType.key] = choice.value
-        }
-        return result
     }
 }
