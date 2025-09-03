@@ -14,8 +14,10 @@ final class TutorialViewController: UIViewController {
         static let tutorialTableViewTopSpacing: CGFloat = 86
         static let tutorialTableViewCellHeight: CGFloat = 56
         static let tutorialTableViewCellSpacing: CGFloat = 12
+        static let tutorialDetailViewHeight: CGFloat = 348
     }
 
+    private var dimmedView: UIView?
     private let tutorialTableView = UITableView()
 
     override func viewDidLoad() {
@@ -65,6 +67,7 @@ extension TutorialViewController: UITableViewDelegate, UITableViewDataSource {
 
         let tutorial = Tutorial.allCases[indexPath.section]
         cell.configure(title: tutorial.title)
+        cell.selectionStyle = .none
         return cell
     }
 
@@ -78,5 +81,46 @@ extension TutorialViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         return UIView()
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let tutorial = Tutorial.allCases[indexPath.section]
+
+        dimmedView?.removeFromSuperview()
+
+        let newDimmedView = UIView()
+        newDimmedView.backgroundColor = .black.withAlphaComponent(0.0)
+        newDimmedView.frame = view.bounds
+        view.addSubview(newDimmedView)
+        dimmedView = newDimmedView
+
+        UIView.animate(withDuration: 0.25) {
+            newDimmedView.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+        }
+
+        let tutorialDetailView = TutorialDetailViewController(tutorial: tutorial)
+        if let sheet = tutorialDetailView.sheetPresentationController {
+            sheet.prefersGrabberVisible = false
+            if #available(iOS 16.0, *) {
+                sheet.detents = [.custom { _ in Layout.tutorialDetailViewHeight }]
+            } else {
+                sheet.detents = [.medium()]
+            }
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
+            sheet.preferredCornerRadius = 20
+        }
+
+        tutorialDetailView.onDismiss = { [weak self] in
+            guard let self else { return }
+            guard let dimmedView = self.dimmedView else { return }
+            UIView.animate(withDuration: 0.1, animations: {
+                dimmedView.alpha = 0
+            }, completion: { _ in
+                dimmedView.removeFromSuperview()
+                self.dimmedView = nil
+            })
+        }
+
+        present(tutorialDetailView, animated: true)
     }
 }
