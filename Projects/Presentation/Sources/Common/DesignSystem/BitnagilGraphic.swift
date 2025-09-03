@@ -33,4 +33,10 @@ enum BitnagilGraphic {
     static let logoGraphic = UIImage(named: "bitnagil_logo", in: bundle, with: nil)
     static let profileGraphic = UIImage(named: "profile_graphic", in: bundle, with: nil)
     static let grayLogoGraphic = UIImage(named: "bitnagil_logo_gray", in: bundle, with: nil)
+
+    // MARK: - Tutorial
+    static let tutorialEmotionGraphic = UIImage(named: "tutorial_emotion_graphic", in: bundle, with: nil)
+    static let tutorialHomeMoreGraphic = UIImage(named: "tutorial_home_more_graphic", in: bundle, with: nil)
+    static let tutorialRecommendationRoutineGraphic = UIImage(named: "tutorial_recommendation_routine_graphic", in: bundle, with: nil)
+    static let tutorialEditRoutineGraphic = UIImage(named: "tutorial_edit_routine_graphic", in: bundle, with: nil)
 }

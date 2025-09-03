@@ -118,6 +118,14 @@ final class HomeViewController: BaseViewController<HomeViewModel> {
         helpButton.setImage(BitnagilIcon.helpIcon, for: .normal)
         alarmButton.setImage(BitnagilIcon.alarmIcon, for: .normal)
 
+        helpButton.addAction(
+            UIAction { [weak self] _ in
+                let tutorialView = TutorialViewController()
+                tutorialView.hidesBottomBarWhenPushed = true
+                self?.navigationController?.pushViewController(tutorialView, animated: true)
+            },
+            for: .touchUpInside)
+
         let homeLabelText = "\(nickname)\n"
         homeLabel.attributedText = BitnagilFont(
             family: .cafe24Ssurround,
