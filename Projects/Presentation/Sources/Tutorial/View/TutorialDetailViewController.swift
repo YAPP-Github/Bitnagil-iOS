@@ -45,6 +45,8 @@ final class TutorialDetailViewController: UIViewController {
     }
 
     private func configureAttribute() {
+        view.backgroundColor = BitnagilColor.gray99
+
         titleLabel.text = tutorial.title
         titleLabel.font = BitnagilFont(style: .title3, weight: .semiBold).font
         titleLabel.textColor = BitnagilColor.gray10
@@ -60,7 +62,6 @@ final class TutorialDetailViewController: UIViewController {
 
     private func configureLayout() {
         let safeArea = view.safeAreaLayoutGuide
-        view.backgroundColor = BitnagilColor.gray99
 
         view.addSubview(titleLabel)
         view.addSubview(descriptionLabel)
@@ -74,15 +75,17 @@ final class TutorialDetailViewController: UIViewController {
 
         descriptionLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(Layout.descriptionLabelTopSpacing)
-            make.leading.equalTo(safeArea).offset(Layout.horizontalMargin)
-            make.trailing.equalTo(safeArea).inset(Layout.horizontalMargin)
+            make.horizontalEdges.equalTo(safeArea).inset(Layout.horizontalMargin)
             make.height.equalTo(Layout.descriptionLabelHeight)
         }
 
         tutorialImage.snp.makeConstraints { make in
             make.top.equalTo(descriptionLabel.snp.bottom).offset(Layout.tutorialImageTopSpacing)
-            make.leading.equalTo(safeArea).offset(Layout.horizontalMargin)
-            make.trailing.equalTo(safeArea).inset(Layout.horizontalMargin)
+            make.horizontalEdges.equalTo(safeArea).inset(Layout.horizontalMargin)
+            if let image = tutorialImage.image {
+                let aspectRatio = image.size.height / image.size.width
+                make.height.equalTo(tutorialImage.snp.width).multipliedBy(aspectRatio)
+            }
         }
     }
 }

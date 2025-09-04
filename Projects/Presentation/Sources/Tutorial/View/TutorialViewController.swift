@@ -27,6 +27,10 @@ final class TutorialViewController: UIViewController {
     }
 
     private func configureAttribute() {
+        view.backgroundColor = .systemBackground
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        configureCustomNavigationBar(navigationBarStyle: .withBackButton(title: "설명서"))
+
         tutorialTableView.delegate = self
         tutorialTableView.dataSource = self
 
@@ -37,15 +41,11 @@ final class TutorialViewController: UIViewController {
 
     private func configureLayout() {
         let safeArea = view.safeAreaLayoutGuide
-        view.backgroundColor = .systemBackground
-        navigationController?.setNavigationBarHidden(true, animated: false)
-        configureCustomNavigationBar(navigationBarStyle: .withBackButton(title: "설명서"))
 
         view.addSubview(tutorialTableView)
         tutorialTableView.snp.makeConstraints { make in
             make.top.equalTo(safeArea).offset(Layout.tutorialTableViewTopSpacing)
-            make.leading.equalTo(safeArea).offset(Layout.horizontalMargin)
-            make.trailing.equalTo(safeArea).offset(-Layout.horizontalMargin)
+            make.horizontalEdges.equalTo(safeArea).inset(Layout.horizontalMargin)
             make.bottom.equalTo(safeArea)
         }
     }
