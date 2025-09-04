@@ -39,7 +39,7 @@ final class ResultRecommendedRoutineViewController: BaseViewController<ResultRec
             switch self {
             case .onboarding: "등록하기"
             case .mypage: "확인"
-            case .emotion: "맞춤 추천 루틴보러 가기"
+            case .emotion: "맞춤 추천 루틴 보러 가기"
             }
         }
 
@@ -126,6 +126,15 @@ final class ResultRecommendedRoutineViewController: BaseViewController<ResultRec
     }
 
     override func configureAttribute() {
+        view.backgroundColor = .systemBackground
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        switch entryPoint {
+        case .onboarding, .mypage:
+            configureCustomNavigationBar(navigationBarStyle: .withProgressBar(step: OnboardingType.allCases.count + 1))
+        case .emotion:
+            configureCustomNavigationBar(navigationBarStyle: .withBackButton(title: ""))
+        }
+
         let mainLabelText = entryPoint.mainLabelText
         mainLabel.attributedText = BitnagilFont(style: .title2, weight: .bold).attributedString(text: mainLabelText)
         mainLabel.textColor = BitnagilColor.gray10
@@ -156,9 +165,6 @@ final class ResultRecommendedRoutineViewController: BaseViewController<ResultRec
 
     override func configureLayout() {
         let safeArea = view.safeAreaLayoutGuide
-        view.backgroundColor = .systemBackground
-        navigationController?.setNavigationBarHidden(true, animated: false)
-        configureCustomNavigationBar(navigationBarStyle: .withProgressBar(step: OnboardingType.allCases.count + 1))
 
         view.addSubview(mainLabel)
         view.addSubview(subLabel)
@@ -168,28 +174,24 @@ final class ResultRecommendedRoutineViewController: BaseViewController<ResultRec
         view.addSubview(skipButton)
 
         mainLabel.snp.makeConstraints { make in
-            make.leading.equalTo(safeArea).offset(Layout.horizontalMargin)
-            make.trailing.equalTo(safeArea).inset(Layout.horizontalMargin)
+            make.horizontalEdges.equalTo(safeArea).inset(Layout.horizontalMargin)
             mainLabelTopConstraint = make.top.equalTo(safeArea).offset(Layout.mainLabelMinTopSpacing).constraint
             make.height.equalTo(Layout.mainLabelHeight)
         }
 
         subLabel.snp.makeConstraints { make in
-            make.leading.equalTo(safeArea).offset(Layout.horizontalMargin)
-            make.trailing.equalTo(safeArea).inset(Layout.horizontalMargin)
+            make.horizontalEdges.equalTo(safeArea).inset(Layout.horizontalMargin)
             make.top.equalTo(mainLabel.snp.bottom).offset(Layout.subLabelTopSpacing)
             make.height.equalTo(Layout.subLabelHeight)
         }
 
         recommendedRoutineStackView.snp.makeConstraints { make in
-            make.leading.equalTo(safeArea).offset(Layout.horizontalMargin)
-            make.trailing.equalTo(safeArea).inset(Layout.horizontalMargin)
+            make.horizontalEdges.equalTo(safeArea).inset(Layout.horizontalMargin)
             make.top.equalTo(subLabel.snp.bottom).offset(Layout.routineStackViewTopSpacing)
         }
 
         confirmButton.snp.makeConstraints { make in
-            make.leading.equalTo(safeArea).offset(Layout.horizontalMargin)
-            make.trailing.equalTo(safeArea).inset(Layout.horizontalMargin)
+            make.horizontalEdges.equalTo(safeArea).inset(Layout.horizontalMargin)
             if entryPoint.isHiddenSkipButton {
                 make.bottom.equalTo(safeArea).inset(Layout.confirmButtonBottomMaxSpacing)
             } else {
@@ -203,8 +205,7 @@ final class ResultRecommendedRoutineViewController: BaseViewController<ResultRec
         }
 
         skipButton.snp.makeConstraints { make in
-            make.leading.equalTo(safeArea).offset(Layout.horizontalMargin)
-            make.trailing.equalTo(safeArea).inset(Layout.horizontalMargin)
+            make.horizontalEdges.equalTo(safeArea).inset(Layout.horizontalMargin)
             make.bottom.equalTo(safeArea).inset(Layout.skipButtonBottomSpacing)
             make.height.equalTo(Layout.skipButtonHeight)
         }

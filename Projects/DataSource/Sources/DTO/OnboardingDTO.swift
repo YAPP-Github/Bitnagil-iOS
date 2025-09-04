@@ -17,6 +17,7 @@ struct OnboardingDTO: Encodable {
         return OnboardingEntity(
             time: timeSlot,
             feeling: emotionType,
+            frequency: realOutingFrequency,
             outdoor: targetOutingFrequency)
     }
 }
