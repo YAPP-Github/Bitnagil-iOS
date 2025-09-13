@@ -115,7 +115,7 @@ final class EmotionRegistrationViewController: BaseViewController<EmotionRegiste
         speechImageView.tintColor = .clear
         speechLabel.numberOfLines = 2
         speechLabel.textAlignment = .center
-        speechLabel.font = BitnagilFont.init(style:.cafe24Title1, weight: .light).font
+        speechLabel.font = BitnagilFont.init(style:.cafe24Title2, weight: .light).font
         speechLabel.textColor = .clear
 
         infoLabel.numberOfLines = 0

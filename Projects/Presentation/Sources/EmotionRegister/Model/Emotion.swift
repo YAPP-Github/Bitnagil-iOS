@@ -20,6 +20,7 @@ struct Emotion: Hashable {
     var fomoImage: UIImage?
     var textColor: UIColor?
     var backgroundColor: UIColor?
+    var titleDescription: String?
 
     func copy() -> Emotion {
         return .init(
@@ -30,7 +31,8 @@ struct Emotion: Hashable {
             image: image,
             fomoImage: fomoImage,
             textColor: textColor,
-            backgroundColor: backgroundColor)
+            backgroundColor: backgroundColor,
+            titleDescription: titleDescription)
     }
 }
 
@@ -52,7 +54,8 @@ let emotinonDummies: [Emotion] = Marble.allCases.map { Emotion(
     emotionMessage: $0.description,
     image: $0.marbleImage,
     textColor: $0.textColor,
-    backgroundColor: $0.backgroundColor)}
+    backgroundColor: $0.backgroundColor,
+    titleDescription: $0.koreanDescription)}
 
 enum Marble:String, CaseIterable {
     case NONE
