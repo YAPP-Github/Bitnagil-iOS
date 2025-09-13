@@ -50,11 +50,10 @@ enum BitnagilGraphic {
     static let marbleGreenGraphic = UIImage(named: "marble_green_graphic", in: bundle, with: nil)
     static let marbleGrayGraphic = UIImage(named: "marble_gray_graphic", in: bundle, with: nil)
     static let marblePurpleGraphic = UIImage(named: "marble_purple_graphic", in: bundle, with: nil)
-    static let fomoRedGraphic = UIImage(named: "fomo_red_graphic", in: bundle, with: nil)
-    static let fomoOrangeGraphic = UIImage(named: "fomo_orange_graphic", in: bundle, with: nil)
-    static let fomomintGraphic = UIImage(named: "fomo_mint_graphic", in: bundle, with: nil)
-    static let fomoGreenGraphic = UIImage(named: "fomo_green_graphic", in: bundle, with: nil)
-    static let fogoGrayGraphic = UIImage(named: "fomo_gray_graphic", in: bundle, with: nil)
-    static let fomoPurpleGraphic = UIImage(named: "fomo_purple_graphic", in: bundle, with: nil)
-    static let backgroundGraphic = UIImage(named: "background_graphic", in: bundle, with: nil)
+    // MARK: - Emotion Register Completion
+    static let emotionCompletionBackgroundGraphic = UIImage(named: "emotion_background_graphic", in: bundle, with: nil)
+    static let emotionCompletionGroundGraphic = UIImage(named: "emotion_ground_graphic", in: bundle, with: nil)
+    static let pomoLeftHandGraphic = UIImage(named: "marble_pomo_left_hand_graphic", in: bundle, with: nil)
+    static let pomoRightHandGraphic = UIImage(named: "marble_pomo_right_hand_graphic", in: bundle, with: nil)
+    static let marblePomoGraphic = UIImage(named: "marblePomo_graphic", in: bundle, with: nil)
 }
