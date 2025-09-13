@@ -91,8 +91,6 @@ final class RecommendedRoutineViewController: BaseViewController<RecommendedRout
         recommendedRoutineStackView.axis = .vertical
         recommendedRoutineStackView.spacing = Layout.recommendedRoutineStackViewSpacing
 
-        registerEmotionButton.delegate = self
-
         floatingButton.addAction(UIAction { [weak self] _ in
             self?.toggleFloatingButton()
         }, for: .touchUpInside)
@@ -332,18 +330,6 @@ extension RecommendedRoutineViewController: FloatingMenuViewDelegate {
         let routineCreationView = RoutineCreationViewController(viewModel: routineCreationViewModel)
         routineCreationView.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(routineCreationView, animated: true)
-    }
-}
-
-// MARK: RegisterEmotionButtonViewDelegate
-extension RecommendedRoutineViewController: RegisterEmotionButtonViewDelegate {
-    func registerEmotionButtonViewDidTapRegisterButton(_ sender: RegisterEmotionButtonView) {
-        guard let emotionRegisterViewModel = DIContainer.shared.resolve(type: EmotionRegisterViewModel.self)
-        else { fatalError("emotionRegisterViewModel 의존성이 등록되지 않았습니다.") }
-
-        let emotionRegisterView = EmotionRegisterView(viewModel: emotionRegisterViewModel)
-        emotionRegisterView.hidesBottomBarWhenPushed = true
-        self.navigationController?.pushViewController(emotionRegisterView, animated: true)
     }
 }
 

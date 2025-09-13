@@ -21,6 +21,7 @@ final class EmotionRegistrationViewController: BaseViewController<EmotionRegiste
         static let emotionCollectionViewHeight: CGFloat = 191
         static let emotionMarbleImageViewSize: CGFloat = 140
         static let emotionMarbleImageViewTopSpacing: CGFloat = 13
+        static let speechImageTopSpacing: CGFloat = 26
         static let speechImageHorizontalSpacing: CGFloat = 54
         static let speechImageHeight: CGFloat = 102
         static let speechLabelTopSpacing: CGFloat = 22
@@ -31,10 +32,12 @@ final class EmotionRegistrationViewController: BaseViewController<EmotionRegiste
         static let foromThumbTopSpacing: CGFloat = 64
         static let foromThumbLeadingSpacing: CGFloat = 71
         static let handMarbleImageViewBottomSpacing: CGFloat = 7
+        static let handMarbleImageViewTopSpacing: CGFloat = 50
         static let infoLabelTopSpacing: CGFloat = 30
         static let doubleChevronIconSize: CGFloat = 24
         static let doubleChevronIconHorizontalSpacing: CGFloat = 26
         static let doubleChevronIconTopSpacing: CGFloat = 10
+        static let infoViewSize: CGFloat = 0
     }
 
     private let smallMarbleScrollView = UIScrollView()
@@ -83,7 +86,7 @@ final class EmotionRegistrationViewController: BaseViewController<EmotionRegiste
         if view.frame.maxY == view.safeAreaLayoutGuide.layoutFrame.maxY {
             handMarbleView.snp.remakeConstraints { make in
                 make.centerX.equalToSuperview()
-                make.top.equalTo(infoLabel.snp.bottom).offset(50)
+                make.top.equalTo(infoLabel.snp.bottom).offset(Layout.handMarbleImageViewTopSpacing)
                 make.size.equalTo(Layout.emotionMarbleImageViewSize)
             }
 
@@ -177,7 +180,7 @@ final class EmotionRegistrationViewController: BaseViewController<EmotionRegiste
         }
 
         speechImageView.snp.makeConstraints { make in
-            make.top.equalTo(smallMarbleStackView.snp.bottom).offset(26)
+            make.top.equalTo(smallMarbleStackView.snp.bottom).offset(Layout.speechImageTopSpacing)
             make.horizontalEdges.equalToSuperview().inset(Layout.speechImageHorizontalSpacing)
             make.height.equalTo(Layout.speechImageHeight)
         }
@@ -209,14 +212,13 @@ final class EmotionRegistrationViewController: BaseViewController<EmotionRegiste
         infoView.snp.makeConstraints { make in
             make.top.equalTo(emotionCollectionView.snp.bottom).offset(Layout.infoLabelTopSpacing)
             make.centerX.equalToSuperview()
-            make.width.equalTo(0).priority(.low)
-            make.height.equalTo(0).priority(.low)
+            make.width.equalTo(Layout.infoViewSize).priority(.low)
+            make.height.equalTo(Layout.infoViewSize).priority(.low)
         }
 
         infoLabel.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.centerX.equalToSuperview()
-            make.height.equalTo(40)
         }
 
         leftDoubleChevronImageView.snp.makeConstraints { make in
@@ -410,10 +412,11 @@ final class EmotionRegistrationViewController: BaseViewController<EmotionRegiste
                     withDuration: 0.2,
                     delay: 0,
                     options: [.curveEaseInOut]
-                ) { self.emotionMarbleImageView.transform = .identity }
+                ) {
+                    self.emotionMarbleImageView.transform = .identity
+                    self.infoView.isHidden = false
+                }
             }
-
-            infoView.isHidden = false
         default:
             break
         }
