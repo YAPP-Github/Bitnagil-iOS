@@ -7,7 +7,7 @@
 
 import Domain
 
-public struct RecommendedRoutine: OnboardingChoiceProtocol, RoutineProtocol, Hashable {
+public struct RecommendedRoutine: BitnagilChoiceProtocol, RoutineProtocol, Hashable {
     let id: Int
     let title: String
     let subTitle: String?

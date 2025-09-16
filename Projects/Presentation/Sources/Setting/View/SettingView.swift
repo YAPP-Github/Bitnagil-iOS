@@ -225,6 +225,15 @@ final class SettingView: BaseViewController<SettingViewModel> {
             })
             .store(in: &cancellables)
     }
+
+    private func goToWithdrawView() {
+        guard let withdrawViewModel = DIContainer.shared.resolve(type: WithdrawViewModel.self)
+        else { fatalError("") }
+
+        let withdrawViewController = WithdrawViewController(viewModel: withdrawViewModel)
+        withdrawViewController.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(withdrawViewController, animated: true)
+    }
 }
 
 extension SettingView: UITableViewDelegate {
@@ -259,20 +268,11 @@ extension SettingView: UITableViewDelegate {
                     confirmHandler: { [weak self] in
                         self?.viewModel.action(input: .logout)
                     })
+                alert.modalPresentationStyle = .overFullScreen
+                present(alert, animated: false)
             case .withdrawal:
-                alert = BitnagilAlert(
-                    alertType: .withImage,
-                    title: "정말 탈퇴하시겠어요?",
-                    content: "소중한 기록들이 모두 사라져요.",
-                    cancelButtonTitle: "취소",
-                    confirmButtonTitle: "회원탈퇴",
-                    cancelHandler: nil,
-                    confirmHandler: { [weak self] in
-                        self?.viewModel.action(input: .withdrawal)
-                    })
+                goToWithdrawView()
             }
-            alert.modalPresentationStyle = .overFullScreen
-            present(alert, animated: false)
         }
         tableView.deselectRow(at: indexPath, animated: true)
     }

@@ -84,7 +84,7 @@ final class ResultRecommendedRoutineViewController: BaseViewController<ResultRec
     private let mainLabel = UILabel()
     private var subLabel = UILabel()
     private let recommendedRoutineStackView = UIStackView()
-    private var recommendedRoutines: [Int: OnboardingChoiceButton] = [:]
+    private var recommendedRoutines: [Int: BitnagilChoiceButton] = [:]
     private var confirmButton = PrimaryButton(buttonState: .disabled, buttonTitle: "등록하기")
     private let skipButtonLabel = UILabel()
     private let skipButton = UIButton()
@@ -274,7 +274,7 @@ final class ResultRecommendedRoutineViewController: BaseViewController<ResultRec
         recommendedRoutines.removeAll()
 
         for routine in routines {
-            let routineButton = OnboardingChoiceButton(onboardingChoice: routine)
+            let routineButton = BitnagilChoiceButton(bitnagilChoice: routine)
             routineButton.tag = routine.id
 
             recommendedRoutines[routine.id] = routineButton

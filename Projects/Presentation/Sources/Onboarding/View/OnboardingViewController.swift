@@ -29,7 +29,7 @@ final class OnboardingViewController: BaseViewController<OnboardingViewModel> {
     private let mainLabel = UILabel()
     private var subLabel: UILabel? = nil
     private let choiceStackView = UIStackView()
-    private var choiceButtons: [OnboardingChoiceType: OnboardingChoiceButton] = [:]
+    private var choiceButtons: [OnboardingChoiceType: BitnagilChoiceButton] = [:]
     private let nextButton = PrimaryButton(buttonState: .disabled, buttonTitle: "다음")
 
     private let onboarding: OnboardingType
@@ -96,7 +96,7 @@ final class OnboardingViewController: BaseViewController<OnboardingViewModel> {
         choiceStackView.spacing = Layout.choiceStackViewSpacing
 
         for (index, choice) in onboarding.choices.enumerated() {
-            let choiceButton = OnboardingChoiceButton(onboardingChoice: choice)
+            let choiceButton = BitnagilChoiceButton(bitnagilChoice: choice)
             choiceButton.tag = index
 
             choiceButton.addAction(

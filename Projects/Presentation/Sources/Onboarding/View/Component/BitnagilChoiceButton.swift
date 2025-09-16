@@ -8,7 +8,7 @@
 import SnapKit
 import UIKit
 
-final class OnboardingChoiceButton: UIButton {
+final class BitnagilChoiceButton: UIButton {
     private enum Layout {
         static let cornerRadius: CGFloat = 12
         static let horizontalMargin: CGFloat = 20
@@ -30,9 +30,11 @@ final class OnboardingChoiceButton: UIButton {
         }
     }
 
-    private var onboardingChoice: OnboardingChoiceProtocol
-    init(onboardingChoice: OnboardingChoiceProtocol) {
-        self.onboardingChoice = onboardingChoice
+    private let bitnagilChoice: BitnagilChoiceProtocol
+    private let forWithdrawChoice: Bool
+    init(bitnagilChoice: BitnagilChoiceProtocol, forWithdrawChoice: Bool = false) {
+        self.bitnagilChoice = bitnagilChoice
+        self.forWithdrawChoice = forWithdrawChoice
         super.init(frame: .zero)
         configureAttribute()
         configureLayout()
@@ -53,11 +55,15 @@ final class OnboardingChoiceButton: UIButton {
         stackView.spacing = Layout.stackViewSpacing
         stackView.isUserInteractionEnabled = false
 
-        mainLabel.text = onboardingChoice.title
+        mainLabel.text = bitnagilChoice.title
         mainLabel.font = BitnagilFont(style: .body1, weight: .semiBold).font
         mainLabel.textColor = BitnagilColor.gray50
+        if forWithdrawChoice {
+            mainLabel.font = BitnagilFont(style: .subtitle1, weight: .medium).font
+            mainLabel.textColor = BitnagilColor.gray80
+        }
 
-        if let subTitle = onboardingChoice.subTitle {
+        if let subTitle = bitnagilChoice.subTitle {
             subLabel = UILabel()
             subLabel?.text = subTitle
             subLabel?.font = BitnagilFont(style: .body2, weight: .medium).font
@@ -100,6 +106,12 @@ final class OnboardingChoiceButton: UIButton {
         mainLabel.textColor = isChecked ? BitnagilColor.orange500 : BitnagilColor.gray50
         subLabel?.textColor = isChecked ? BitnagilColor.orange500 : BitnagilColor.gray50
         checkedIcon.isHidden = !isChecked
+        if forWithdrawChoice {
+            let uncheckedFont = BitnagilFont(style: .subtitle1, weight: .medium).font
+            let checkedFont = BitnagilFont(style: .body1, weight: .semiBold).font
+            mainLabel.font = isChecked ? checkedFont : uncheckedFont
+            mainLabel.textColor = isChecked ? BitnagilColor.orange500 : BitnagilColor.gray80
+        }
     }
 
     func updateButtonState(isChecked: Bool) {

@@ -7,7 +7,7 @@
 
 import Domain
 
-extension OnboardingChoiceType: OnboardingChoiceProtocol {
+extension OnboardingChoiceType: BitnagilChoiceProtocol {
     var title: String {
         switch self {
         case .morningTime: "아침을 잘 시작하고 싶어요."

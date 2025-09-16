@@ -43,7 +43,6 @@ final class SettingViewModel: ViewModel {
         case update
         case openURL(type: URLType)
         case logout
-        case withdrawal
         case fetchVersion
     }
 
@@ -85,8 +84,6 @@ final class SettingViewModel: ViewModel {
             handleURL(type: type)
         case .logout:
             logout()
-        case .withdrawal:
-            withdrawal()
         case .fetchVersion:
             fetchVersion()
         }
@@ -118,17 +115,6 @@ final class SettingViewModel: ViewModel {
         Task {
             do {
                 try await authRepository?.logout()
-                authenticatedSubject.send(false)
-            } catch {
-                // TODO: - 토스트 팝업 구현 시 + 디자인 추가 시 네트워크 불안정 알림
-            }
-        }
-    }
-
-    private func withdrawal() {
-        Task {
-            do {
-                try await authRepository?.withdraw()
                 authenticatedSubject.send(false)
             } catch {
                 // TODO: - 토스트 팝업 구현 시 + 디자인 추가 시 네트워크 불안정 알림
