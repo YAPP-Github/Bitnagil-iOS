@@ -14,12 +14,13 @@ final class WithdrawViewController: BaseViewController<WithdrawViewModel> {
     private enum Layout {
         static let horizontalMargin: CGFloat = 20
         static let mainLabelTopSpacing: CGFloat = 86
-        static let mainLabelTopMinSpacing: CGFloat = 66
+        static let mainLabelTopMinSpacing: CGFloat = 60
         static let subLabelTopSpacing: CGFloat = 5
         static let confirmStackViewTopSpacing: CGFloat = 24
+        static let confirmStackViewTopMinSpacing: CGFloat = 15
         static let confirmButtonSize: CGFloat = 24
         static let withdrawReasonViewTopSpacing: CGFloat = 62
-        static let withdrawReasonViewTopMinSpacing: CGFloat = 25
+        static let withdrawReasonViewTopMinSpacing: CGFloat = 22
         static let withdrawReasonTextViewPlaceholderTopSpacing: CGFloat = 13
         static let withdrawReasonTextViewHorizontalMargin: CGFloat = 16
         static let withdrawReasonTextViewVerticalMargin: CGFloat = 13
@@ -48,6 +49,7 @@ final class WithdrawViewController: BaseViewController<WithdrawViewModel> {
 
     private var isLayoutConfigured: Bool = false
     private var mainLabelTopConstraint: Constraint?
+    private var confirmStackViewTopConstraint: Constraint?
     private var withdrawReasonViewTopConstraint: Constraint?
     private var cancellables: Set<AnyCancellable> = []
 
@@ -64,6 +66,7 @@ final class WithdrawViewController: BaseViewController<WithdrawViewModel> {
         let height = view.bounds.height
         if height <= 667 {
             mainLabelTopConstraint?.update(offset: Layout.mainLabelTopMinSpacing)
+            confirmStackViewTopConstraint?.update(offset: Layout.confirmStackViewTopMinSpacing)
             withdrawReasonViewTopConstraint?.update(offset: Layout.withdrawReasonViewTopMinSpacing)
         }
     }
@@ -171,7 +174,7 @@ final class WithdrawViewController: BaseViewController<WithdrawViewModel> {
         }
 
         confirmStackView.snp.makeConstraints { make in
-            make.top.equalTo(subLabel.snp.bottom).offset(Layout.confirmStackViewTopSpacing)
+            confirmStackViewTopConstraint = make.top.equalTo(subLabel.snp.bottom).offset(Layout.confirmStackViewTopSpacing).constraint
             make.horizontalEdges.equalTo(safeArea).inset(Layout.horizontalMargin)
         }
 
