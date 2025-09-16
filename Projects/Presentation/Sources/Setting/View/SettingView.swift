@@ -259,9 +259,8 @@ extension SettingView: UITableViewDelegate {
             switch row {
             case .logout:
                 alert = BitnagilAlert(
-                    alertType: .withImage,
-                    title: "로그아웃 하시겠어요?",
-                    content: "버튼을 누르면 로그인 페이지로 이동해요.",
+                    title: "로그아웃할까요?",
+                    content: "이 기기에서 계정이 로그아웃되고, 다시\n로그인해야 서비스를 계속 이용할 수 있어요.",
                     cancelButtonTitle: "취소",
                     confirmButtonTitle: "로그아웃",
                     cancelHandler: nil,
