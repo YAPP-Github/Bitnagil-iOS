@@ -14,10 +14,12 @@ final class WithdrawViewController: BaseViewController<WithdrawViewModel> {
     private enum Layout {
         static let horizontalMargin: CGFloat = 20
         static let mainLabelTopSpacing: CGFloat = 86
+        static let mainLabelTopMinSpacing: CGFloat = 66
         static let subLabelTopSpacing: CGFloat = 5
         static let confirmStackViewTopSpacing: CGFloat = 24
         static let confirmButtonSize: CGFloat = 24
         static let withdrawReasonViewTopSpacing: CGFloat = 62
+        static let withdrawReasonViewTopMinSpacing: CGFloat = 25
         static let withdrawReasonTextViewPlaceholderTopSpacing: CGFloat = 13
         static let withdrawReasonTextViewHorizontalMargin: CGFloat = 16
         static let withdrawReasonTextViewVerticalMargin: CGFloat = 13
@@ -44,7 +46,27 @@ final class WithdrawViewController: BaseViewController<WithdrawViewModel> {
     private let withdrawReasonMaxLength: Int = 100
     private let withdrawButton = PrimaryButton(buttonState: .disabled, buttonTitle: "탈퇴하기")
 
+    private var isLayoutConfigured: Bool = false
+    private var mainLabelTopConstraint: Constraint?
+    private var withdrawReasonViewTopConstraint: Constraint?
     private var cancellables: Set<AnyCancellable> = []
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        if !isLayoutConfigured {
+            updateConstraint()
+            isLayoutConfigured = true
+        }
+    }
+
+    private func updateConstraint() {
+        let height = view.bounds.height
+        if height <= 667 {
+            mainLabelTopConstraint?.update(offset: Layout.mainLabelTopMinSpacing)
+            withdrawReasonViewTopConstraint?.update(offset: Layout.withdrawReasonViewTopMinSpacing)
+        }
+    }
 
     override func configureAttribute() {
         view.backgroundColor = .systemBackground
@@ -139,7 +161,7 @@ final class WithdrawViewController: BaseViewController<WithdrawViewModel> {
         view.addSubview(withdrawButton)
 
         mainLabel.snp.makeConstraints { make in
-            make.top.equalTo(safeArea).offset(Layout.mainLabelTopSpacing)
+            mainLabelTopConstraint = make.top.equalTo(safeArea).offset(Layout.mainLabelTopSpacing).constraint
             make.horizontalEdges.equalTo(safeArea).inset(Layout.horizontalMargin)
         }
 
@@ -158,7 +180,7 @@ final class WithdrawViewController: BaseViewController<WithdrawViewModel> {
         }
 
         withdrawReasonView.snp.makeConstraints { make in
-            make.top.equalTo(confirmStackView.snp.bottom).offset(Layout.withdrawReasonViewTopSpacing)
+            withdrawReasonViewTopConstraint = make.top.equalTo(confirmStackView.snp.bottom).offset(Layout.withdrawReasonViewTopSpacing).constraint
             make.horizontalEdges.equalTo(safeArea)
             make.bottom.equalTo(withdrawButton.snp.top)
         }
