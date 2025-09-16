@@ -113,5 +113,12 @@ public struct PresentationDependencyAssembler: DependencyAssemblerProtocol {
 
             return RoutineListViewModel(routineRepository: routineRepository)
         }
+
+        DIContainer.shared.register(type: WithdrawViewModel.self) { container in
+            guard let authRepository = container.resolve(type: AuthRepositoryProtocol.self)
+            else { fatalError("authRepository 의존성이 등록되지 않았습니다.") }
+
+            return WithdrawViewModel(authRepository: authRepository)
+        }
     }
 }

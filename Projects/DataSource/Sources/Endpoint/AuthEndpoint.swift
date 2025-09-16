@@ -10,7 +10,7 @@ import Domain
 enum AuthEndpoint {
     case login(socialLoginType: SocialLoginType, nickname: String?, token: String)
     case logout
-    case withdraw
+    case withdraw(withdrawReason: String)
     case reissue(refreshToken: String)
     case agreements(agreements: [TermsType: Bool])
 }
@@ -70,6 +70,8 @@ extension AuthEndpoint: Endpoint {
                 parameters[agreement.key.termKey] = agreement.value
             }
             return parameters
+        case .withdraw(let withdrawReason):
+            return ["reasonOfWithdrawal": withdrawReason]
         default:
             return [:]
         }

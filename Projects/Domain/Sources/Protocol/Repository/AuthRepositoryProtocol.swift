@@ -24,5 +24,5 @@ public protocol AuthRepositoryProtocol {
     func logout() async throws
 
     /// 계정 탈퇴를 진행합니다.
-    func withdraw() async throws
+    func withdraw(reason: String) async throws
 }

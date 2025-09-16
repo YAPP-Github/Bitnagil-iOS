@@ -60,8 +60,8 @@ final class AuthRepository: AuthRepositoryProtocol {
     }
 
     // 탈퇴하기를 진행합니다.
-    func withdraw() async throws {
-        let endpoint = AuthEndpoint.withdraw
+    func withdraw(reason: String) async throws {
+        let endpoint = AuthEndpoint.withdraw(withdrawReason: reason)
         _ = try await networkService.request(endpoint: endpoint, type: String.self)
         try tokenManager.removeToken()
         try removeUserInfo()
