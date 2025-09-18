@@ -21,6 +21,7 @@ final class WithdrawViewController: BaseViewController<WithdrawViewModel> {
         static let confirmButtonSize: CGFloat = 24
         static let withdrawReasonViewTopSpacing: CGFloat = 62
         static let withdrawReasonViewTopMinSpacing: CGFloat = 22
+        static let withdrawChoiceButtonHeight: CGFloat = 56
         static let withdrawReasonTextViewPlaceholderTopSpacing: CGFloat = 13
         static let withdrawReasonTextViewHorizontalMargin: CGFloat = 16
         static let withdrawReasonTextViewVerticalMargin: CGFloat = 13
@@ -117,7 +118,7 @@ final class WithdrawViewController: BaseViewController<WithdrawViewModel> {
                 for: .touchUpInside)
 
             withdrawChoiceButton.snp.makeConstraints { make in
-                make.height.equalTo(56)
+                make.height.equalTo(Layout.withdrawChoiceButtonHeight)
             }
             withdrawReasonStackView.addArrangedSubview(withdrawChoiceButton)
             withdrawButtons[withdrawReason] = withdrawChoiceButton
