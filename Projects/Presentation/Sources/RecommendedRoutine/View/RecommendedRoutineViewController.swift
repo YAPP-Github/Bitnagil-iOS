@@ -79,6 +79,7 @@ final class RecommendedRoutineViewController: BaseViewController<RecommendedRout
         routineLabel.textColor = BitnagilColor.gray60
 
         headerStackView.axis = .horizontal
+        registerEmotionButton.delegate = self
 
         levelButton.addAction(UIAction { _ in
             self.showBottomSheet()
@@ -299,6 +300,18 @@ final class RecommendedRoutineViewController: BaseViewController<RecommendedRout
 
     @objc private func tappedDimmedView() {
         toggleFloatingButton()
+    }
+}
+
+// MARK: RegisterEmotionButtonViewDelegate
+extension RecommendedRoutineViewController: RegisterEmotionButtonViewDelegate {
+    func registerEmotionButtonViewDidTapRegisterButton(_ sender: RegisterEmotionButtonView) {
+        guard let emotionRegisterViewModel = DIContainer.shared.resolve(type: EmotionRegisterViewModel.self)
+        else { fatalError("emotionRegisterViewModel 의존성이 등록되지 않았습니다.") }
+
+        let emotionRegistrationViewController = EmotionRegistrationViewController(viewModel: emotionRegisterViewModel)
+        emotionRegistrationViewController.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(emotionRegistrationViewController, animated: true)
     }
 }
 
