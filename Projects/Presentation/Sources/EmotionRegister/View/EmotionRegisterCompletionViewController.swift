@@ -5,6 +5,7 @@
 //  Created by 이동현 on 8/23/25.
 //
 
+import Shared
 import SnapKit
 import UIKit
 
@@ -30,6 +31,7 @@ final class EmotionRegisterCompletionViewController: UIViewController {
         static let marbleImageTopSpacing: CGFloat = 96.92
     }
 
+    private let emotion: Emotion
     private let backgroundImageView = UIImageView()
     private let groundImageView = UIImageView()
     private let speechImageView = UIImageView()
@@ -40,6 +42,7 @@ final class EmotionRegisterCompletionViewController: UIViewController {
     private let pomoRightHandImageView = UIImageView()
 
     init(emotion: Emotion) {
+        self.emotion = emotion
         super.init(nibName: nil, bundle: nil)
 
         marbleImageView.image = emotion.image
@@ -57,11 +60,14 @@ final class EmotionRegisterCompletionViewController: UIViewController {
         super.viewDidLoad()
         configureAttribute()
         configureLayout()
+    }
 
-        // TODO: - 임시 네비 바 설정
-        configureCustomNavigationBar(navigationBarStyle: .withBackButton(title: "임시뒤로가기"))
-        let filteredNavigations = navigationController?.viewControllers.filter { !($0 is EmotionRegistrationViewController) } ?? []
-        navigationController?.setViewControllers(filteredNavigations, animated: false)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+            self?.goToRecommendedRoutineView()
+        }
     }
 
     func configureAttribute() {
@@ -135,5 +141,15 @@ final class EmotionRegisterCompletionViewController: UIViewController {
             make.top.equalTo(speechImageView.snp.top).offset(Layout.speechLabelTopSpacing)
             make.horizontalEdges.equalTo(speechImageView).inset(Layout.speechImageHorizontalSpacing)
         }
+    }
+
+    private func goToRecommendedRoutineView() {
+        guard let resultRecommendedRoutineViewModel = DIContainer.shared.resolve(type: ResultRecommendedRoutineViewModel.self)
+        else{ fatalError("resultRecommendedRoutineViewModel 의존성이 등록되지 않았습니다.") }
+
+        resultRecommendedRoutineViewModel.configure(viewModelType: .emotion(emotion: emotion))
+        let resultRecommendedRoutineView = ResultRecommendedRoutineViewController(entryPoint: .emotion, viewModel: resultRecommendedRoutineViewModel)
+        resultRecommendedRoutineView.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(resultRecommendedRoutineView, animated: true)
     }
 }
