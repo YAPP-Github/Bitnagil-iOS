@@ -37,8 +37,7 @@ final class ResultRecommendedRoutineViewController: BaseViewController<ResultRec
 
         var confirmButtonLabel: String {
             switch self {
-            case .onboarding: "등록하기"
-            case .mypage: "확인"
+            case .onboarding, .mypage: "등록하기"
             case .emotion: "맞춤 추천 루틴 보러 가기"
             }
         }
@@ -54,9 +53,9 @@ final class ResultRecommendedRoutineViewController: BaseViewController<ResultRec
 
         var isRoutineButtonEnabled: Bool {
             switch self {
-            case .onboarding, .emotion:
+            case .onboarding, .mypage:
                 true
-            case .mypage:
+            case .emotion:
                 false
             }
         }
@@ -132,7 +131,7 @@ final class ResultRecommendedRoutineViewController: BaseViewController<ResultRec
         case .onboarding, .mypage:
             configureCustomNavigationBar(navigationBarStyle: .withProgressBar(step: OnboardingType.allCases.count + 1))
         case .emotion:
-            configureCustomNavigationBar(navigationBarStyle: .withBackButton(title: ""))
+            configureCustomNavigationBar(navigationBarStyle: .withTitle(title: ""))
         }
 
         let mainLabelText = entryPoint.mainLabelText
@@ -216,9 +215,9 @@ final class ResultRecommendedRoutineViewController: BaseViewController<ResultRec
         case .onboarding:
             confirmButton = PrimaryButton(buttonState: .disabled, buttonTitle: entryPoint.confirmButtonLabel)
         case .mypage:
-            confirmButton = PrimaryButton(buttonState: .default, buttonTitle: entryPoint.confirmButtonLabel)
-        case .emotion:
             confirmButton = PrimaryButton(buttonState: .disabled, buttonTitle: entryPoint.confirmButtonLabel)
+        case .emotion:
+            confirmButton = PrimaryButton(buttonState: .default, buttonTitle: entryPoint.confirmButtonLabel)
         }
     }
 
@@ -312,20 +311,27 @@ final class ResultRecommendedRoutineViewController: BaseViewController<ResultRec
     }
 
     private func configureSkipButton() {
-        skipButton.addAction(UIAction { [weak self] _ in
-            guard let self else { return }
-            switch entryPoint {
-            case .emotion:
-                if let navigationController = self.navigationController {
-                    let viewControllers = navigationController.viewControllers
-                    if viewControllers.count >= 3 {
-                        navigationController.popToViewController(viewControllers[viewControllers.count - 3], animated: false)
+        skipButton.addAction(
+            UIAction { [weak self] _ in
+                guard let self else { return }
+                switch entryPoint {
+                case .emotion:
+                    if
+                        let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                        let window = windowScene.windows.first(where: { $0.isKeyWindow }),
+                        let tabBarView = window.rootViewController as? TabBarView {
+                        self.navigationController?.popToRootViewController(animated: false)
+                        tabBarView.selectedIndex = 0
                     }
+
+                case .onboarding:
+                    goToNextView()
+
+                case .mypage:
+                    break
                 }
-            case .onboarding, .mypage:
-                goToNextView()
-            }
-        }, for: .touchUpInside)
+            },
+            for: .touchUpInside)
     }
 
     private func goToNextView() {
@@ -337,6 +343,9 @@ final class ResultRecommendedRoutineViewController: BaseViewController<ResultRec
             }
 
         case .mypage:
+            viewModel.action(input: .fetchSelectedRoutineId)
+
+        case .emotion:
             if
                 let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                 let window = windowScene.windows.first(where: { $0.isKeyWindow }),
@@ -345,16 +354,16 @@ final class ResultRecommendedRoutineViewController: BaseViewController<ResultRec
                 tabBarView.selectedIndex = 1
             }
             viewModel.action(input: .showRecommendedRoutineToastMessageView)
-
-        case .emotion:
-            viewModel.action(input: .fetchSelectedRoutineId)
         }
     }
 
     private func goToRoutineCreationView(routineId: Int) {
         guard let routineCreationViewModel = DIContainer.shared.resolve(type: RoutineCreationViewModel.self)
         else { fatalError("routineCreationViewModel 의존성이 등록되지 않았습니다.") }
-        let routineCreationView = RoutineCreationViewController(viewModel: routineCreationViewModel, recommendRoutineId: routineId)
+        let routineCreationView = RoutineCreationViewController(
+            viewModel: routineCreationViewModel,
+            recommendRoutineId: routineId,
+            isFromMypage: true)
         routineCreationView.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(routineCreationView, animated: true)
     }

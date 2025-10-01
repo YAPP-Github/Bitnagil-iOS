@@ -67,6 +67,7 @@ final class RoutineCreationViewController: BaseViewController<RoutineCreationVie
     private let registerButton = UIButton()
     private let navigationTitle: String
     private let registerButtonTitle: String
+    private let isFromMypage: Bool
     private var cancellables = Set<AnyCancellable>()
 
     init(
@@ -75,6 +76,7 @@ final class RoutineCreationViewController: BaseViewController<RoutineCreationVie
     ) {
         navigationTitle = updateInfo?.routineId == nil ? "루틴 등록" : "루틴 수정"
         registerButtonTitle = updateInfo?.routineId == nil ? "등록하기" : "수정하기"
+        self.isFromMypage = false
 
         super.init(viewModel: viewModel)
 
@@ -85,9 +87,14 @@ final class RoutineCreationViewController: BaseViewController<RoutineCreationVie
         }
     }
 
-    init(viewModel: RoutineCreationViewModel, recommendRoutineId: Int) {
+    init(
+        viewModel: RoutineCreationViewModel,
+        recommendRoutineId: Int,
+        isFromMypage: Bool = false
+    ) {
         navigationTitle = "루틴 등록"
         registerButtonTitle = "등록하기"
+        self.isFromMypage = isFromMypage
 
         super.init(viewModel: viewModel)
 
@@ -136,8 +143,20 @@ final class RoutineCreationViewController: BaseViewController<RoutineCreationVie
         registerButton.titleLabel?.font = BitnagilFont.init(style: .body1, weight: .semiBold).font
         registerButton.addAction(
             UIAction { [weak self] _ in
-                self?.viewModel.action(input: .registerRoutine)
-                self?.navigationController?.popViewController(animated: true)
+                guard let self else { return }
+                self.viewModel.action(input: .registerRoutine)
+                if self.isFromMypage {
+                    if
+                        let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                        let window = windowScene.windows.first(where: { $0.isKeyWindow }),
+                        let tabBarView = window.rootViewController as? TabBarView {
+                        self.navigationController?.popToRootViewController(animated: false)
+                        tabBarView.selectedIndex = 1
+                        viewModel.action(input: .showRecommendedRoutineToastMessageView)
+                    }
+                } else {
+                    self.navigationController?.popViewController(animated: true)
+                }
             },
             for: .touchUpInside)
         bindCreationCardViews()

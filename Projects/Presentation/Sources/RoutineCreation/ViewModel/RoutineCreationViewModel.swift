@@ -33,6 +33,7 @@ final class RoutineCreationViewModel: ViewModel {
         case configureEndDate(date: Date)
         case configureExecution(type: ExecutionTime)
         case registerRoutine
+        case showRecommendedRoutineToastMessageView
     }
 
     struct Output {
@@ -108,6 +109,8 @@ final class RoutineCreationViewModel: ViewModel {
             periodStartSubject.send(date)
         case .configureEndDate(let date):
             periodEndSubject.send(date)
+        case .showRecommendedRoutineToastMessageView:
+            showRecommendedRoutineToastMessageView()
         }
         
         updateIsRoutineValid()
@@ -277,6 +280,15 @@ final class RoutineCreationViewModel: ViewModel {
             } catch {
 
             }
+        }
+    }
+
+    private func showRecommendedRoutineToastMessageView() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            NotificationCenter.default.post(
+                name: .showRecommendedRoutineToast,
+                object: nil,
+                userInfo: nil)
         }
     }
 }

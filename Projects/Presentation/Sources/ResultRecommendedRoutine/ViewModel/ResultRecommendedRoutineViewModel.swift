@@ -128,7 +128,7 @@ final class ResultRecommendedRoutineViewModel: ViewModel {
         if selectedRoutines.contains(routine) {
             selectedRoutines.remove(routine)
         } else {
-            if case .emotion = viewModelType {
+            if case .mypage = viewModelType {
                 selectedRoutines.removeAll()
             }
             selectedRoutines.insert(routine)
