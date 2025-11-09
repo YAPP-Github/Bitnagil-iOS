@@ -120,5 +120,9 @@ public struct PresentationDependencyAssembler: DependencyAssemblerProtocol {
 
             return WithdrawViewModel(authRepository: authRepository)
         }
+
+        DIContainer.shared.register(type: ReportViewModel.self) { container in
+            return ReportViewModel()
+        }
     }
 }

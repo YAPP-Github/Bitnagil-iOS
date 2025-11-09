@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>앨범에서 사진을 선택합니다. 허용하시겠습니까?</string>
+	<key>NSCameraUsageDescription</key>
+	<string>카메라를 사용해 사진을 촬영합니다. 허용하시겠습니까?</string>
 	<key>BaseURL</key>
 	<string>$(BASE_URL)</string>
 	<key>CFBundleExecutable</key>

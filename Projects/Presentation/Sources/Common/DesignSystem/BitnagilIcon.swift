@@ -72,6 +72,11 @@ enum BitnagilIcon {
     static let settingIcon = UIImage(named: "setting_icon", in: bundle, with: nil)
     static let exclamationFilledIcon = UIImage(named: "exclamation_filled_icon", in: bundle, with: nil)
 
+    // MARK: - Report
+    static let roundDeleteIcon = UIImage(named: "round_delete_icon", in: bundle, with: nil)
+    static let cameraIcon = UIImage(named: "camera_icon", in: bundle, with: nil)
+    static let locationIcon = UIImage(named: "location_icon", in: bundle, with: nil)
+
     // MARK: - Routine Creation Icons
     static let asteriskIcon = UIImage(named: "asterisk_icon", in: bundle, with: nil)
     static let deleteIcon = UIImage(named: "delete_icon", in: bundle, with: nil)

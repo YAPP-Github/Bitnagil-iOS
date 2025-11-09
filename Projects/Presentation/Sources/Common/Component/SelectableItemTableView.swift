@@ -19,17 +19,20 @@ final class SelectableItemTableView<T: SelectableItem & CaseIterable & Equatable
 
     private let itemTableView = UITableView()
     private let items: [T]
+    private let markIsSelected: Bool
     private var selectedItem: T? {
         didSet {
+            if !markIsSelected && selectedItem == nil { return }
             delegate?.selectableItemTableView(self, didSelectItem: selectedItem)
         }
     }
 
     weak var delegate: SelectableItemTableViewDelegate?
 
-    init(items: [T], selectedItem: T? = nil) {
+    init(items: [T], selectedItem: T? = nil, markIsSelected: Bool = true) {
         self.items = items.sorted(by:  { $0.id < $1.id })
         self.selectedItem = selectedItem
+        self.markIsSelected = markIsSelected
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -93,6 +96,9 @@ final class SelectableItemTableView<T: SelectableItem & CaseIterable & Equatable
         } else {
             self.selectedItem = selectedItem
         }
+
+        if !markIsSelected { self.selectedItem = nil }
+
         itemTableView.reloadData()
         dismiss(animated: true)
     }

@@ -35,7 +35,7 @@ final class HomeViewModel: ViewModel {
         let updateVersionPublisher: AnyPublisher<URL?, Never>
     }
 
-    private(set) var output: Output
+    let output: Output
     private var routines: [String: [Routine]] = [:]
     private var routinesCompleted: [String: Bool] = [:]
     private let nicknameSubject = CurrentValueSubject<String, Never>("")
