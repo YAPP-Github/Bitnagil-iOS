@@ -26,6 +26,7 @@ final class ReportViewModel: ViewModel {
         let locationPublisher: AnyPublisher<String?, Never>
         let selectedPhotoPublisher: AnyPublisher<[PhotoItem], Never>
         let exceptionPublisher: AnyPublisher<String, Never>
+        let maxPhotoCount: Int
     }
 
     private(set) var output: Output
@@ -35,6 +36,7 @@ final class ReportViewModel: ViewModel {
     private let locationSubject = CurrentValueSubject<String?, Never>(nil)
     private let selectedPhotoSubject = CurrentValueSubject<[PhotoItem], Never>([])
     private let exceptionSubject = PassthroughSubject<String, Never>()
+    private let maxPhotoCount = 3
     private var latitude: Double? = nil
     private var longitude: Double? = nil
 
@@ -45,7 +47,8 @@ final class ReportViewModel: ViewModel {
             contentPublisher: contentSubject.eraseToAnyPublisher(),
             locationPublisher: locationSubject.eraseToAnyPublisher(),
             selectedPhotoPublisher: selectedPhotoSubject.eraseToAnyPublisher(),
-            exceptionPublisher: exceptionSubject.eraseToAnyPublisher())
+            exceptionPublisher: exceptionSubject.eraseToAnyPublisher(),
+            maxPhotoCount: maxPhotoCount)
     }
 
     func action(input: Input) {
@@ -85,8 +88,8 @@ final class ReportViewModel: ViewModel {
         guard let photoData else { return }
         var currentSelectedPhoto = selectedPhotoSubject.value
 
-        guard currentSelectedPhoto.count < 3 else {
-            exceptionSubject.send("사진은 최대 3장까지 선택할 수 있습니다.")
+        guard currentSelectedPhoto.count < maxPhotoCount else {
+            exceptionSubject.send("사진은 최대 \(maxPhotoCount)장까지 선택할 수 있습니다.")
             return
         }
 

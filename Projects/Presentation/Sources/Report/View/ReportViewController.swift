@@ -349,8 +349,10 @@ final class ReportViewController: BaseViewController<ReportViewModel> {
         viewModel.output.selectedPhotoPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] items in
-                self?.applySnapshot(items: items, animating: true)
-                self?.cameraButton.configure(imageCount: items.count)
+                guard let self else { return }
+                self.applySnapshot(items: items, animating: true)
+                self.cameraButton
+                    .configure(imageCount: items.count, maxCount: viewModel.output.maxPhotoCount)
             }
             .store(in: &cancellables)
     }
@@ -431,7 +433,7 @@ final class ReportViewController: BaseViewController<ReportViewModel> {
 
     private func dismissIfNeededThen(_ action: @escaping () -> Void) {
         if let presentedViewController {
-            print(presentedViewController)
+            
         }
 
         if Thread.isMainThread {

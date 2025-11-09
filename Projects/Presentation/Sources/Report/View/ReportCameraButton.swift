@@ -31,7 +31,7 @@ final class ReportCameraButton: UIButton {
     private func configureAttribute() {
         backgroundColor = BitnagilColor.gray99
         cameraImageView.image = BitnagilIcon.cameraIcon
-        configure(imageCount: 0)
+        configure(imageCount: 0, maxCount: 3)
     }
 
     private func configureLayout() {
@@ -50,8 +50,8 @@ final class ReportCameraButton: UIButton {
         }
     }
 
-    func configure(imageCount: Int) {
-        let text = "\(imageCount)/3"
+    func configure(imageCount: Int, maxCount: Int) {
+        let text = "\(imageCount)/\(maxCount)"
 
         let nsString = text as NSString
         let firstRange = nsString.rangeOfComposedCharacterSequence(at: .zero)
