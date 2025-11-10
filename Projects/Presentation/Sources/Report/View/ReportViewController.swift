@@ -99,12 +99,17 @@ final class ReportViewController: BaseViewController<ReportViewModel> {
 
         locationButton.layer.cornerRadius = Layout.locationButtonCornerRadius
         locationButton.layer.masksToBounds = true
+        locationButton.addAction(
+            UIAction { [weak self] _ in
+                self?.viewModel.action(input: .configureLocation)
+            },
+            for: .touchUpInside)
 
         registerButton.layer.cornerRadius = Layout.registerButtonCornerRadius
         registerButton.layer.masksToBounds = true
         registerButton.addAction(
             UIAction { [weak self] _ in
-                self?.viewModel.action(input: .configureLocation)
+                self?.viewModel.action(input: .register)
             },
             for: .touchUpInside)
 

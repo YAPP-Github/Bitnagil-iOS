@@ -62,5 +62,14 @@ public struct DomainDependencyAssembler: DependencyAssemblerProtocol {
 
             return RoutineUseCase(routineRepository: routineRepository)
         }
+
+        DIContainer.shared.register(type: ReportUseCaserProtocol.self) { container in
+            guard
+                let locationRepository = container.resolve(type: LocationRepositoryProtocol.self),
+                let reportRepository = container.resolve(type: ReportRepositoryProtocol.self)
+            else { fatalError("reportUseCase에 필요한 의존성이 등록되지 않았습니다.") }
+
+            return ReportUseCase(locationRepository: locationRepository, reportRepository: reportRepository)
+        }
     }
 }

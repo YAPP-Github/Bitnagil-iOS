@@ -15,4 +15,8 @@ public enum AppProperties {
     public static var kakaoNativeKey: String {
         Bundle.main.object(forInfoDictionaryKey: "KakaoNativeKey") as? String ?? ""
     }
+
+    public static var kakaoApiKey: String {
+        Bundle.main.object(forInfoDictionaryKey: "KakaoAPIKey") as? String ?? ""
+    }
 }

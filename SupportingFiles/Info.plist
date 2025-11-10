@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>위치 정보 사용을 허용하시겠습니까?</string>
+	<key>LSApplicationCategoryType</key>
+	<string></string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>앨범에서 사진을 선택합니다. 허용하시겠습니까?</string>
 	<key>NSCameraUsageDescription</key>
@@ -35,6 +39,8 @@
 	<string>1</string>
 	<key>KakaoNativeKey</key>
 	<string>$(KAKAO_NATIVE_KEY)</string>
+	<key>KakaoAPIKey</key>
+	<string>$(KAKAO_API_KEY)</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>kakaokompassauth</string>

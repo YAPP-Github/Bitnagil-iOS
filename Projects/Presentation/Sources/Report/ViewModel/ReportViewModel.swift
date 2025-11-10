@@ -17,6 +17,7 @@ final class ReportViewModel: ViewModel {
         case configureLocation
         case selectPhoto(photoData: Data)
         case removePhoto(id: UUID)
+        case register
     }
 
     struct Output {
@@ -30,6 +31,7 @@ final class ReportViewModel: ViewModel {
     }
 
     private(set) var output: Output
+    private let reportUseCase: ReportUseCaserProtocol
     private let categorySubject = CurrentValueSubject<ReportType?, Never>(nil)
     private let titleSubject = CurrentValueSubject<String?, Never>(nil)
     private let contentSubject = CurrentValueSubject<String?, Never>(nil)
@@ -37,10 +39,11 @@ final class ReportViewModel: ViewModel {
     private let selectedPhotoSubject = CurrentValueSubject<[PhotoItem], Never>([])
     private let exceptionSubject = PassthroughSubject<String, Never>()
     private let maxPhotoCount = 3
-    private var latitude: Double? = nil
-    private var longitude: Double? = nil
+    private var location: LocationEntity? = nil
 
-    init() {
+    init(reportUseCase: ReportUseCaserProtocol) {
+        self.reportUseCase = reportUseCase
+
         self.output = Output(
             categoryPublisher: categorySubject.map { $0?.description }.eraseToAnyPublisher(),
             titlePublisher: titleSubject.eraseToAnyPublisher(),
@@ -65,6 +68,8 @@ final class ReportViewModel: ViewModel {
             selectPhoto(photoData: photoData)
         case .removePhoto(let id):
             removePhoto(id: id)
+        case .register:
+            register()
         }
     }
 
@@ -81,7 +86,15 @@ final class ReportViewModel: ViewModel {
     }
 
     private func configureLocation() {
-        // 카카오 sdk로 현 위치 설정
+        Task {
+            do {
+                self.location = try await reportUseCase.getCurrentLocation()
+            } catch {
+                
+            }
+
+            locationSubject.send(location?.address)
+        }
     }
 
     private func selectPhoto(photoData: Data?) {
@@ -102,5 +115,9 @@ final class ReportViewModel: ViewModel {
     private func removePhoto(id: UUID) {
         let currentSelectedPhoto = selectedPhotoSubject.value.filter { $0.id != id }
         selectedPhotoSubject.send(currentSelectedPhoto)
+    }
+
+    private func register() {
+
     }
 }

@@ -81,13 +81,18 @@ final class NetworkService {
         guard !data.isEmpty else { throw NetworkError.emptyData }
 
         do {
-            let baseResponse = try decoder.decode(BaseResponse<T>.self, from: data)
+            let bitnagilResponse = try decoder.decode(BaseResponse<T>.self, from: data)
 
-            guard let responseDTO = baseResponse.data else { return nil }
+            guard let responseDTO = bitnagilResponse.data else { return nil }
 
             return responseDTO
         } catch {
-            throw NetworkError.decodingError
+            do {
+                let generalResponse = try decoder.decode(T.self, from: data)
+                return generalResponse
+            } catch {
+                throw NetworkError.decodingError
+            }
         }
     }
 }
