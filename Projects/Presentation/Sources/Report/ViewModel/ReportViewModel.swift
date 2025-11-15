@@ -40,12 +40,13 @@ final class ReportViewModel: ViewModel {
     private let exceptionSubject = PassthroughSubject<String, Never>()
     private let maxPhotoCount = 3
     private var location: LocationEntity? = nil
+    private(set) var selectedReportType: ReportType?
 
     init(reportUseCase: ReportUseCaserProtocol) {
         self.reportUseCase = reportUseCase
 
         self.output = Output(
-            categoryPublisher: categorySubject.map { $0?.description }.eraseToAnyPublisher(),
+            categoryPublisher: categorySubject.map { $0?.name }.eraseToAnyPublisher(),
             titlePublisher: titleSubject.eraseToAnyPublisher(),
             contentPublisher: contentSubject.eraseToAnyPublisher(),
             locationPublisher: locationSubject.eraseToAnyPublisher(),
@@ -75,6 +76,7 @@ final class ReportViewModel: ViewModel {
 
     private func configureCategory(type: ReportType?) {
         categorySubject.send(type)
+        selectedReportType = type
     }
 
     private func configureTitle(title: String?) {

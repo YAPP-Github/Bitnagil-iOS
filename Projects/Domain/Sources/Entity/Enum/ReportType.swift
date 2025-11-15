@@ -6,7 +6,8 @@
 //
 
 public enum ReportType: String, CaseIterable {
+    case transportation
     case lamp
-    case road
-    case etc
+    case water
+    case convenience
 }

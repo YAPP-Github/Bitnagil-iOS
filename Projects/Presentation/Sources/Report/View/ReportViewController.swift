@@ -38,7 +38,7 @@ final class ReportViewController: BaseViewController<ReportViewModel> {
         static let registerButtonTopSpacing: CGFloat = 47
         static let registerButtonBottomSpacing: CGFloat = 14
         static let registerButtonHeight: CGFloat = 54
-        static let categoryBottomSheetHeight: CGFloat = 226
+        static let categoryBottomSheetHeight: CGFloat = 362
         static let cameraBottomSheetHeight: CGFloat = 174
     }
 
@@ -61,7 +61,6 @@ final class ReportViewController: BaseViewController<ReportViewModel> {
     private let locationButton = LocationButton()
     private let registerButton = PrimaryButton(buttonState: .disabled, buttonTitle: "제출하기")
     private let photoSelectionView = SelectableItemTableView<SelectPhotoType>(items: SelectPhotoType.allCases.sorted(by: { $0.id < $1.id }), markIsSelected: false)
-    private let categorySelectionView = SelectableItemTableView<ReportType>(items: ReportType.allCases.sorted(by: { $0.id < $1.id}))
     private var cancellables: Set<AnyCancellable> = []
     private var dataSource: DataSource?
 
@@ -114,7 +113,6 @@ final class ReportViewController: BaseViewController<ReportViewModel> {
             for: .touchUpInside)
 
         photoSelectionView.delegate = self
-        categorySelectionView.delegate = self
         applySnapshot(items: [], animating: false)
     }
 
@@ -367,7 +365,9 @@ final class ReportViewController: BaseViewController<ReportViewModel> {
     }
 
     private func showCategoryBottomSheet() {
-        presentCustomBottomSheet(contentViewController: categorySelectionView, maxHeight: Layout.categoryBottomSheetHeight )
+        let categorySelectionView = ReportCategoryTableViewController(reportType: viewModel.selectedReportType)
+        categorySelectionView.delegate = self
+        presentCustomBottomSheet(contentViewController: categorySelectionView, maxHeight: Layout.categoryBottomSheetHeight)
     }
 
     private func configureCollectionViewDataSource() {
@@ -437,10 +437,6 @@ final class ReportViewController: BaseViewController<ReportViewModel> {
     }
 
     private func dismissIfNeededThen(_ action: @escaping () -> Void) {
-        if let presentedViewController {
-            
-        }
-
         if Thread.isMainThread {
             if let presented = presentedViewController {
                 presented.dismiss(animated: true, completion: action)
@@ -479,6 +475,13 @@ extension ReportViewController: ReportPhotoCollectionViewCellDelegate {
 
 extension ReportViewController: UICollectionViewDelegate {
 
+}
+
+extension ReportViewController: ReportCategoryTableViewControllerDelegate {
+    func reportCategoryTableViewController(_ sender: ReportCategoryTableViewController, selectedCategory: ReportType?) {
+        guard let selectedCategory else { return }
+        viewModel.action(input: .selectCategory(type: selectedCategory))
+    }
 }
 
 extension ReportViewController: SelectableItemTableViewDelegate {

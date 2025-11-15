@@ -26,8 +26,8 @@ final class ReportTextView: UIView {
         static let placeholderTopSpacing: CGFloat = 15
         static let chevronImageLeadingSpacing: CGFloat = 17
         static let chevronImageTrailingSpacing: CGFloat = 19
-        static let chevronImageWidth: CGFloat = 10
-        static let chevronImageHeight: CGFloat = 6
+        static let chevronImageWidth: CGFloat = 24
+        static let chevronImageHeight: CGFloat = 24
     }
 
     private let placeholderLabel = UILabel()
