@@ -30,7 +30,7 @@ final class RecommendedRoutineViewController: BaseViewController<RecommendedRout
         static let floatingButtonBottomSpacing: CGFloat = 19
         static let floatingButtonSize: CGFloat = 52
         static let floatingMenuBottomSpacing: CGFloat = 15
-        static let floatingMenuHeight: CGFloat = 64
+        static let floatingMenuHeight: CGFloat = 104
         static let floatingMenuWidth: CGFloat = 144
         static let toastMessageViewHeight: CGFloat = 52
         static let toastMessageViewBottomSpacing: CGFloat = 38
@@ -335,6 +335,11 @@ extension RecommendedRoutineViewController: SelectableItemTableViewDelegate {
 
 // MARK: FloatingMenuViewDelegate
 extension RecommendedRoutineViewController: FloatingMenuViewDelegate {
+    func floatingMenuDidTapReportButton(_ sender: FloatingMenuView) {
+        toggleFloatingButton()
+        // TODO: 제보하기 뷰로 이동
+    }
+
     func floatingMenuDidTapRegisterRoutineButton(_ sender: FloatingMenuView) {
         toggleFloatingButton()
         guard let routineCreationViewModel = DIContainer.shared.resolve(type: RoutineCreationViewModel.self)

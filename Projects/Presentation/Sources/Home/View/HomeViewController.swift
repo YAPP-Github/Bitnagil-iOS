@@ -45,7 +45,7 @@ final class HomeViewController: BaseViewController<HomeViewModel> {
         static let floatingButtonBottomSpacing: CGFloat = 19
         static let floatingButtonSize: CGFloat = 52
         static let floatingMenuBottomSpacing: CGFloat = 16
-        static let floatingMenuHeight: CGFloat = 56
+        static let floatingMenuHeight: CGFloat = 104
         static let floatingMenuWidth: CGFloat = 144
     }
 
@@ -664,6 +664,11 @@ extension HomeViewController: RoutineViewDelegate {
 
 // MARK: FloatingMenuViewDelegate
 extension HomeViewController: FloatingMenuViewDelegate {
+    func floatingMenuDidTapReportButton(_ sender: FloatingMenuView) {
+        toggleFloatingButton()
+        // TODO: 제보하기 뷰로 이동
+    }
+    
     func floatingMenuDidTapRegisterRoutineButton(_ sender: FloatingMenuView) {
         toggleFloatingButton()
         guard let routineCreationViewModel = DIContainer.shared.resolve(type: RoutineCreationViewModel.self) else {

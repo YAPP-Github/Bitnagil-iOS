@@ -15,6 +15,7 @@ enum BitnagilIcon {
     // MARK: - Common Icons
     static let backButtonIcon = UIImage(named: "back_button_icon", in: bundle, with: nil)
     static let plusIcon = UIImage(named: "plus_icon", in: bundle, with: nil)?.withRenderingMode(.alwaysTemplate)
+    static let reportIcon = UIImage(named: "report_icon", in: bundle, with: nil)
     static let bitnagilChevronIcon = UIImage(named: "bitnagil_chevron_icon", in: bundle, with: nil)
     static func bitnagilChevronIcon(direction: Direction) -> UIImage? {
         return BitnagilIcon.bitnagilChevronIcon?.rotate(degrees: direction.rotation)?.withRenderingMode(.alwaysTemplate)
