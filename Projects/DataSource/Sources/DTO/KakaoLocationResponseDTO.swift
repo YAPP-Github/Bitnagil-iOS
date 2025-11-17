@@ -8,9 +8,6 @@
 import Domain
 import Foundation
 
-import Foundation
-import Domain
-
 struct KakaoLocationResponseDTO: Codable {
     let meta: Meta
     let documents: [Document]

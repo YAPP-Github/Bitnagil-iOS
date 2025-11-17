@@ -63,7 +63,7 @@ public struct DomainDependencyAssembler: DependencyAssemblerProtocol {
             return RoutineUseCase(routineRepository: routineRepository)
         }
 
-        DIContainer.shared.register(type: ReportUseCaserProtocol.self) { container in
+        DIContainer.shared.register(type: ReportUseCaseProtocol.self) { container in
             guard
                 let locationRepository = container.resolve(type: LocationRepositoryProtocol.self),
                 let reportRepository = container.resolve(type: ReportRepositoryProtocol.self)

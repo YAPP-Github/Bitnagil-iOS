@@ -31,7 +31,7 @@ final class ReportViewModel: ViewModel {
     }
 
     private(set) var output: Output
-    private let reportUseCase: ReportUseCaserProtocol
+    private let reportUseCase: ReportUseCaseProtocol
     private let categorySubject = CurrentValueSubject<ReportType?, Never>(nil)
     private let titleSubject = CurrentValueSubject<String?, Never>(nil)
     private let contentSubject = CurrentValueSubject<String?, Never>(nil)
@@ -42,7 +42,7 @@ final class ReportViewModel: ViewModel {
     private var location: LocationEntity? = nil
     private(set) var selectedReportType: ReportType?
 
-    init(reportUseCase: ReportUseCaserProtocol) {
+    init(reportUseCase: ReportUseCaseProtocol) {
         self.reportUseCase = reportUseCase
 
         self.output = Output(
@@ -90,7 +90,7 @@ final class ReportViewModel: ViewModel {
     private func configureLocation() {
         Task {
             do {
-                self.location = try await reportUseCase.getCurrentLocation()
+                self.location = try await reportUseCase.fetchCurrentLocation()
             } catch {
                 
             }

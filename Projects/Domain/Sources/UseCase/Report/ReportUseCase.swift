@@ -5,7 +5,7 @@
 //  Created by 이동현 on 11/9/25.
 //
 
-public final class ReportUseCase: ReportUseCaserProtocol {
+public final class ReportUseCase: ReportUseCaseProtocol {
     private let locationRepository: LocationRepositoryProtocol
     private let reportRepository: ReportRepositoryProtocol
 
@@ -14,10 +14,10 @@ public final class ReportUseCase: ReportUseCaserProtocol {
         self.reportRepository = reportRepository
     }
 
-    public func getCurrentLocation() async throws -> LocationEntity? {
-        guard let coordinate = await locationRepository.getCoordinate() else { return nil }
+    public func fetchCurrentLocation() async throws -> LocationEntity? {
+        guard let coordinate = await locationRepository.fetchCoordinate() else { return nil }
 
-        return try await locationRepository.getAddress(coordinate: coordinate)
+        return try await locationRepository.fetchAddress(coordinate: coordinate)
     }
 
     public func report(reportEntity: ReportEntity) async {

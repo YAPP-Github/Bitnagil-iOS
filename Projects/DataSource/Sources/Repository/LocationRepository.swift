@@ -21,7 +21,7 @@ final class LocationRepository: NSObject, LocationRepositoryProtocol {
         locationManager.delegate = self
     }
 
-    func getCoordinate() async -> LocationEntity? {
+    func fetchCoordinate() async -> LocationEntity? {
         guard CLLocationManager.locationServicesEnabled() else { return nil }
 
         let currentStatus = await requestAuthorizationIfNeeded()
@@ -36,7 +36,7 @@ final class LocationRepository: NSObject, LocationRepositoryProtocol {
         }
     }
 
-    func getAddress(coordinate: LocationEntity) async throws -> LocationEntity? {
+    func fetchAddress(coordinate: LocationEntity) async throws -> LocationEntity? {
         let endpoint = LocationEndpoint.fetchAddress(longitude: coordinate.longitude, latitude: coordinate.latitude)
 
         guard let response = try await networkService.request(endpoint: endpoint, type: KakaoLocationResponseDTO.self)

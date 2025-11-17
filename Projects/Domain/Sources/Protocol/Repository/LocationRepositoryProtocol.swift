@@ -6,7 +6,7 @@
 //
 
 public protocol LocationRepositoryProtocol {
-    func getCoordinate() async -> LocationEntity?
+    func fetchCoordinate() async -> LocationEntity?
 
-    func getAddress(coordinate: LocationEntity) async throws -> LocationEntity?
+    func fetchAddress(coordinate: LocationEntity) async throws -> LocationEntity?
 }
