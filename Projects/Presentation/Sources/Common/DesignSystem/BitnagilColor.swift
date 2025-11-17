@@ -59,6 +59,7 @@ enum BitnagilColor {
     // MARK: - Green Colors
     static let green5 = UIColor(named: "Green5", in: bundle, compatibleWith: nil)
     static let green10 = UIColor(named: "Green10", in: bundle, compatibleWith: nil)
+    static let green300 = UIColor(named: "Green300", in: bundle, compatibleWith: nil)
     static let green500 = UIColor(named: "Green500", in: bundle, compatibleWith: nil)
 
     // MARK: - Purple Colors
@@ -100,4 +101,8 @@ enum BitnagilColor {
     static let lightBlue700 = UIColor(named: "LightBlue700", in: bundle, compatibleWith: nil)
     static let lightBlue800 = UIColor(named: "LightBlue800", in: bundle, compatibleWith: nil)
     static let lightBlue900 = UIColor(named: "LightBlue900", in: bundle, compatibleWith: nil)
+
+    // MARK: - Blue Colors
+    static let blue300 = UIColor(named: "Blue300", in: bundle, compatibleWith: nil)
+
 }
