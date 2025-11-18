@@ -127,5 +127,9 @@ public struct PresentationDependencyAssembler: DependencyAssemblerProtocol {
 
             return ReportViewModel(reportUseCase: reportUseCase)
         }
+
+        DIContainer.shared.register(type: ReportDetailViewModel.self) { container in
+            return ReportDetailViewModel()
+        }
     }
 }

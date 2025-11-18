@@ -666,7 +666,14 @@ extension HomeViewController: RoutineViewDelegate {
 extension HomeViewController: FloatingMenuViewDelegate {
     func floatingMenuDidTapReportButton(_ sender: FloatingMenuView) {
         toggleFloatingButton()
-        // TODO: 제보하기 뷰로 이동
+        // TODO: 제보하기 뷰로 이동 (현재는 제보 detailView)
+        guard let reportDetailViewModel = DIContainer.shared.resolve(type: ReportDetailViewModel.self)
+        else { fatalError("reportDetailViewModel 의존성이 등록되지 않았습니다.") }
+
+        let reportDetailViewController = ReportDetailViewController(viewModel: reportDetailViewModel)
+        reportDetailViewController.hidesBottomBarWhenPushed = true
+
+        self.navigationController?.pushViewController(reportDetailViewController, animated: true)
     }
     
     func floatingMenuDidTapRegisterRoutineButton(_ sender: FloatingMenuView) {
