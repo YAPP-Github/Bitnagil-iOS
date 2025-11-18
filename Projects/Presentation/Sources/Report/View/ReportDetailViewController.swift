@@ -45,6 +45,8 @@ class ReportDetailViewController: BaseViewController<ReportDetailViewModel> {
         }
     }
 
+    private let scrollView = UIScrollView()
+    private let contentView = UIView()
     private let reportStatusView = UIView()
     private let dateLabel = UILabel()
     private let photoStackView = UIStackView()
@@ -64,6 +66,7 @@ class ReportDetailViewController: BaseViewController<ReportDetailViewModel> {
         view.backgroundColor = .white
         configureCustomNavigationBar(navigationBarStyle: .withBackButton(title: "제보하기"))
 
+        scrollView.showsVerticalScrollIndicator = false
         // TODO: 추후 공통 component로 교체
         reportStatusView.layer.masksToBounds = true
         reportStatusView.layer.cornerRadius = 6
@@ -87,31 +90,42 @@ class ReportDetailViewController: BaseViewController<ReportDetailViewModel> {
     override func configureLayout() {
         let safeArea = view.safeAreaLayoutGuide
 
-        view.addSubview(reportStatusView)
-        view.addSubview(dateLabel)
-        view.addSubview(photoStackView)
-        view.addSubview(contentStackView)
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        [reportStatusView, dateLabel, photoStackView, contentStackView].forEach {
+            contentView.addSubview($0)
+        }
+
+        scrollView.snp.makeConstraints { make in
+            make.edges.equalTo(safeArea)
+        }
+
+        contentView.snp.makeConstraints { make in
+            make.edges.equalTo(scrollView.contentLayoutGuide)
+            make.width.equalTo(scrollView.frameLayoutGuide)
+        }
 
         reportStatusView.snp.makeConstraints { make in
-            make.top.equalTo(safeArea).offset(Layout.reportStatusViewTopSpacing)
+            make.top.equalTo(contentView).offset(Layout.reportStatusViewTopSpacing)
             make.width.equalTo(Layout.reportStatusViewWidth)
             make.height.equalTo(Layout.reportStatusViewHeight)
-            make.leading.equalTo(safeArea).offset(Layout.horizontalMargin)
+            make.leading.equalTo(contentView).offset(Layout.horizontalMargin)
         }
 
         dateLabel.snp.makeConstraints { make in
             make.top.equalTo(reportStatusView.snp.bottom).offset(Layout.dateLabelTopSpacing)
-            make.leading.equalTo(safeArea).offset(Layout.horizontalMargin)
+            make.leading.equalTo(contentView).offset(Layout.horizontalMargin)
         }
 
         photoStackView.snp.makeConstraints { make in
             make.top.equalTo(dateLabel.snp.bottom).offset(Layout.photoStackViewTopSpacing)
-            make.leading.equalTo(safeArea).offset(Layout.horizontalMargin)
+            make.leading.equalTo(contentView).offset(Layout.horizontalMargin)
         }
 
         contentStackView.snp.makeConstraints { make in
             make.top.equalTo(photoStackView.snp.bottom).offset(Layout.contentStackViewTopSpacing)
-            make.horizontalEdges.equalTo(safeArea).inset(Layout.horizontalMargin)
+            make.horizontalEdges.equalTo(contentView).inset(Layout.horizontalMargin)
+            make.bottom.equalToSuperview().offset(-40)
         }
     }
 
@@ -190,7 +204,7 @@ class ReportDetailViewController: BaseViewController<ReportDetailViewModel> {
 
         dateLabel.text = reportDetail.date
         titleContentLabel.text = reportDetail.title
-        categoryLabel.text = reportDetail.category
+        categoryLabel.text = reportDetail.category.name
         detailDescriptionLabel.attributedText = BitnagilFont(style: .body2, weight: .medium).attributedString(text: reportDetail.description)
         locationLabel.text = reportDetail.location
     }
