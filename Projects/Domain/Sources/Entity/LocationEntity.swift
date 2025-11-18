@@ -6,13 +6,13 @@
 //
 
 public struct LocationEntity {
-    public let longitude: Double
-    public let latitude: Double
+    public let longitude: Double?
+    public let latitude: Double?
     public let address: String?
 
     public init(
-        longitude: Double,
-        latitude: Double,
+        longitude: Double?,
+        latitude: Double?,
         address: String?
     ) {
         self.longitude = longitude

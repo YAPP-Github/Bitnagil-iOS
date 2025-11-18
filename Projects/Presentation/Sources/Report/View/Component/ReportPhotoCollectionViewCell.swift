@@ -82,7 +82,7 @@ final class ReportPhotoCollectionViewCell: UICollectionViewCell {
         }
     }
 
-    func configure(item: PhotoItem) {
+    func configure(with item: PhotoItem) {
         imageView.image = UIImage(data: item.data)
         uuid = item.id
     }

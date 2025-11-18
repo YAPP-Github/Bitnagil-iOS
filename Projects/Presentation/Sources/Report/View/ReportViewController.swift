@@ -372,7 +372,7 @@ final class ReportViewController: BaseViewController<ReportViewModel> {
 
     private func configureCollectionViewDataSource() {
         let registration = UICollectionView.CellRegistration<ReportPhotoCollectionViewCell, PhotoItem> { cell, _, item in
-            cell.configure(item: item)
+            cell.configure(with: item)
             cell.delegate = self
         }
 

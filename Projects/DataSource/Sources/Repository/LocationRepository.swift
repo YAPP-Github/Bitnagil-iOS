@@ -37,7 +37,12 @@ final class LocationRepository: NSObject, LocationRepositoryProtocol {
     }
 
     func fetchAddress(coordinate: LocationEntity) async throws -> LocationEntity? {
-        let endpoint = LocationEndpoint.fetchAddress(longitude: coordinate.longitude, latitude: coordinate.latitude)
+        guard
+            let longitude = coordinate.longitude,
+            let latitude = coordinate.latitude
+        else { return nil }
+
+        let endpoint = LocationEndpoint.fetchAddress(longitude: longitude, latitude: latitude)
 
         guard let response = try await networkService.request(endpoint: endpoint, type: KakaoLocationResponseDTO.self)
         else { return nil }

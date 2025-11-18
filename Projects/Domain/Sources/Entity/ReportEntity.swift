@@ -6,5 +6,12 @@
 //
 
 public struct ReportEntity {
-
+    let id: Int
+    let title: String
+    let date: String?
+    let type: ReportType
+    let progress: ReportProgress
+    let content: String?
+    let location: LocationEntity
+    let photoUrls: [String]
 }

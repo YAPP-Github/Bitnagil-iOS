@@ -106,13 +106,13 @@ extension ReportType {
     var iconImage: UIImage? {
         switch self {
         case .transportation:
-            BitnagilIcon.restIcon
+            BitnagilIcon.carIcon
         case .lamp:
-            BitnagilIcon.outsideIcon
+            BitnagilIcon.lightIcon
         case .water:
-            BitnagilIcon.wakeupIcon
+            BitnagilIcon.waterIcon
         case .convenience:
-            BitnagilIcon.growIcon
+            BitnagilIcon.hammerIcon
         }
     }
 }

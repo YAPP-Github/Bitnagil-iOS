@@ -7,11 +7,11 @@
 
 import Foundation
 
-public struct PhotoItem: Hashable {
-    public let id: UUID
-    public let data: Data
+struct PhotoItem: Hashable {
+    let id: UUID
+    let data: Data
 
-    public init(id: UUID = .init(), data: Data) {
+    init(id: UUID = .init(), data: Data) {
         self.id = id
         self.data = data
     }
