@@ -12,12 +12,14 @@ import UIKit
 class ReportDetailViewController: BaseViewController<ReportDetailViewModel> {
     private enum Layout {
         static let horizontalMargin: CGFloat = 20
+        static let scrollViewTopSpacing: CGFloat = 48
         static let photoStackViewSpacing: CGFloat = 8
         static let photoStackViewTopSpacing: CGFloat = 14
         static let photoSize: CGFloat = 74
         static let contentStackViewSpacing: CGFloat = 28
         static let contentStackViewTopSpacing: CGFloat = 23
-        static let reportStatusViewTopSpacing: CGFloat = 74
+        static let contentStackViewBottomSpacing: CGFloat = 40
+        static let reportStatusViewTopSpacing: CGFloat = 20
         static let reportStatusViewWidth: CGFloat = 65
         static let reportStatusViewHeight: CGFloat = 26
         static let dateLabelTopSpacing: CGFloat = 6
@@ -97,7 +99,8 @@ class ReportDetailViewController: BaseViewController<ReportDetailViewModel> {
         }
 
         scrollView.snp.makeConstraints { make in
-            make.edges.equalTo(safeArea)
+            make.top.equalTo(safeArea).offset(Layout.scrollViewTopSpacing)
+            make.horizontalEdges.bottom.equalToSuperview()
         }
 
         contentView.snp.makeConstraints { make in
@@ -125,7 +128,7 @@ class ReportDetailViewController: BaseViewController<ReportDetailViewModel> {
         contentStackView.snp.makeConstraints { make in
             make.top.equalTo(photoStackView.snp.bottom).offset(Layout.contentStackViewTopSpacing)
             make.horizontalEdges.equalTo(contentView).inset(Layout.horizontalMargin)
-            make.bottom.equalToSuperview().offset(-40)
+            make.bottom.equalToSuperview().offset(-Layout.contentStackViewBottomSpacing)
         }
     }
 
