@@ -28,6 +28,15 @@ final class ReportLoadingViewController: UIViewController {
         configureLayout()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+            let reportCompleteViewController = ReportCompleteViewController()
+            self?.navigationController?.pushViewController(reportCompleteViewController, animated: true)
+        }
+    }
+
     private func configureAttribute() {
         view.backgroundColor = .white
         loadingImageView.image = BitnagilIcon.loadingIcon
