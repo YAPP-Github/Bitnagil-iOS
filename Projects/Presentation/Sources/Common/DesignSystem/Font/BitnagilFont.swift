@@ -47,10 +47,11 @@ struct BitnagilFont {
         return font
     }
 
-    func attributedString(text: String?) -> NSAttributedString {
+    func attributedString(text: String?, alignment: NSTextAlignment = .left) -> NSAttributedString {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.maximumLineHeight = style.fontAttributes.lineHeight
         paragraphStyle.minimumLineHeight = style.fontAttributes.lineHeight
+        paragraphStyle.alignment = alignment
 
         var attributes:  [NSAttributedString.Key: Any] = [
             .font: font,

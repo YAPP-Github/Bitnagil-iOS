@@ -81,6 +81,8 @@ enum BitnagilIcon {
     static let lightIcon = UIImage(named: "icon_light", in: bundle, with: nil)
     static let waterIcon = UIImage(named: "icon_water", in: bundle, with: nil)
     static let hammerIcon = UIImage(named: "icon_hammer", in: bundle, with: nil)
+    static let loadingIcon = UIImage(named: "loading_icon", in: bundle, with: nil)
+    static let completeIcon = UIImage(named: "complete_icon", in: bundle, with: nil)
 
     // MARK: - Routine Creation Icons
     static let asteriskIcon = UIImage(named: "asterisk_icon", in: bundle, with: nil)
