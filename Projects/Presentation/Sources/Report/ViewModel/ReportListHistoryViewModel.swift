@@ -14,7 +14,7 @@ final class ReportListHistoryViewModel: ViewModel {
         case fetchReports
         case fetchReport(index: Int)
         case filterCategory(type: ReportType)
-        case filterProgress(progress: ReportProgress)
+        case filterProgress(progress: ReportProgress) 
     }
 
     struct Output {

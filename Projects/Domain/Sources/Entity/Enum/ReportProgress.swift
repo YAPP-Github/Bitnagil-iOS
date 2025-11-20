@@ -20,7 +20,7 @@ public enum ReportProgress: CaseIterable {
         case .inProgress:
             "처리 중"
         case .completed:
-            "처리완료"
+            "처리 완료"
         }
     }
 }

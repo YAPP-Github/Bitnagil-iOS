@@ -10,8 +10,8 @@ import Domain
 struct ReportHistoryItem: Hashable {
     let id: Int
     let title: String
-    let thumbnailUrl: String?
-    let date: String?
+    let thumbnailUrl: String
+    let date: String
     let type: ReportType
     let progress: ReportProgress
     let location: String

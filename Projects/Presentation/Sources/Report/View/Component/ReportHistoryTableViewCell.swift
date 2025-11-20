@@ -73,7 +73,7 @@ final class ReportHistoryTableViewCell: UITableViewCell {
         addressLabel.font = BitnagilFont.init(style: .caption1, weight: .medium).font
 
         dotView.backgroundColor = BitnagilColor.gray90
-        dotView.layer.cornerRadius = dotView.bounds.width / 2
+        dotView.layer.cornerRadius = Layout.dotViewSize / 2
         dotView.layer.masksToBounds = true
     }
 
@@ -184,6 +184,7 @@ final class ReportHistoryTableViewCell: UITableViewCell {
 
         progressLabel.textColor = item.progress.titleColor
         progressLabel.text = item.progress.description
+        progressLabel.font = BitnagilFont.init(style: .caption1, weight: .semiBold).font
 
         titleLabel.text = item.title
 
@@ -192,10 +193,9 @@ final class ReportHistoryTableViewCell: UITableViewCell {
 
         addressLabel.text = item.location
 
-        guard
-            let thumbnailURL = item.thumbnailUrl,
-            let imageURL = URL(string: thumbnailURL)
-        else { return }
+        guard let imageURL = URL(string: item.thumbnailUrl) else {
+            return
+        }
 
         photoImageView.kf.setImage(with: imageURL)
     }

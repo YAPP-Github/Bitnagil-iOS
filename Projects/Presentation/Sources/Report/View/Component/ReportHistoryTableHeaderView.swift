@@ -39,8 +39,8 @@ final class ReportHistoryTableHeaderView: UITableViewHeaderFooterView {
     }
 
     private func configureLayout() {
-        addSubview(dateLabel)
-        addSubview(weekLabel)
+        contentView.addSubview(dateLabel)
+        contentView.addSubview(weekLabel)
 
         dateLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview()
@@ -60,10 +60,14 @@ final class ReportHistoryTableHeaderView: UITableViewHeaderFooterView {
     }
 
     func configure(with dateString: String) {
-        var dateString = dateString
-        let weekString = dateString.removeLast()
-
-        dateLabel.text = dateString
-        weekLabel.text = String(weekString)
+        guard let weekCharacter = dateString.last else {
+            dateLabel.text = dateString
+            weekLabel.text = nil
+            return
+        }
+        
+        let datePart = String(dateString.dropLast())
+        dateLabel.text = datePart
+        weekLabel.text = String(weekCharacter)
     }
 }
