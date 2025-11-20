@@ -6,10 +6,11 @@
 //
 
 import Combine
+import Domain
 import SnapKit
 import UIKit
 
-final class ReportListHistoryViewController: BaseViewController<ReportListHistoryViewModel> {
+final class ReportHistoryViewController: BaseViewController<ReportHistoryViewModel> {
     private enum Layout {
         static let horizontalSpacing: CGFloat = 20
         static let progressCollectionViewTopSpacing: CGFloat = 80
@@ -27,6 +28,9 @@ final class ReportListHistoryViewController: BaseViewController<ReportListHistor
         static let categoryButtonImageSize: CGFloat = 16
         static let categoryButtonImageLeadingSpacing: CGFloat = 5
         static let cetegoryButtonHeight: CGFloat = 40
+        static let emptyHistoryViewHeight: CGFloat = 50
+        static let emptyHistoryViewWidth: CGFloat = 269
+        static let categoryBottomSheetHeight: CGFloat = 362
     }
 
     private enum ProgressSection {
@@ -38,6 +42,7 @@ final class ReportListHistoryViewController: BaseViewController<ReportListHistor
     private let categoryButtonImage = UIImageView()
     private let categoryButton = UIButton()
     private let historyTableView = UITableView(frame: .zero, style: .grouped)
+    private let historyEmptyView = ReportHistoryEmptyView()
     private var progressDataSource: UICollectionViewDiffableDataSource<ProgressSection, ReportProgressItem>?
     private var historyDataSource: UITableViewDiffableDataSource<String, ReportHistoryItem>?
     private var cancellables: Set<AnyCancellable> = []
@@ -45,11 +50,12 @@ final class ReportListHistoryViewController: BaseViewController<ReportListHistor
     override func viewDidLoad() {
         super.viewDidLoad()
         viewModel.action(input: .fetchReports)
+        navigationController?.navigationBar.isHidden = true
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        configureCustomNavigationBar(navigationBarStyle: .withBackButton(title: "내 제보 기록"))
+        configureCustomNavigationBar(navigationBarStyle: .withBackButton(title: "내 제보 기록"), backgroundColor: BitnagilColor.gray99)
     }
 
     override func configureAttribute() {
@@ -57,8 +63,13 @@ final class ReportListHistoryViewController: BaseViewController<ReportListHistor
 
         categoryLabel.textColor = BitnagilColor.gray40
         categoryLabel.font = BitnagilFont.init(style: .body2, weight: .medium).font
-
         categoryButton.backgroundColor = .clear
+        categoryButton.addAction(
+            UIAction { [weak self] _ in
+                self?.showCategoryBottomSheet()
+            },
+            for: .touchUpInside)
+
         categoryButtonImage.image = BitnagilIcon
             .chevronIcon(direction: .down)?
             .withRenderingMode(.alwaysTemplate)
@@ -76,6 +87,7 @@ final class ReportListHistoryViewController: BaseViewController<ReportListHistor
         view.addSubview(categoryLabel)
         view.addSubview(categoryButtonImage)
         view.addSubview(categoryButton)
+        view.addSubview(historyEmptyView)
 
         progressCollectionView.snp.makeConstraints { make in
             make.top
@@ -132,6 +144,14 @@ final class ReportListHistoryViewController: BaseViewController<ReportListHistor
 
             make.height.equalTo(Layout.cetegoryButtonHeight)
         }
+
+        historyEmptyView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+
+            make.width.equalTo(Layout.emptyHistoryViewWidth)
+
+            make.height.equalTo(Layout.emptyHistoryViewHeight)
+        }
     }
 
     override func bind() {
@@ -163,6 +183,7 @@ final class ReportListHistoryViewController: BaseViewController<ReportListHistor
         viewModel.output.reportsPublisher
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] reports in
+                self?.historyEmptyView.isHidden = !reports.isEmpty
                 self?.applyHistorySnapshot(reports: reports)
             })
             .store(in: &cancellables)
@@ -260,9 +281,15 @@ final class ReportListHistoryViewController: BaseViewController<ReportListHistor
 
         historyDataSource?.apply(snapshot, animatingDifferences: true)
     }
+
+    private func showCategoryBottomSheet() {
+        let categorySelectionView = ReportCategoryTableViewController(reportType: viewModel.selectedReportCategory)
+        categorySelectionView.delegate = self
+        presentCustomBottomSheet(contentViewController: categorySelectionView, maxHeight: Layout.categoryBottomSheetHeight)
+    }
 }
 
-extension ReportListHistoryViewController: UICollectionViewDelegate {
+extension ReportHistoryViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard
             let snapshot = progressDataSource?.snapshot(),
@@ -274,7 +301,7 @@ extension ReportListHistoryViewController: UICollectionViewDelegate {
 
 }
 
-extension ReportListHistoryViewController: UITableViewDelegate {
+extension ReportHistoryViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         guard
             let header = tableView.dequeueReusableHeaderFooterView(withIdentifier: ReportHistoryTableHeaderView.className) as? ReportHistoryTableHeaderView,
@@ -289,4 +316,13 @@ extension ReportListHistoryViewController: UITableViewDelegate {
 
         return header
     }
+}
+
+extension ReportHistoryViewController: ReportCategoryTableViewControllerDelegate {
+    func reportCategoryTableViewController(_ sender: ReportCategoryTableViewController, selectedCategory: ReportType?) {
+        guard let selectedCategory = selectedCategory else { return }
+
+        viewModel.action(input: .filterCategory(type: selectedCategory))
+    }
+
 }

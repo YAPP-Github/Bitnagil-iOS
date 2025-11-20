@@ -9,7 +9,7 @@ import Combine
 import Domain
 import Foundation
 
-final class ReportViewModel: ViewModel {
+final class ReportRegistrationViewModel: ViewModel {
     enum Input {
         case selectCategory(type: ReportType)
         case inputTitle(title: String?)

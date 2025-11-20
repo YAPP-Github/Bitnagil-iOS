@@ -5,7 +5,6 @@
 //  Created by 이동현 on 11/15/25.
 //
 
-import Domain
 import SnapKit
 import UIKit
 
@@ -15,10 +14,6 @@ final class ReportHistoryTableViewCell: UITableViewCell {
         static let verticalSpacing: CGFloat = 14
         static let containerViewBottomSpacing: CGFloat = 10
         static let photoSize: CGFloat = 74
-        static let progressViewHeight: CGFloat = 26
-        static let progressLabelHeight: CGFloat = 18
-        static let progressLabelHorizontalSpacing: CGFloat = 10
-        static let progressLabelVerticalSpacing: CGFloat = 4
         static let titleLabelMaxHeight: CGFloat = 40
         static let titleLabelTopSpacing: CGFloat = 8
         static let titleLabelTrailingSpacing: CGFloat = 14
@@ -30,8 +25,7 @@ final class ReportHistoryTableViewCell: UITableViewCell {
     }
 
     private let containerView = UIView()
-    private let progressView = UIView()
-    private let progressLabel = UILabel()
+    private let progressView = ReportProgressView()
     private let titleLabel = UILabel()
     private let categoryLabel = UILabel()
     private let dotView = UIView()
@@ -56,9 +50,6 @@ final class ReportHistoryTableViewCell: UITableViewCell {
         containerView.layer.cornerRadius = Layout.containerViewCornerRadius
         containerView.layer.masksToBounds = true
 
-        progressView.layer.cornerRadius = 6
-        progressView.layer.masksToBounds = true
-
         photoImageView.layer.cornerRadius = 9.25
         photoImageView.layer.masksToBounds = true
 
@@ -79,9 +70,8 @@ final class ReportHistoryTableViewCell: UITableViewCell {
 
     private func configureLayout() {
         addSubview(containerView)
-        containerView.addSubview(progressView)
-        containerView.addSubview(progressLabel)
         containerView.addSubview(photoImageView)
+        containerView.addSubview(progressView)
         containerView.addSubview(titleLabel)
         containerView.addSubview(categoryLabel)
         containerView.addSubview(dotView)
@@ -98,19 +88,6 @@ final class ReportHistoryTableViewCell: UITableViewCell {
         progressView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(Layout.horizontalSpacing)
             make.top.equalToSuperview().offset(Layout.verticalSpacing)
-            make.height.equalTo(Layout.progressViewHeight)
-        }
-
-        progressLabel.snp.makeConstraints { make in
-            make.height.equalTo(Layout.progressLabelHeight)
-
-            make.verticalEdges
-                .equalTo(progressView)
-                .inset(Layout.progressLabelVerticalSpacing)
-
-            make.horizontalEdges
-                .equalTo(progressView)
-                .inset(Layout.progressLabelHorizontalSpacing)
         }
 
         photoImageView.snp.makeConstraints { make in
@@ -180,17 +157,10 @@ final class ReportHistoryTableViewCell: UITableViewCell {
     }
 
     func configure(with item: ReportHistoryItem) {
-        progressView.backgroundColor = item.progress.backgroundColor
-
-        progressLabel.textColor = item.progress.titleColor
-        progressLabel.text = item.progress.description
-        progressLabel.font = BitnagilFont.init(style: .caption1, weight: .semiBold).font
+        progressView.configure(with: item.progress)
 
         titleLabel.text = item.title
-
         categoryLabel.text = item.type.name
-
-
         addressLabel.text = item.location
 
         guard let imageURL = URL(string: item.thumbnailUrl) else {
@@ -198,33 +168,5 @@ final class ReportHistoryTableViewCell: UITableViewCell {
         }
 
         photoImageView.kf.setImage(with: imageURL)
-    }
-}
-
-extension ReportProgress {
-    var backgroundColor: UIColor? {
-        switch self {
-        case .received:
-            BitnagilColor.green10
-        case .inProgress:
-            BitnagilColor.skyblue10
-        case .completed:
-            BitnagilColor.gray95
-        case .entire:
-            nil
-        }
-    }
-
-    var titleColor: UIColor? {
-        switch self {
-        case .received:
-            BitnagilColor.green500
-        case .inProgress:
-            BitnagilColor.lightBlue300
-        case .completed:
-            BitnagilColor.gray40
-        case .entire:
-            nil
-        }
     }
 }

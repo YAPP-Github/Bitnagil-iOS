@@ -52,7 +52,6 @@ final class MypageView: BaseViewController<MypageViewModel> {
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
         navigationController?.navigationBar.compactAppearance = appearance
-        navigationController?.navigationBar.isHidden = false
     }
 
     override func configureAttribute() {
@@ -165,16 +164,24 @@ extension MypageView: UITableViewDataSource {
 
         let selectedMenu = MypageViewModel.MypageMenu.allCases[indexPath.row]
 
-        guard selectedMenu == .resetGoal else {
+        switch selectedMenu {
+
+        case .reportHistory:
+            guard let reportHistoryViewModel = DIContainer.shared.resolve(type: ReportHistoryViewModel.self)
+            else { fatalError("reportHistoryViewModel 의존성이 등록되지 않았습니다.") }
+
+            let reportHistoryViewController = ReportHistoryViewController(viewModel: reportHistoryViewModel)
+            reportHistoryViewController.hidesBottomBarWhenPushed = true
+            navigationController?.pushViewController(reportHistoryViewController, animated: true)
+        case .resetGoal:
+            guard let onboardingViewModel = DIContainer.shared.resolve(type: OnboardingViewModel.self)
+            else { fatalError("onboardingViewModel 의존성이 등록되지 않았습니다.") }
+
+            let onboardingView = OnboardingResultViewController(viewModel: onboardingViewModel, entryPoint: .myPagePrevious)
+            onboardingView.hidesBottomBarWhenPushed = true
+            navigationController?.pushViewController(onboardingView, animated: true)
+        case .notice, .faq:
             viewModel.action(input: .didSelectMenu(menu: selectedMenu))
-            return
         }
-
-        guard let onboardingViewModel = DIContainer.shared.resolve(type: OnboardingViewModel.self)
-        else { fatalError("onboardingViewModel 의존성이 등록되지 않았습니다.") }
-
-        let onboardingView = OnboardingResultViewController(viewModel: onboardingViewModel, entryPoint: .myPagePrevious)
-        onboardingView.hidesBottomBarWhenPushed = true
-        navigationController?.pushViewController(onboardingView, animated: true)
     }
 }

@@ -9,7 +9,7 @@ import Combine
 import Domain
 import Foundation
 
-final class ReportListHistoryViewModel: ViewModel {
+final class ReportHistoryViewModel: ViewModel {
     enum Input {
         case fetchReports
         case fetchReport(index: Int)
@@ -31,6 +31,7 @@ final class ReportListHistoryViewModel: ViewModel {
     private let selectedCategorySubject = CurrentValueSubject<ReportType?, Never>(nil)
     private let reportSubject = CurrentValueSubject<[ReportHistoryItem], Never>([])
     private let selectedReportSubject = PassthroughSubject<Int?, Never>()
+    private(set) var selectedReportCategory: ReportType?
     private var reports: [ReportHistoryItem] = []
 
     init() {
@@ -76,6 +77,7 @@ final class ReportListHistoryViewModel: ViewModel {
             currentType = reportType
         }
 
+        selectedReportCategory = currentType
         selectedCategorySubject.send(currentType)
         filterReports()
     }
@@ -101,7 +103,7 @@ final class ReportListHistoryViewModel: ViewModel {
     }
 
     private func fetchReports() {
-        reportSubject.send(ReportHistoryItem.dummyData)
+        //reportSubject.send(ReportHistoryItem.dummyData)
     }
 
     private func fetchReport(index: Int) {

@@ -121,16 +121,16 @@ public struct PresentationDependencyAssembler: DependencyAssemblerProtocol {
             return WithdrawViewModel(authRepository: authRepository)
         }
 
-        DIContainer.shared.register(type: ReportViewModel.self) { container in
+        DIContainer.shared.register(type: ReportRegistrationViewModel.self) { container in
             guard let reportUseCase = container.resolve(type: ReportUseCaseProtocol.self)
             else { fatalError("reportUseCase 의존성이 등록되지 않았습니다.") }
 
-            return ReportViewModel(reportUseCase: reportUseCase)
+            return ReportRegistrationViewModel(reportUseCase: reportUseCase)
         }
 
         DIContainer.shared
-            .register(type: ReportListHistoryViewModel.self) { container in
-            return ReportListHistoryViewModel()
+            .register(type: ReportHistoryViewModel.self) { container in
+            return ReportHistoryViewModel()
         }
 
         DIContainer.shared.register(type: ReportDetailViewModel.self) { container in

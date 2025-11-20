@@ -21,6 +21,7 @@ final class MypageViewModel: ViewModel {
     }
 
     enum MypageMenu: String, CaseIterable {
+        case reportHistory = "내 제보 기록"
         case resetGoal = "내 목표 재설정"
         case notice = "공지사항"
         case faq = "자주 묻는 질문"
@@ -67,6 +68,8 @@ final class MypageViewModel: ViewModel {
             if let url = URL(string: "https://complex-wombat-99f.notion.site/23ff4587491d80659ae3ea392afbc05e") {
                 externalURLPublisher.send(url)
             }
+        case .reportHistory:
+            break
         }
     }
 }

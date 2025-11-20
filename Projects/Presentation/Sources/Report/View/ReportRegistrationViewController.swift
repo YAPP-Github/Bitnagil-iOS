@@ -11,7 +11,7 @@ import PhotosUI
 import SnapKit
 import UIKit
 
-final class ReportViewController: BaseViewController<ReportViewModel> {
+final class ReportRegistrationViewController: BaseViewController<ReportRegistrationViewModel> {
     private enum CollectionViewSection { case main }
 
     private enum Layout {
@@ -42,7 +42,7 @@ final class ReportViewController: BaseViewController<ReportViewModel> {
         static let cameraBottomSheetHeight: CGFloat = 174
     }
 
-    private typealias Section = ReportViewController.CollectionViewSection
+    private typealias Section = ReportRegistrationViewController.CollectionViewSection
     private typealias DataSource = UICollectionViewDiffableDataSource<Section, PhotoItem>
     private typealias Snapshot  = NSDiffableDataSourceSnapshot<Section, PhotoItem>
 
@@ -451,7 +451,7 @@ final class ReportViewController: BaseViewController<ReportViewModel> {
     }
 }
 
-extension ReportViewController: ReportTextViewDelegate {
+extension ReportRegistrationViewController: ReportTextViewDelegate {
     func reportTextViewDidChanged(_ reportTextView: ReportTextView, text: String?) {
         switch reportTextView {
         case reportTitleTextView:
@@ -467,24 +467,24 @@ extension ReportViewController: ReportTextViewDelegate {
     }
 }
 
-extension ReportViewController: ReportPhotoCollectionViewCellDelegate {
+extension ReportRegistrationViewController: ReportPhotoCollectionViewCellDelegate {
     func reportPhotoCollectionViewCellWillDeleteCell(_ cell: ReportPhotoCollectionViewCell, uuid: UUID) {
         viewModel.action(input: .removePhoto(id: uuid))
     }
 }
 
-extension ReportViewController: UICollectionViewDelegate {
+extension ReportRegistrationViewController: UICollectionViewDelegate {
 
 }
 
-extension ReportViewController: ReportCategoryTableViewControllerDelegate {
+extension ReportRegistrationViewController: ReportCategoryTableViewControllerDelegate {
     func reportCategoryTableViewController(_ sender: ReportCategoryTableViewController, selectedCategory: ReportType?) {
         guard let selectedCategory else { return }
         viewModel.action(input: .selectCategory(type: selectedCategory))
     }
 }
 
-extension ReportViewController: SelectableItemTableViewDelegate {
+extension ReportRegistrationViewController: SelectableItemTableViewDelegate {
     func selectableItemTableView<T>(_ sender: SelectableItemTableView<T>, didSelectItem: T?) where T : SelectableItem, T : CaseIterable, T : Equatable {
         if
             T.self == ReportType.self,
@@ -510,7 +510,7 @@ extension ReportViewController: SelectableItemTableViewDelegate {
     }
 }
 
-extension ReportViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+extension ReportRegistrationViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true)
     }
@@ -527,7 +527,7 @@ extension ReportViewController: UIImagePickerControllerDelegate, UINavigationCon
     }
 }
 
-extension ReportViewController: PHPickerViewControllerDelegate {
+extension ReportRegistrationViewController: PHPickerViewControllerDelegate {
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         picker.dismiss(animated: true, completion: nil)
         guard
