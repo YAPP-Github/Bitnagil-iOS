@@ -134,7 +134,10 @@ public struct PresentationDependencyAssembler: DependencyAssemblerProtocol {
         }
 
         DIContainer.shared.register(type: ReportDetailViewModel.self) { container in
-            return ReportDetailViewModel()
+            guard let reportRepository = container.resolve(type: ReportRepositoryProtocol.self)
+            else { fatalError("reportRepository 의존성이 등록되지 않았습니다.") }
+
+            return ReportDetailViewModel(reportRepository: reportRepository)
         }
     }
 }

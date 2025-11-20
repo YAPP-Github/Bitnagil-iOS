@@ -6,6 +6,7 @@
 //
 
 import Combine
+import Kingfisher
 import SnapKit
 import UIKit
 
@@ -20,8 +21,6 @@ class ReportDetailViewController: BaseViewController<ReportDetailViewModel> {
         static let contentStackViewTopSpacing: CGFloat = 23
         static let contentStackViewBottomSpacing: CGFloat = 40
         static let reportStatusViewTopSpacing: CGFloat = 20
-        static let reportStatusViewWidth: CGFloat = 65
-        static let reportStatusViewHeight: CGFloat = 26
         static let dateLabelTopSpacing: CGFloat = 6
         static let reportContentBackgroudViewTopSpacing: CGFloat = 8
         static let reportContentDescriptionVerticalMargin: CGFloat = 16
@@ -42,14 +41,14 @@ class ReportDetailViewController: BaseViewController<ReportDetailViewModel> {
             case .description:
                 return "상세 제보 내용"
             case .location:
-                return "내 위치"
+                return "신고 위치"
             }
         }
     }
 
     private let scrollView = UIScrollView()
     private let contentView = UIView()
-    private let reportStatusView = UIView()
+    private let reportStatusView = ReportProgressView()
     private let dateLabel = UILabel()
     private let photoStackView = UIStackView()
     private let contentStackView = UIStackView()
@@ -58,10 +57,20 @@ class ReportDetailViewController: BaseViewController<ReportDetailViewModel> {
     private let detailDescriptionLabel = UILabel()
     private let locationLabel = UILabel()
     private var cancellables: Set<AnyCancellable> = []
+    private let reportId: Int
+
+    init(viewModel: ReportDetailViewModel, reportId: Int) {
+        self.reportId = reportId
+        super.init(viewModel: viewModel)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel.action(input: .fetchReportDetail)
+        viewModel.action(input: .fetchReportDetail(reportId: reportId))
     }
 
     override func configureAttribute() {
@@ -69,10 +78,6 @@ class ReportDetailViewController: BaseViewController<ReportDetailViewModel> {
         configureCustomNavigationBar(navigationBarStyle: .withBackButton(title: "제보하기"))
 
         scrollView.showsVerticalScrollIndicator = false
-        // TODO: 추후 공통 component로 교체
-        reportStatusView.layer.masksToBounds = true
-        reportStatusView.layer.cornerRadius = 6
-        reportStatusView.backgroundColor = BitnagilColor.green10
 
         dateLabel.font = BitnagilFont(style: .body1, weight: .semiBold).font
         dateLabel.textColor = BitnagilColor.gray10
@@ -110,8 +115,6 @@ class ReportDetailViewController: BaseViewController<ReportDetailViewModel> {
 
         reportStatusView.snp.makeConstraints { make in
             make.top.equalTo(contentView).offset(Layout.reportStatusViewTopSpacing)
-            make.width.equalTo(Layout.reportStatusViewWidth)
-            make.height.equalTo(Layout.reportStatusViewHeight)
             make.leading.equalTo(contentView).offset(Layout.horizontalMargin)
         }
 
@@ -196,19 +199,26 @@ class ReportDetailViewController: BaseViewController<ReportDetailViewModel> {
     private func fillReportContent(reportDetail: ReportDetail?) {
         guard let reportDetail else { return }
 
-        let photoView = UIView()
-        photoView.backgroundColor = BitnagilColor.gray30
-        photoView.layer.masksToBounds = true
-        photoView.layer.cornerRadius = 9.25
-        photoView.snp.makeConstraints { make in
-            make.size.equalTo(Layout.photoSize)
-        }
-        photoStackView.addArrangedSubview(photoView)
-
+        reportStatusView.configure(with: reportDetail.status)
         dateLabel.text = reportDetail.date
         titleContentLabel.text = reportDetail.title
         categoryLabel.text = reportDetail.category.name
-        detailDescriptionLabel.attributedText = BitnagilFont(style: .body2, weight: .medium).attributedString(text: reportDetail.description)
+        detailDescriptionLabel.attributedText = BitnagilFont(style: .body2, weight: .medium)
+            .attributedString(text: reportDetail.description)
         locationLabel.text = reportDetail.location
+
+        reportDetail.photoUrls.forEach { photoUrl in
+            let photoView = UIImageView()
+
+            if let url = URL(string: photoUrl) {
+                photoView.kf.setImage(with: url)
+            }
+            photoView.layer.masksToBounds = true
+            photoView.layer.cornerRadius = 9.25
+            photoView.snp.makeConstraints { make in
+                make.size.equalTo(Layout.photoSize)
+            }
+            photoStackView.addArrangedSubview(photoView)
+        }
     }
 }

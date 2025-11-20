@@ -670,7 +670,7 @@ extension HomeViewController: FloatingMenuViewDelegate {
         guard let reportDetailViewModel = DIContainer.shared.resolve(type: ReportDetailViewModel.self)
         else { fatalError("reportDetailViewModel 의존성이 등록되지 않았습니다.") }
 
-        let reportDetailViewController = ReportDetailViewController(viewModel: reportDetailViewModel)
+        let reportDetailViewController = ReportDetailViewController(viewModel: reportDetailViewModel, reportId: 1)
         reportDetailViewController.hidesBottomBarWhenPushed = true
 
         self.navigationController?.pushViewController(reportDetailViewController, animated: true)

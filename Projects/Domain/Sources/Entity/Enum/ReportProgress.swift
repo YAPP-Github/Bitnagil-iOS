@@ -5,11 +5,11 @@
 //  Created by 이동현 on 11/15/25.
 //
 
-public enum ReportProgress: CaseIterable {
-    case entire
-    case received
-    case inProgress
-    case completed
+public enum ReportProgress: String, CaseIterable {
+    case entire = "ENTIRE"
+    case received = "PENDING"
+    case inProgress = "IN_PROGRESS"
+    case completed = "COMPLETED"
 
     public var description: String {
         switch self {
