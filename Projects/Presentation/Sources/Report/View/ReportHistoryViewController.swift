@@ -7,6 +7,7 @@
 
 import Combine
 import Domain
+import Shared
 import SnapKit
 import UIKit
 
@@ -262,7 +263,6 @@ final class ReportHistoryViewController: BaseViewController<ReportHistoryViewMod
         var snapshot = NSDiffableDataSourceSnapshot<ProgressSection, ReportProgressItem>()
         snapshot.appendSections([.main])
         snapshot.appendItems(items, toSection: .main)
-        print(items)
         progressDataSource?.apply(snapshot, animatingDifferences: true)
     }
 
@@ -315,6 +315,28 @@ extension ReportHistoryViewController: UITableViewDelegate {
         header.configure(with: dateString)
 
         return header
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let snapshot = historyDataSource?.snapshot()
+        else { return }
+
+        let sectionID = snapshot.sectionIdentifiers[indexPath.section]
+        let items = snapshot.itemIdentifiers(inSection: sectionID)
+
+        guard indexPath.row < items.count
+        else { return }
+
+        let item = items[indexPath.row]
+
+        guard let reportDetailViewModel = DIContainer.shared.resolve(type: ReportDetailViewModel.self)
+        else { fatalError("reportDetailViewModel 의존성이 등록되지 않았습니다.") }
+
+        let reportDetailViewController = ReportDetailViewController(viewModel: reportDetailViewModel, reportId: item.id)
+        reportDetailViewController.hidesBottomBarWhenPushed = true
+
+        self.navigationController?.pushViewController(reportDetailViewController, animated: true)
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 

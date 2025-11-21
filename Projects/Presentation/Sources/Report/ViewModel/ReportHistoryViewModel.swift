@@ -12,13 +12,13 @@ import Foundation
 final class ReportHistoryViewModel: ViewModel {
     enum Input {
         case fetchReports
-        case fetchReport(index: Int)
         case filterCategory(type: ReportType)
         case filterProgress(progress: ReportProgress) 
     }
 
     struct Output {
         let progressPublisher: AnyPublisher<[ReportProgressItem], Never>
+        let selectedProgressPublisher: AnyPublisher<ReportProgress?, Never>
         let categoryPublisher: AnyPublisher<[ReportType], Never>
         let selectedCategoryPublisher: AnyPublisher<ReportType?, Never>
         let reportsPublisher: AnyPublisher<[ReportHistoryItem], Never>
@@ -27,14 +27,17 @@ final class ReportHistoryViewModel: ViewModel {
 
     private(set) var output: Output
     private let progressSubject = CurrentValueSubject<[ReportProgressItem], Never>([])
+    private let selectedProgressSubject = CurrentValueSubject<ReportProgress?, Never>(nil)
     private let categorySubject = CurrentValueSubject<[ReportType], Never>([])
     private let selectedCategorySubject = CurrentValueSubject<ReportType?, Never>(nil)
     private let reportSubject = CurrentValueSubject<[ReportHistoryItem], Never>([])
     private let selectedReportSubject = PassthroughSubject<Int?, Never>()
     private(set) var selectedReportCategory: ReportType?
     private var reports: [ReportHistoryItem] = []
+    private let reportRepository: ReportRepositoryProtocol
 
-    init() {
+    init(reportRepository: ReportRepositoryProtocol) {
+        self.reportRepository = reportRepository
         progressSubject
             .send(
                 ReportProgress.allCases.map { ReportProgressItem(
@@ -46,6 +49,7 @@ final class ReportHistoryViewModel: ViewModel {
 
         output = Output(
             progressPublisher: progressSubject.eraseToAnyPublisher(),
+            selectedProgressPublisher: selectedProgressSubject.eraseToAnyPublisher(),
             categoryPublisher: categorySubject.eraseToAnyPublisher(),
             selectedCategoryPublisher: selectedCategorySubject.eraseToAnyPublisher(),
             reportsPublisher: reportSubject.eraseToAnyPublisher(),
@@ -56,8 +60,6 @@ final class ReportHistoryViewModel: ViewModel {
         switch input {
         case .fetchReports:
             fetchReports()
-        case .fetchReport(let index):
-            fetchReport(index: index)
         case .filterCategory(let type):
             filterCategory(reportType: type)
         case .filterProgress(let progress):
@@ -99,16 +101,42 @@ final class ReportHistoryViewModel: ViewModel {
     }
 
     private func filterReports() {
+        let selectedProgress = selectedProgressSubject.value
+        let selectedCategory = selectedCategorySubject.value
 
+        var filteredReports = reports
+        if let selectedProgress {
+            filteredReports = filteredReports.filter({ $0.progress == selectedProgress })
+        }
+        if let selectedCategory {
+            filteredReports = filteredReports.filter({ $0.type == selectedCategory })
+        }
+        reportSubject.send(filteredReports)
     }
 
     private func fetchReports() {
-        //reportSubject.send(ReportHistoryItem.dummyData)
-    }
+        Task {
+            do {
+                let reportEntities = try await reportRepository.fetchReports()
 
-    private func fetchReport(index: Int) {
-        guard index < reports.count else { return }
+                var reportHistoryItems: [ReportHistoryItem] = []
+                for reportEntity in reportEntities {
+                    let reportHistoryItem = ReportHistoryItem(
+                        id: reportEntity.id,
+                        title: reportEntity.title,
+                        thumbnailUrl: reportEntity.photoUrls.first ?? "",
+                        date: reportEntity.date ?? "",
+                        type: reportEntity.type,
+                        progress: reportEntity.progress,
+                        location: reportEntity.location.address ?? "")
+                    reportHistoryItems.append(reportHistoryItem)
+                }
 
-        selectedReportSubject.send(reports[index].id)
+                reports = reportHistoryItems
+                reportSubject.send(reportHistoryItems)
+            } catch {
+                // TODO: 에러 처리
+            }
+        }
     }
 }
