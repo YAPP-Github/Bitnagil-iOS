@@ -6,27 +6,30 @@
 //
 
 enum ReportEndpoint {
+    case fetchReports
     case fetchReportDetail(reportId: Int)
 }
 
 extension ReportEndpoint: Endpoint {
     var baseURL: String {
         switch self {
-        case .fetchReportDetail:
+        case .fetchReports, .fetchReportDetail:
             return AppProperties.baseURL + "/api/v2/reports"
         }
     }
 
     var path: String {
         switch self {
+        case .fetchReports:
+            return baseURL
         case .fetchReportDetail(let reportId):
-            "\(baseURL)/\(reportId)"
+            return "\(baseURL)/\(reportId)"
         }
     }
 
     var method: HTTPMethod {
         switch self {
-        case .fetchReportDetail:
+        case .fetchReports, .fetchReportDetail:
                 .get
         }
     }
