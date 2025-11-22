@@ -13,7 +13,8 @@ public struct ReportEntity {
     public let progress: ReportProgress
     public let content: String?
     public let location: LocationEntity
-    public let photoUrls: [String]
+    public let thumbnailURL: String?
+    public let photoURLs: [String]
 
     public init(
         id: Int,
@@ -23,6 +24,7 @@ public struct ReportEntity {
         progress: ReportProgress,
         content: String?,
         location: LocationEntity,
+        thumbnailURL: String?,
         photoUrls: [String]
     ) {
         self.id = id
@@ -32,7 +34,7 @@ public struct ReportEntity {
         self.progress = progress
         self.content = content
         self.location = location
-        self.photoUrls = photoUrls
+        self.thumbnailURL = thumbnailURL
+        self.photoURLs = photoUrls
     }
-
 }

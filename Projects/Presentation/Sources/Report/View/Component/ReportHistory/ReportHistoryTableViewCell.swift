@@ -46,6 +46,8 @@ final class ReportHistoryTableViewCell: UITableViewCell {
 
     private func configureAttribute() {
         backgroundColor = .clear
+        selectionStyle = .none
+        
         containerView.backgroundColor = .white
         containerView.layer.cornerRadius = Layout.containerViewCornerRadius
         containerView.layer.masksToBounds = true

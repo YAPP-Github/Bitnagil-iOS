@@ -267,7 +267,7 @@ final class ReportHistoryViewController: BaseViewController<ReportHistoryViewMod
     }
 
     private func applyHistorySnapshot(reports: [ReportHistoryItem]) {
-        let reportsDictionary = Dictionary(grouping: reports) { $0.date ?? "" }
+        let reportsDictionary = Dictionary(grouping: reports) { $0.date }
         let sortedDates = reportsDictionary.keys.sorted(by: >)
 
         var snapshot = NSDiffableDataSourceSnapshot<String, ReportHistoryItem>()
@@ -279,7 +279,7 @@ final class ReportHistoryViewController: BaseViewController<ReportHistoryViewMod
             }
         }
 
-        historyDataSource?.apply(snapshot, animatingDifferences: true)
+        historyDataSource?.apply(snapshot, animatingDifferences: false)
     }
 
     private func showCategoryBottomSheet() {

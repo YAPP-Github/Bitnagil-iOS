@@ -46,7 +46,7 @@ final class ReportDetailViewModel: ViewModel {
                         category: reportEntity.type,
                         description: reportEntity.content ?? "",
                         location: reportEntity.location.address ?? "",
-                        photoUrls: reportEntity.photoUrls)
+                        photoUrls: reportEntity.photoURLs)
                     reportDetailSubject.send(reportDetail)
                 }
                 reportDetailSubject.send(nil)

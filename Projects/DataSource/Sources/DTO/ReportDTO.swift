@@ -33,6 +33,7 @@ struct ReportDTO: Codable {
                 longitude: longitude,
                 latitude: latitude,
                 address: reportLocation),
+            thumbnailURL: reportImageUrl,
             photoUrls: reportImageUrls ?? [])
     }
 
@@ -49,6 +50,7 @@ struct ReportDTO: Codable {
                 longitude: longitude,
                 latitude: latitude,
                 address: reportLocation),
+            thumbnailURL: reportImageUrl,
             photoUrls: reportImageUrls ?? [])
     }
 }

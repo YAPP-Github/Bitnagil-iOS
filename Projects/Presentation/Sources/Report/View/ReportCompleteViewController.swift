@@ -103,6 +103,12 @@ final class ReportCompleteViewController: UIViewController {
 
         photoStackView.axis = .horizontal
         photoStackView.spacing = Layout.photoStackViewSpacing
+
+        confirmButton.addAction(
+            UIAction { [weak self] _ in
+                self?.navigationController?.popToRootViewController(animated: true)
+            },
+            for: .touchUpInside)
     }
 
     private func configureLayout() {
