@@ -12,7 +12,7 @@ final class FileRepository: FileRepositoryProtocol {
     private let networkService = NetworkService.shared
 
     func fetchPresignedURL(prefix: String?, fileNames: [String]) async throws -> [String : String]? {
-        let dtos = fileNames.map { FilePresignedConditaionDTO(prefix: prefix, fileName: $0) }
+        let dtos = fileNames.map { FilePresignedConditionDTO(prefix: prefix, fileName: $0) }
         let endpoint = FilePresignedEndpoint.fetchPresignedURL(presignedConditions: dtos)
 
         return try await networkService.request(endpoint: endpoint, type: [String:String].self)

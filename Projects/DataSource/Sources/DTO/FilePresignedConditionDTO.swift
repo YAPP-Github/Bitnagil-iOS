@@ -1,11 +1,11 @@
 //
-//  FilePresignedDTO.swift
+//  FilePresignedConditionDTO.swift
 //  DataSource
 //
 //  Created by 이동현 on 11/22/25.
 //
 
-struct FilePresignedConditaionDTO: Codable {
+struct FilePresignedConditionDTO: Codable {
     let prefix: String?
     let fileName: String
 }

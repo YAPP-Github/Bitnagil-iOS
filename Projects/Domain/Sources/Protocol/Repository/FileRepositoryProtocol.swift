@@ -1,5 +1,5 @@
 //
-//  FIileRepository.swift
+//  FileRepositoryProtocol.swift
 //  Domain
 //
 //  Created by 이동현 on 11/22/25.

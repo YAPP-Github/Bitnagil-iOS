@@ -8,7 +8,7 @@
 import Foundation
 
 enum FilePresignedEndpoint {
-    case fetchPresignedURL(presignedConditions: [FilePresignedConditaionDTO])
+    case fetchPresignedURL(presignedConditions: [FilePresignedConditionDTO])
 }
 
 extension FilePresignedEndpoint: Endpoint {

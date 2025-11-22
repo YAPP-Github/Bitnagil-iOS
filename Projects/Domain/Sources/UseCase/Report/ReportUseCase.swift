@@ -43,6 +43,8 @@ public final class ReportUseCase: ReportUseCaseProtocol {
         location: LocationEntity?,
         photos: [Data]
     ) async throws -> Int? {
+        if photos.isEmpty { return nil }
+
         let fileNames = (1...photos.count).map { "\($0).jpg" }
 
         // TODO: - 사진 업로드 실패 시 에러 처리 필요
@@ -51,7 +53,9 @@ public final class ReportUseCase: ReportUseCaseProtocol {
             presignedDict.count == photos.count
         else { return nil }
 
-        let presignedURLs = Array(presignedDict.values)
+        let presignedURLs = fileNames.compactMap { fileName in
+            presignedDict[fileName]
+        }
 
         for (url, photo) in zip(presignedURLs, photos) {
             do {
