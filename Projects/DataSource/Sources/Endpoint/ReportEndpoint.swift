@@ -6,21 +6,19 @@
 //
 
 enum ReportEndpoint {
+    case register(report: ReportDTO)
     case fetchReports
     case fetchReportDetail(reportId: Int)
 }
 
 extension ReportEndpoint: Endpoint {
     var baseURL: String {
-        switch self {
-        case .fetchReports, .fetchReportDetail:
-            return AppProperties.baseURL + "/api/v2/reports"
-        }
+        return AppProperties.baseURL + "/api/v2/reports"
     }
 
     var path: String {
         switch self {
-        case .fetchReports:
+        case .register, .fetchReports:
             return baseURL
         case .fetchReportDetail(let reportId):
             return "\(baseURL)/\(reportId)"
@@ -29,8 +27,10 @@ extension ReportEndpoint: Endpoint {
 
     var method: HTTPMethod {
         switch self {
+        case.register:
+            return .post
         case .fetchReports, .fetchReportDetail:
-                .get
+            return .get
         }
     }
 
@@ -47,7 +47,12 @@ extension ReportEndpoint: Endpoint {
     }
 
     var bodyParameters: [String : Any] {
-        return [:]
+        switch self {
+        case .register(let report):
+            return report.dictionary
+        case .fetchReports, .fetchReportDetail:
+            return [:]
+        }
     }
 
     var isAuthorized: Bool {

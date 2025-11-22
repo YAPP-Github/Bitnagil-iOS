@@ -11,3 +11,9 @@ public enum ReportType: String, CaseIterable {
     case water
     case convenience
 }
+
+extension ReportType: CustomStringConvertible {
+    public var description: String {
+        return self.rawValue.uppercased()
+    }
+}

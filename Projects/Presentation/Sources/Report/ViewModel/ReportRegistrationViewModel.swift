@@ -26,7 +26,9 @@ final class ReportRegistrationViewModel: ViewModel {
         let contentPublisher: AnyPublisher<String?, Never>
         let locationPublisher: AnyPublisher<String?, Never>
         let selectedPhotoPublisher: AnyPublisher<[PhotoItem], Never>
+        let isReportValid: AnyPublisher<Bool, Never>
         let exceptionPublisher: AnyPublisher<String, Never>
+        let reportRegistrationCompletePublisher: AnyPublisher<Bool, Never>
         let maxPhotoCount: Int
     }
 
@@ -37,6 +39,8 @@ final class ReportRegistrationViewModel: ViewModel {
     private let contentSubject = CurrentValueSubject<String?, Never>(nil)
     private let locationSubject = CurrentValueSubject<String?, Never>(nil)
     private let selectedPhotoSubject = CurrentValueSubject<[PhotoItem], Never>([])
+    private let reportVerificationSubject = PassthroughSubject<Bool, Never>()
+    private let reportRegistrationCompleteSubject = PassthroughSubject<Bool, Never>()
     private let exceptionSubject = PassthroughSubject<String, Never>()
     private let maxPhotoCount = 3
     private var location: LocationEntity? = nil
@@ -51,7 +55,9 @@ final class ReportRegistrationViewModel: ViewModel {
             contentPublisher: contentSubject.eraseToAnyPublisher(),
             locationPublisher: locationSubject.eraseToAnyPublisher(),
             selectedPhotoPublisher: selectedPhotoSubject.eraseToAnyPublisher(),
+            isReportValid: reportVerificationSubject.eraseToAnyPublisher(),
             exceptionPublisher: exceptionSubject.eraseToAnyPublisher(),
+            reportRegistrationCompletePublisher: reportRegistrationCompleteSubject.eraseToAnyPublisher(),
             maxPhotoCount: maxPhotoCount)
     }
 
@@ -77,25 +83,29 @@ final class ReportRegistrationViewModel: ViewModel {
     private func configureCategory(type: ReportType?) {
         categorySubject.send(type)
         selectedReportType = type
+        verifyIsReportValid()
     }
 
     private func configureTitle(title: String?) {
         titleSubject.send(title)
+        verifyIsReportValid()
     }
 
     private func configureContent(content: String?) {
         contentSubject.send(content)
+        verifyIsReportValid()
     }
 
     private func configureLocation() {
         Task {
             do {
                 self.location = try await reportUseCase.fetchCurrentLocation()
+                locationSubject.send(location?.address)
+                verifyIsReportValid()
             } catch {
-                
+                locationSubject.send(nil)
+                verifyIsReportValid()
             }
-
-            locationSubject.send(location?.address)
         }
     }
 
@@ -112,14 +122,72 @@ final class ReportRegistrationViewModel: ViewModel {
         currentSelectedPhoto.append(item)
 
         selectedPhotoSubject.send(currentSelectedPhoto)
+        verifyIsReportValid()
     }
 
     private func removePhoto(id: UUID) {
         let currentSelectedPhoto = selectedPhotoSubject.value.filter { $0.id != id }
         selectedPhotoSubject.send(currentSelectedPhoto)
+        verifyIsReportValid()
     }
 
     private func register() {
+        guard
+            let name = titleSubject.value,
+            !name.isEmpty,
+            let category = categorySubject.value,
+            let content = contentSubject.value,
+            let location,
+            selectedPhotoSubject.value.count > 0
+        else { return }
 
+        let selectedPhotos = selectedPhotoSubject.value.map({ $0.data })
+
+        Task {
+            let minimumDuration: TimeInterval = 0.7
+            let startTime = Date()
+            let result: Bool
+
+            do {
+                try await reportUseCase.report(
+                    title: name,
+                    content: content,
+                    category: category,
+                    location: location,
+                    photos: selectedPhotos)
+                result = true
+            } catch {
+
+                result = false
+            }
+
+            let elapsed = Date().timeIntervalSince(startTime)
+            if elapsed < minimumDuration {
+                let remaining = minimumDuration - elapsed
+                try? await Task.sleep(
+                    nanoseconds: UInt64(remaining * 1_000_000_000)
+                )
+            }
+
+            reportRegistrationCompleteSubject.send(result)
+        }
+    }
+
+    private func verifyIsReportValid() {
+        guard
+            let name = titleSubject.value,
+            !name.isEmpty,
+            categorySubject.value != nil,
+            contentSubject.value != nil,
+            let location,
+            location.latitude != nil,
+            location.longitude != nil,
+            selectedPhotoSubject.value.count > 0
+        else {
+            reportVerificationSubject.send(false)
+            return
+        }
+
+        reportVerificationSubject.send(true)
     }
 }

@@ -5,13 +5,21 @@
 //  Created by 이동현 on 11/9/25.
 //
 
+import Foundation
+
 public final class ReportUseCase: ReportUseCaseProtocol {
     private let locationRepository: LocationRepositoryProtocol
+    private let fileRepository: FileRepositoryProtocol
     private let reportRepository: ReportRepositoryProtocol
 
-    public init(locationRepository: LocationRepositoryProtocol, reportRepository: ReportRepositoryProtocol) {
+    public init(
+        locationRepository: LocationRepositoryProtocol,
+        reportRepository: ReportRepositoryProtocol,
+        fileRepository: FileRepositoryProtocol
+    ) {
         self.locationRepository = locationRepository
         self.reportRepository = reportRepository
+        self.fileRepository = fileRepository
     }
 
     public func fetchCurrentLocation() async throws -> LocationEntity? {
@@ -20,7 +28,50 @@ public final class ReportUseCase: ReportUseCaseProtocol {
         return try await locationRepository.fetchAddress(coordinate: coordinate)
     }
 
-    public func report(reportEntity: ReportEntity) async {
+    public func fetchReports() async throws -> [ReportEntity] {
+        return try await reportRepository.fetchReports()
+    }
 
+    public func fetchReport(reportId: Int) async throws -> ReportEntity? {
+        return try await reportRepository.fetchReportDetail(reportId: reportId)
+    }
+
+    public func report(
+        title: String,
+        content: String?,
+        category: ReportType,
+        location: LocationEntity?,
+        photos: [Data]
+    ) async throws {
+        let fileNames = (1...photos.count).map { "\($0).jpg" }
+
+        // TODO: - 사진 업로드 실패 시 에러 처리 필요
+        guard
+            let presignedDict = try await fileRepository.fetchPresignedURL(prefix: "report", fileNames: fileNames),
+            presignedDict.count == photos.count
+        else { return }
+
+        let presignedURLs = Array(presignedDict.values)
+
+        for (url, photo) in zip(presignedURLs, photos) {
+            do {
+                try await fileRepository.uploadFile(url: url, data: photo)
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+
+        let publicImageURLs = presignedURLs.map { url in
+            url.split(separator: "?", maxSplits: 1)
+                .map(String.init)
+                .first ?? url
+        }
+
+        try await reportRepository.report(
+            title: title,
+            content: content,
+            category: category,
+            location: location,
+            photoURLs: publicImageURLs)
     }
 }

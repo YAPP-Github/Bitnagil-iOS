@@ -5,8 +5,24 @@
 //  Created by 이동현 on 11/9/25.
 //
 
+import Foundation
+
 public protocol ReportRepositoryProtocol {
-    func report(reportEntity: ReportEntity) async
+
+    /// 제보를 등록합니다.
+    /// - Parameters:
+    ///   - title: 제보 제목
+    ///   - content: 제보 내용
+    ///   - category: 제보 카테고리
+    ///   - location: 제보 위치
+    ///   - photos: 업로드한 사진의 presigned urls
+    func report(
+        title: String,
+        content: String?,
+        category: ReportType,
+        location: LocationEntity?,
+        photoURLs: [String]
+    ) async throws
 
     /// 제보 목록을 조회합니다.
     /// - Returns: 조회된 제보 목록

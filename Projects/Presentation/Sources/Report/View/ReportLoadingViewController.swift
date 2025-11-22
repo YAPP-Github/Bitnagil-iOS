@@ -83,3 +83,13 @@ final class ReportLoadingViewController: UIViewController {
         }
     }
 }
+
+extension ReportLoadingViewController: ReportRegistrationViewControllerDelegate {
+    func reportRegistrationViewController(_ sender: ReportRegistrationViewController, completeRegistration: Bool) {
+        if completeRegistration {
+            navigationController?.popToRootViewController(animated: true)
+        } else {
+            navigationController?.popViewController(animated: true)
+        }
+    }
+}

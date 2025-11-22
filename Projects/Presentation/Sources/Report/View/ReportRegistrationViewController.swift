@@ -11,6 +11,10 @@ import PhotosUI
 import SnapKit
 import UIKit
 
+protocol ReportRegistrationViewControllerDelegate: AnyObject {
+    func reportRegistrationViewController(_ sender: ReportRegistrationViewController, completeRegistration: Bool)
+}
+
 final class ReportRegistrationViewController: BaseViewController<ReportRegistrationViewModel> {
     private enum CollectionViewSection { case main }
 
@@ -63,6 +67,7 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
     private let photoSelectionView = SelectableItemTableView<SelectPhotoType>(items: SelectPhotoType.allCases.sorted(by: { $0.id < $1.id }), markIsSelected: false)
     private var cancellables: Set<AnyCancellable> = []
     private var dataSource: DataSource?
+    weak var delegate: ReportRegistrationViewControllerDelegate?
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -108,6 +113,9 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
         registerButton.layer.masksToBounds = true
         registerButton.addAction(
             UIAction { [weak self] _ in
+                let loadingViewController = ReportLoadingViewController()
+                self?.delegate = loadingViewController
+                self?.navigationController?.pushViewController(loadingViewController, animated: true)
                 self?.viewModel.action(input: .register)
             },
             for: .touchUpInside)
@@ -356,6 +364,29 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
                 self.applySnapshot(items: items, animating: true)
                 self.cameraButton
                     .configure(imageCount: items.count, maxCount: viewModel.output.maxPhotoCount)
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.isReportValid
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isReportValid in
+                if isReportValid {
+                    self?.registerButton.updateButtonState(buttonState: .default)
+                } else {
+                    self?.registerButton.updateButtonState(buttonState: .disabled)
+                }
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.reportRegistrationCompletePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isCompleted in
+                guard
+                    let self,
+                    isCompleted
+                else { return }
+
+                delegate?.reportRegistrationViewController(self, completeRegistration: isCompleted)
             }
             .store(in: &cancellables)
     }

@@ -7,13 +7,13 @@
 
 import Domain
 
-struct ReportDTO: Decodable {
+struct ReportDTO: Codable {
     let reportId: Int?
     let reportDate: String?
     let reportTitle: String
     let reportContent: String?
     let reportLocation: String
-    let reportStatus: String
+    let reportStatus: String?
     let reportCategory: String
     let reportImageUrl: String?
     let reportImageUrls: [String]?
@@ -27,7 +27,7 @@ struct ReportDTO: Decodable {
             title: reportTitle,
             date: reportDate,
             type: ReportType(rawValue: reportCategory) ?? .transportation,
-            progress: ReportProgress(rawValue: reportStatus) ?? .received,
+            progress: ReportProgress(rawValue: reportStatus ?? "") ?? .received,
             content: reportContent,
             location: LocationEntity(
                 longitude: longitude,
@@ -43,7 +43,7 @@ struct ReportDTO: Decodable {
             title: reportTitle,
             date: date,
             type: ReportType(rawValue: reportCategory) ?? .transportation,
-            progress: ReportProgress(rawValue: reportStatus) ?? .received,
+            progress: ReportProgress(rawValue: reportStatus ?? "") ?? .received,
             content: reportContent,
             location: LocationEntity(
                 longitude: longitude,
