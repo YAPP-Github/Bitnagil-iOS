@@ -126,8 +126,10 @@ final class ReportHistoryViewModel: ViewModel {
                     let date = Date.convertToDate(from: reportEntity.date ?? "", dateType: .yearMonthDate)
                     let dateString = date?.convertToString(dateType: .yearMonthDateWeek)
 
+                    guard let id = reportEntity.id else { continue }
+
                     let reportHistoryItem = ReportHistoryItem(
-                        id: reportEntity.id,
+                        id: id,
                         title: reportEntity.title,
                         thumbnailUrl: reportEntity.thumbnailURL ?? "",
                         date: dateString ?? "",
@@ -139,6 +141,25 @@ final class ReportHistoryViewModel: ViewModel {
 
                 reports = reportHistoryItems
                 reportSubject.send(reportHistoryItems)
+
+                let progressItems: [ReportProgressItem] = ReportProgress.allCases.map { progress in
+                    let count: Int
+
+                    switch progress {
+                    case .entire:
+                        count = reports.count
+                    default:
+                        count = reports.filter { $0.progress == progress }.count
+                    }
+
+                    return ReportProgressItem(
+                        uuid: UUID(),
+                        progress: progress,
+                        count: count,
+                        isSelected: progress == .entire)
+                }
+
+                progressSubject.send(progressItems)
             } catch {
                 // TODO: 에러 처리
             }

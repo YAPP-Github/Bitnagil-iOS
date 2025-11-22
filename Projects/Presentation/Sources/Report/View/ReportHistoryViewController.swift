@@ -346,5 +346,4 @@ extension ReportHistoryViewController: ReportCategoryTableViewControllerDelegate
 
         viewModel.action(input: .filterCategory(type: selectedCategory))
     }
-
 }

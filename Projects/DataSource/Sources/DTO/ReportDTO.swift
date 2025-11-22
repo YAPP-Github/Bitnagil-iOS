@@ -21,7 +21,6 @@ struct ReportDTO: Codable {
     let longitude: Double?
 
     func toReportEntity() throws -> ReportEntity {
-        guard let reportId else { throw NetworkError.decodingError }
         return ReportEntity(
             id: reportId,
             title: reportTitle,

@@ -6,7 +6,7 @@
 //
 
 public struct ReportEntity {
-    public let id: Int
+    public let id: Int?
     public let title: String
     public let date: String?
     public let type: ReportType
@@ -17,7 +17,7 @@ public struct ReportEntity {
     public let photoURLs: [String]
 
     public init(
-        id: Int,
+        id: Int?,
         title: String,
         date: String?,
         type: ReportType,
