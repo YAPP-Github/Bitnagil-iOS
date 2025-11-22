@@ -42,14 +42,14 @@ public final class ReportUseCase: ReportUseCaseProtocol {
         category: ReportType,
         location: LocationEntity?,
         photos: [Data]
-    ) async throws {
+    ) async throws -> Int? {
         let fileNames = (1...photos.count).map { "\($0).jpg" }
 
         // TODO: - 사진 업로드 실패 시 에러 처리 필요
         guard
             let presignedDict = try await fileRepository.fetchPresignedURL(prefix: "report", fileNames: fileNames),
             presignedDict.count == photos.count
-        else { return }
+        else { return nil }
 
         let presignedURLs = Array(presignedDict.values)
 
@@ -67,7 +67,7 @@ public final class ReportUseCase: ReportUseCaseProtocol {
                 .first ?? url
         }
 
-        try await reportRepository.report(
+        return try await reportRepository.report(
             title: title,
             content: content,
             category: category,

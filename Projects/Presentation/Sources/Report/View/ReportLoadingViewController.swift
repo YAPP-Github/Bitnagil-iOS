@@ -80,9 +80,10 @@ final class ReportLoadingViewController: UIViewController {
 }
 
 extension ReportLoadingViewController: ReportRegistrationViewControllerDelegate {
-    func reportRegistrationViewController(_ sender: ReportRegistrationViewController, completeRegistration: Bool) {
-        if completeRegistration {
+    func reportRegistrationViewController(_ sender: ReportRegistrationViewController, completeRegistration reportId: Int?) {
+        if let reportId {
             let reportCompleteViewController = ReportCompleteViewController()
+            // TODO: - reportCompleteViewController에 제보id 전달 (또는 생성한 제보 객체 자체를 넘기기. 논의 필요)
             self.navigationController?.pushViewController(reportCompleteViewController, animated: true)
         } else {
             navigationController?.popViewController(animated: true)

@@ -12,7 +12,7 @@ import SnapKit
 import UIKit
 
 protocol ReportRegistrationViewControllerDelegate: AnyObject {
-    func reportRegistrationViewController(_ sender: ReportRegistrationViewController, completeRegistration: Bool)
+    func reportRegistrationViewController(_ sender: ReportRegistrationViewController, completeRegistration reportId: Int?)
 }
 
 final class ReportRegistrationViewController: BaseViewController<ReportRegistrationViewModel> {
@@ -417,13 +417,10 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
 
         viewModel.output.reportRegistrationCompletePublisher
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] isCompleted in
-                guard
-                    let self,
-                    isCompleted
-                else { return }
+            .sink { [weak self] reportId in
+                guard let self else { return }
 
-                delegate?.reportRegistrationViewController(self, completeRegistration: isCompleted)
+                delegate?.reportRegistrationViewController(self, completeRegistration: reportId)
             }
             .store(in: &cancellables)
     }

@@ -17,7 +17,7 @@ final class ReportRepository: ReportRepositoryProtocol {
         category: ReportType,
         location: LocationEntity?,
         photoURLs: [String]
-    ) async throws {
+    ) async throws -> Int? {
         let reportDTO = ReportDTO(
             reportId: nil,
             reportDate: nil,
@@ -33,7 +33,9 @@ final class ReportRepository: ReportRepositoryProtocol {
         )
 
         let endpoint = ReportEndpoint.register(report: reportDTO)
-        guard let response = try await networkService.request(endpoint: endpoint, type: EmptyResponseDTO.self) else { return }
+        guard let id = try await networkService.request(endpoint: endpoint, type: Int.self) else { return nil }
+
+        return id
     }
 
     func fetchReports() async throws -> [ReportEntity] {

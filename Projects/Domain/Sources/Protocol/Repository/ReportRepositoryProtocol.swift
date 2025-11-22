@@ -16,13 +16,14 @@ public protocol ReportRepositoryProtocol {
     ///   - category: 제보 카테고리
     ///   - location: 제보 위치
     ///   - photos: 업로드한 사진의 presigned urls
+    /// - Returns: 제보 id
     func report(
         title: String,
         content: String?,
         category: ReportType,
         location: LocationEntity?,
         photoURLs: [String]
-    ) async throws
+    ) async throws -> Int?
 
     /// 제보 목록을 조회합니다.
     /// - Returns: 조회된 제보 목록

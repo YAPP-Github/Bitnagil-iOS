@@ -28,7 +28,7 @@ final class ReportRegistrationViewModel: ViewModel {
         let selectedPhotoPublisher: AnyPublisher<[PhotoItem], Never>
         let isReportValid: AnyPublisher<Bool, Never>
         let exceptionPublisher: AnyPublisher<String, Never>
-        let reportRegistrationCompletePublisher: AnyPublisher<Bool, Never>
+        let reportRegistrationCompletePublisher: AnyPublisher<Int?, Never>
         let maxPhotoCount: Int
     }
 
@@ -40,7 +40,7 @@ final class ReportRegistrationViewModel: ViewModel {
     private let locationSubject = CurrentValueSubject<String?, Never>(nil)
     private let selectedPhotoSubject = CurrentValueSubject<[PhotoItem], Never>([])
     private let reportVerificationSubject = PassthroughSubject<Bool, Never>()
-    private let reportRegistrationCompleteSubject = PassthroughSubject<Bool, Never>()
+    private let reportRegistrationCompleteSubject = PassthroughSubject<Int?, Never>()
     private let exceptionSubject = PassthroughSubject<String, Never>()
     private let maxPhotoCount = 3
     private var location: LocationEntity? = nil
@@ -146,19 +146,17 @@ final class ReportRegistrationViewModel: ViewModel {
         Task {
             let minimumDuration: TimeInterval = 0.7
             let startTime = Date()
-            let result: Bool
+            let reportId: Int?
 
             do {
-                try await reportUseCase.report(
+                reportId = try await reportUseCase.report(
                     title: name,
                     content: content,
                     category: category,
                     location: location,
                     photos: selectedPhotos)
-                result = true
             } catch {
-
-                result = false
+                reportId = nil
             }
 
             let elapsed = Date().timeIntervalSince(startTime)
@@ -169,7 +167,7 @@ final class ReportRegistrationViewModel: ViewModel {
                 )
             }
 
-            reportRegistrationCompleteSubject.send(result)
+            reportRegistrationCompleteSubject.send(reportId)
         }
     }
 
