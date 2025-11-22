@@ -44,6 +44,8 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
         static let registerButtonHeight: CGFloat = 54
         static let categoryBottomSheetHeight: CGFloat = 362
         static let cameraBottomSheetHeight: CGFloat = 174
+        static let contentCountLabelTopSpacing: CGFloat = 6
+        static let contentCountLabelHeight: CGFloat = 18
     }
 
     private typealias Section = ReportRegistrationViewController.CollectionViewSection
@@ -54,14 +56,16 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
     private let scrollContentView = UIView()
     private let collectionViewTitleLabel = RequiredTitleLabel(title: "제보사진 등록")
     private let categoryTitleLabel = RequiredTitleLabel(title: "제보 카테고리")
+    private let nameTitleLabel = RequiredTitleLabel(title: "제목")
     private let contentTitleLabel = RequiredTitleLabel(title: "제보 내용")
-    private let locationTitleLabel = RequiredTitleLabel(title: "내 위치 등록")
+    private let locationTitleLabel = RequiredTitleLabel(title: "신고 위치")
     private let cameraButton = ReportCameraButton(frame: .zero)
     private let photoCollectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
     private let categoryTextView = ReportTextView(type: .combo, placeholder: "카테고리 선택")
     private let reportTitleTextView = ReportTextView(type: .editable, placeholder: "제보 제목을 작성해주세요.")
-    private let reportContentTextView = ReportTextView(type: .editable, placeholder: "어떤 위험인지 간단히 설명해주세요.(100자 내외)")
+    private let reportContentTextView = ReportTextView(type: .editable, placeholder: "어떤 위험인지 간단히 설명해주세요.")
     private let locationTextView = ReportTextView(type: .nonEditable, placeholder: "현재 위치 검색")
+    private let contentTextCountLabel = UILabel()
     private let locationButton = LocationButton()
     private let registerButton = PrimaryButton(buttonState: .disabled, buttonTitle: "제출하기")
     private let photoSelectionView = SelectableItemTableView<SelectPhotoType>(items: SelectPhotoType.allCases.sorted(by: { $0.id < $1.id }), markIsSelected: false)
@@ -120,6 +124,9 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
             },
             for: .touchUpInside)
 
+        contentTextCountLabel.font = BitnagilFont.init(style: .caption1, weight: .medium).font
+        contentTextCountLabel.textColor = BitnagilColor.gray80
+
         photoSelectionView.delegate = self
         applySnapshot(items: [], animating: false)
     }
@@ -130,6 +137,7 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
         scrollView.addSubview(scrollContentView)
         scrollContentView.addSubview(collectionViewTitleLabel)
         scrollContentView.addSubview(categoryTitleLabel)
+        scrollContentView.addSubview(nameTitleLabel)
         scrollContentView.addSubview(contentTitleLabel)
         scrollContentView.addSubview(locationTitleLabel)
         scrollContentView.addSubview(cameraButton)
@@ -137,6 +145,7 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
         scrollContentView.addSubview(categoryTextView)
         scrollContentView.addSubview(reportTitleTextView)
         scrollContentView.addSubview(reportContentTextView)
+        scrollContentView.addSubview(contentTextCountLabel)
         scrollContentView.addSubview(locationTextView)
         scrollContentView.addSubview(locationButton)
         scrollContentView.addSubview(registerButton)
@@ -193,9 +202,35 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
                 .equalTo(Layout.reportCollectionViewHeight)
         }
 
-        categoryTitleLabel.snp.makeConstraints { make in
+        nameTitleLabel.snp.makeConstraints { make in
             make.top
                 .equalTo(cameraButton.snp.bottom)
+                .offset(Layout.titleLabelTopSpacing)
+
+            make.leading
+                .equalToSuperview()
+                .offset(Layout.horizontalInset)
+
+            make.height
+                .equalTo(Layout.titleLabelHeight)
+        }
+
+        reportTitleTextView.snp.makeConstraints { make in
+            make.top
+                .equalTo(nameTitleLabel.snp.bottom)
+                .offset(Layout.titleLabelBottomSpacing)
+
+            make.horizontalEdges
+                .equalToSuperview()
+                .inset(Layout.horizontalInset)
+
+            make.height
+                .equalTo(Layout.textViewHeight)
+        }
+
+        categoryTitleLabel.snp.makeConstraints { make in
+            make.top
+                .equalTo(reportTitleTextView.snp.bottom)
                 .offset(Layout.titleLabelTopSpacing)
 
             make.leading
@@ -232,7 +267,7 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
                 .equalTo(Layout.titleLabelHeight)
         }
 
-        reportTitleTextView.snp.makeConstraints { make in
+        reportContentTextView.snp.makeConstraints { make in
             make.top
                 .equalTo(contentTitleLabel.snp.bottom)
                 .offset(Layout.titleLabelBottomSpacing)
@@ -242,21 +277,20 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
                 .inset(Layout.horizontalInset)
 
             make.height
-                .equalTo(Layout.textViewHeight)
-        }
-
-        reportContentTextView.snp.makeConstraints { make in
-            make.top
-                .equalTo(reportTitleTextView.snp.bottom)
-                .offset(Layout.titleLabelBottomSpacing)
-
-            make.horizontalEdges
-                .equalToSuperview()
-                .inset(Layout.horizontalInset)
-
-            make.height
                 .equalTo(Layout.reportContentTextViewHeight)
                 .priority(.medium)
+        }
+
+        contentTextCountLabel.snp.makeConstraints { make in
+            make.top
+                .equalTo(reportContentTextView.snp.bottom)
+                .offset(Layout.contentCountLabelTopSpacing)
+
+            make.trailing
+                .equalToSuperview()
+                .offset(-Layout.horizontalInset)
+
+            make.height.equalTo(Layout.contentCountLabelHeight)
         }
 
         locationTitleLabel.snp.makeConstraints { make in
@@ -338,6 +372,9 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
             .receive(on: DispatchQueue.main)
             .sink { [weak self] content in
                 self?.reportContentTextView.configure(text: content ?? "")
+
+                let content = content ?? ""
+                self?.contentTextCountLabel.text = "\(content.count) / 150"
             }
             .store(in: &cancellables)
 

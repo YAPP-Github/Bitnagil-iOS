@@ -11,9 +11,14 @@ import UIKit
 final class SelectableItemCell: UITableViewCell {
     private enum Layout {
         static let checkIconSize: CGFloat = 16
+        static let stackViewHeight: CGFloat = 24
+        static let stackViewSpacing: CGFloat = 10
         static let horizontalMargin: CGFloat = 20
+        static let iconImageViewSize: CGFloat = 20
     }
 
+    private let stackView = UIStackView()
+    private let iconImageView = UIImageView()
     private let titleLabel = UILabel()
     private let checkIcon = UIImageView()
 
@@ -28,6 +33,9 @@ final class SelectableItemCell: UITableViewCell {
     }
 
     private func configureAttribute() {
+        stackView.spacing = Layout.stackViewSpacing
+        stackView.alignment = .leading
+
         titleLabel.font = BitnagilFont(style: .body1, weight: .regular).font
         titleLabel.textColor = BitnagilColor.gray10
 
@@ -36,15 +44,25 @@ final class SelectableItemCell: UITableViewCell {
             .withRenderingMode(.alwaysTemplate)
         checkIcon.tintColor = BitnagilColor.orange500
         checkIcon.image = checkImage
+
+        iconImageView.isHidden = true
     }
 
     private func configureLayout() {
-        contentView.addSubview(titleLabel)
+        contentView.addSubview(stackView)
+        stackView.addArrangedSubview(iconImageView)
+        stackView.addArrangedSubview(titleLabel)
         contentView.addSubview(checkIcon)
 
-        titleLabel.snp.makeConstraints { make in
+        stackView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(Layout.horizontalMargin)
             make.centerY.equalToSuperview()
+            make.height.equalTo(Layout.stackViewHeight)
+            make.width.equalTo(CGFloat.zero).priority(.medium)
+        }
+
+        iconImageView.snp.makeConstraints { make in
+            make.size.equalTo(Layout.iconImageViewSize)
         }
 
         checkIcon.snp.makeConstraints { make in
@@ -61,6 +79,12 @@ final class SelectableItemCell: UITableViewCell {
             titleLabel.text = item.description
             return
         }
+
+        if let icon = item.icon {
+            iconImageView.image = icon
+            iconImageView.isHidden = false
+        }
+
         let attributedString = NSMutableAttributedString(string: item.description)
         attributedString.addAttribute(
             .font,
@@ -73,6 +97,7 @@ final class SelectableItemCell: UITableViewCell {
                 .font: BitnagilFont(style: .body1, weight: .semiBold).font
             ], range: nsRange)
         }
+
         titleLabel.attributedText = attributedString
     }
 }

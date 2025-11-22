@@ -26,8 +26,8 @@ final class ReportTextView: UIView {
         static let placeholderTopSpacing: CGFloat = 15
         static let chevronImageLeadingSpacing: CGFloat = 17
         static let chevronImageTrailingSpacing: CGFloat = 19
-        static let chevronImageWidth: CGFloat = 24
-        static let chevronImageHeight: CGFloat = 24
+        static let chevronImageWidth: CGFloat = 10.12
+        static let chevronImageHeight: CGFloat = 5.74
     }
 
     private let placeholderLabel = UILabel()
@@ -56,7 +56,7 @@ final class ReportTextView: UIView {
         ).font
 
         chevronImage.image = BitnagilIcon
-            .chevronIcon(direction: .down)?
+            .bitnagilChevronIcon(direction: .down)?
             .withRenderingMode(.alwaysTemplate)
         chevronImage.tintColor = BitnagilColor.gray10
 
@@ -158,6 +158,7 @@ extension ReportTextView: UITextViewDelegate {
 
     func textViewDidChange(_ textView: UITextView) {
         updatePlaceholderVisibility()
+        delegate?.reportTextViewDidChanged(self, text: textView.text)
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {

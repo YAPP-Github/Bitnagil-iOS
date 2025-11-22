@@ -5,6 +5,8 @@
 //  Created by 이동현 on 11/9/25.
 //
 
+import UIKit
+
 enum SelectPhotoType: String, CaseIterable {
     case camera
     case library
@@ -30,6 +32,15 @@ extension SelectPhotoType: SelectableItem {
             return "직접 촬영하기"
         case .library:
             return "사진 라이브러리에서 선택"
+        }
+    }
+
+    var icon: UIImage? {
+        switch self {
+        case .camera:
+            return BitnagilIcon.bitnagilCameraIcon
+        case .library:
+            return BitnagilIcon.bitnagilPhotoIcon
         }
     }
 }

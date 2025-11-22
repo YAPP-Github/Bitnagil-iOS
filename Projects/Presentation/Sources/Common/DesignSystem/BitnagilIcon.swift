@@ -76,6 +76,8 @@ enum BitnagilIcon {
     // MARK: - Report
     static let roundDeleteIcon = UIImage(named: "round_delete_icon", in: bundle, with: nil)
     static let cameraIcon = UIImage(named: "camera_icon", in: bundle, with: nil)
+    static let bitnagilCameraIcon = UIImage(named: "bitnagil_camera_icon", in: bundle, with: nil)
+    static let bitnagilPhotoIcon = UIImage(named: "bitnagil_photo_icon", in: bundle, with: nil)
     static let locationIcon = UIImage(named: "location_icon", in: bundle, with: nil)
     static let carIcon = UIImage(named: "icon_car", in: bundle, with: nil)
     static let lightIcon = UIImage(named: "icon_light", in: bundle, with: nil)

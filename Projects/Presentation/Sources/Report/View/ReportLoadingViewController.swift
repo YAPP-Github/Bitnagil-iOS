@@ -30,11 +30,6 @@ final class ReportLoadingViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
-            let reportCompleteViewController = ReportCompleteViewController()
-            self?.navigationController?.pushViewController(reportCompleteViewController, animated: true)
-        }
     }
 
     private func configureAttribute() {
@@ -87,7 +82,8 @@ final class ReportLoadingViewController: UIViewController {
 extension ReportLoadingViewController: ReportRegistrationViewControllerDelegate {
     func reportRegistrationViewController(_ sender: ReportRegistrationViewController, completeRegistration: Bool) {
         if completeRegistration {
-            navigationController?.popToRootViewController(animated: true)
+            let reportCompleteViewController = ReportCompleteViewController()
+            self.navigationController?.pushViewController(reportCompleteViewController, animated: true)
         } else {
             navigationController?.popViewController(animated: true)
         }
