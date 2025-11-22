@@ -12,7 +12,14 @@ extension Endpoint {
         var request = try URLRequest(urlString: path, queryParameters: queryParameters)
         request.httpMethod = method.rawValue
         request.makeHeaders(headers: headers)
-        try request.makeBodyParameter(with: bodyParameters)
+        switch bodyType {
+        case .json:
+            try request.makeBodyParameter(with: bodyParameters)
+        case .rawData:
+            if let data = bodyData {
+                request.httpBody = data
+            }
+        }
         request.cachePolicy = .reloadIgnoringLocalCacheData
         return request
     }

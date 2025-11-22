@@ -78,7 +78,9 @@ final class NetworkService {
             throw NetworkError.invalidStatusCode(statusCode: httpResponse.statusCode)
         }
 
-        guard !data.isEmpty else { throw NetworkError.emptyData }
+        if T.self == EmptyResponseDTO.self {
+            return EmptyResponseDTO() as? T
+        }
 
         do {
             let bitnagilResponse = try decoder.decode(BaseResponse<T>.self, from: data)
