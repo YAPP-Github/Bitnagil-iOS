@@ -6,6 +6,7 @@
 //
 
 import Combine
+import Shared
 import SnapKit
 import UIKit
 
@@ -119,7 +120,21 @@ final class ReportCompleteViewController: BaseViewController<ReportDetailViewMod
 
         confirmButton.addAction(
             UIAction { [weak self] _ in
-                self?.navigationController?.popToRootViewController(animated: true)
+                if
+                    let self,
+                    let tabBarController = self.tabBarController,
+                    let homeViewController = tabBarController.viewControllers?[0] as? UINavigationController,
+                    let mypageViewController = tabBarController.viewControllers?[2] as? UINavigationController,
+                    let reportHistoryViewModel = DIContainer.shared.resolve(type: ReportHistoryViewModel.self) {
+
+                    homeViewController.popToRootViewController(animated: false)
+                    
+                    tabBarController.selectedIndex = 2
+                    let reportHistoryViewController = ReportHistoryViewController(viewModel: reportHistoryViewModel)
+                    mypageViewController.pushViewController(reportHistoryViewController, animated: true)
+                } else {
+                    self?.navigationController?.popToRootViewController(animated: true)
+                }
             },
             for: .touchUpInside)
     }
@@ -136,10 +151,6 @@ final class ReportCompleteViewController: BaseViewController<ReportDetailViewMod
 
         backgroudView.addSubview(summaryStackView)
         summaryStackView.addArrangedSubview(summaryLabel)
-        ReportCompleteContent.allCases.forEach { reportCompleteContentType in
-            let contentStackView = makeContentView(contentType: reportCompleteContentType)
-            summaryStackView.addArrangedSubview(contentStackView)
-        }
 
         scrollView.snp.makeConstraints { make in
             make.edges.equalTo(safeArea)
@@ -200,9 +211,16 @@ final class ReportCompleteViewController: BaseViewController<ReportDetailViewMod
                 self?.categoryLabel.text = reportDetail.category.name
                 self?.locationLabel.text = reportDetail.location
                 let descriptionText = reportDetail.description
+                self?.descriptionLabel.numberOfLines = 0
                 self?.descriptionLabel.attributedText = BitnagilFont(style: .body1, weight: .medium)
                     .attributedString(text: descriptionText, alignment: .right)
 
+                ReportCompleteContent.allCases.forEach { reportCompleteContentType in
+                    let contentStackView = self?.makeContentView(contentType: reportCompleteContentType)
+                    self?.summaryStackView.addArrangedSubview(contentStackView ?? UIView())
+                }
+
+                self?.photoStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
                 for photoURL in reportDetail.photoUrls {
                     guard
                         let photoView = self?.makePhotoView(),
@@ -235,7 +253,6 @@ final class ReportCompleteViewController: BaseViewController<ReportDetailViewMod
             contentView = photoStackView
         } else {
             var contentLabel = UILabel()
-            contentLabel.text = " "
             switch contentType {
             case .title:
                 contentLabel = titleLabel

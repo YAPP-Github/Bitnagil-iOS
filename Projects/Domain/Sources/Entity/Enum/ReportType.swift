@@ -6,10 +6,10 @@
 //
 
 public enum ReportType: String, CaseIterable {
-    case transportation
-    case lamp
-    case water
-    case convenience
+    case transportation = "TRANSPORTATION"
+    case lamp = "LIGHTING"
+    case water = "WATERFACILITY"
+    case convenience = "AMENITY"
 }
 
 extension ReportType: CustomStringConvertible {

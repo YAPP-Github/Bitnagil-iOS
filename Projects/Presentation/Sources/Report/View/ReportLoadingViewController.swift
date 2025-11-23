@@ -5,6 +5,7 @@
 //  Created by 최정인 on 11/18/25.
 //
 
+import Shared
 import SnapKit
 import UIKit
 
@@ -82,7 +83,10 @@ final class ReportLoadingViewController: UIViewController {
 extension ReportLoadingViewController: ReportRegistrationViewControllerDelegate {
     func reportRegistrationViewController(_ sender: ReportRegistrationViewController, completeRegistration reportId: Int?) {
         if let reportId {
-            let reportCompleteViewController = ReportCompleteViewController()
+            guard let reportDetailViewModel = DIContainer.shared.resolve(type: ReportDetailViewModel.self)
+            else { fatalError("reportDetailViewModel 의존성이 등록되지 않았습니다.") }
+
+            let reportCompleteViewController = ReportCompleteViewController(viewModel: reportDetailViewModel, reportId: reportId)
             // TODO: - reportCompleteViewController에 제보id 전달 (또는 생성한 제보 객체 자체를 넘기기. 논의 필요)
             self.navigationController?.pushViewController(reportCompleteViewController, animated: true)
         } else {
