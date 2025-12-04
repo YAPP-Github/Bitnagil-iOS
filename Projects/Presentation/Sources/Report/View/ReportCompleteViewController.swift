@@ -124,11 +124,13 @@ final class ReportCompleteViewController: BaseViewController<ReportDetailViewMod
                     let self,
                     let tabBarController = self.tabBarController,
                     let homeViewController = tabBarController.viewControllers?[0] as? UINavigationController,
+                    let recommendedRoutineViewController = tabBarController.viewControllers?[1] as? UINavigationController,
                     let mypageViewController = tabBarController.viewControllers?[2] as? UINavigationController,
                     let reportHistoryViewModel = DIContainer.shared.resolve(type: ReportHistoryViewModel.self) {
 
                     homeViewController.popToRootViewController(animated: false)
-                    
+                    recommendedRoutineViewController.popToRootViewController(animated: false)
+
                     tabBarController.selectedIndex = 2
                     let reportHistoryViewController = ReportHistoryViewController(viewModel: reportHistoryViewModel)
                     mypageViewController.pushViewController(reportHistoryViewController, animated: true)

@@ -337,7 +337,14 @@ extension RecommendedRoutineViewController: SelectableItemTableViewDelegate {
 extension RecommendedRoutineViewController: FloatingMenuViewDelegate {
     func floatingMenuDidTapReportButton(_ sender: FloatingMenuView) {
         toggleFloatingButton()
-        // TODO: 제보하기 뷰로 이동
+
+        guard let reportRegistrationViewModel = DIContainer.shared.resolve(type: ReportRegistrationViewModel.self)
+        else { fatalError("reportRegistrationViewController 의존성이 등록되지 않았습니다.") }
+
+        let reportRegistrationViewController = ReportRegistrationViewController(viewModel: reportRegistrationViewModel)
+        reportRegistrationViewController.hidesBottomBarWhenPushed = true
+
+        self.navigationController?.pushViewController(reportRegistrationViewController, animated: true)
     }
 
     func floatingMenuDidTapRegisterRoutineButton(_ sender: FloatingMenuView) {
