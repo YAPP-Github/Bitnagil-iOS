@@ -46,8 +46,8 @@ extension Date {
             switch self {
             case .yearMonthDate: "yyyy-MM-dd"
             case .yearMonthDateShort: "yy.MM.dd"
-            case .yearMonthDateWeek: "yyyy-MM-dd E"
-            case .yearMonthDateWeek2: "yyyy-MM-dd (E)"
+            case .yearMonthDateWeek: "yy.MM.dd E"
+            case .yearMonthDateWeek2: "yyyy.MM.dd (E)"
             case .yearMonth: "yyyy년 M월"
             case .dayOfWeek: "E"
             case .date: "d"
