@@ -30,6 +30,9 @@ extension RecommendedRoutineDTO {
         var routineCategory: RoutineCategoryType?
         if let category {
             routineCategory = RoutineCategoryType(rawValue: category)
+            if routineCategory == .outdoorReport {
+                routineCategory = .outdoor
+            }
         }
 
         var type: RoutineCategoryType?
