@@ -17,6 +17,7 @@ final class ReportRegistrationViewModel: ViewModel {
         case configureLocation
         case selectPhoto(photoData: Data)
         case removePhoto(id: UUID)
+        case checkSelectedPhotoCount
         case register
     }
 
@@ -26,6 +27,7 @@ final class ReportRegistrationViewModel: ViewModel {
         let contentPublisher: AnyPublisher<String?, Never>
         let locationPublisher: AnyPublisher<String?, Never>
         let selectedPhotoPublisher: AnyPublisher<[PhotoItem], Never>
+        let selectedPhotoCountPublisher: AnyPublisher<Int, Never>
         let isReportValid: AnyPublisher<Bool, Never>
         let exceptionPublisher: AnyPublisher<String, Never>
         let reportRegistrationCompletePublisher: AnyPublisher<Int?, Never>
@@ -39,6 +41,7 @@ final class ReportRegistrationViewModel: ViewModel {
     private let contentSubject = CurrentValueSubject<String?, Never>(nil)
     private let locationSubject = CurrentValueSubject<String?, Never>(nil)
     private let selectedPhotoSubject = CurrentValueSubject<[PhotoItem], Never>([])
+    private let selectedPhotoCountSubject = PassthroughSubject<Int, Never>()
     private let reportVerificationSubject = PassthroughSubject<Bool, Never>()
     private let reportRegistrationCompleteSubject = PassthroughSubject<Int?, Never>()
     private let exceptionSubject = PassthroughSubject<String, Never>()
@@ -55,6 +58,7 @@ final class ReportRegistrationViewModel: ViewModel {
             contentPublisher: contentSubject.eraseToAnyPublisher(),
             locationPublisher: locationSubject.eraseToAnyPublisher(),
             selectedPhotoPublisher: selectedPhotoSubject.eraseToAnyPublisher(),
+            selectedPhotoCountPublisher: selectedPhotoCountSubject.eraseToAnyPublisher(),
             isReportValid: reportVerificationSubject.eraseToAnyPublisher(),
             exceptionPublisher: exceptionSubject.eraseToAnyPublisher(),
             reportRegistrationCompletePublisher: reportRegistrationCompleteSubject.eraseToAnyPublisher(),
@@ -75,6 +79,8 @@ final class ReportRegistrationViewModel: ViewModel {
             selectPhoto(photoData: photoData)
         case .removePhoto(let id):
             removePhoto(id: id)
+        case .checkSelectedPhotoCount:
+            selectedPhotoCountSubject.send(selectedPhotoSubject.value.count)
         case .register:
             register()
         }

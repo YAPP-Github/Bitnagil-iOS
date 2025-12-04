@@ -101,7 +101,7 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
         cameraButton.layer.masksToBounds = true
         cameraButton.addAction(
             UIAction { [weak self] _ in
-                self?.showCameraBottomSheet()
+                self?.viewModel.action(input: .checkSelectedPhotoCount)
             },
             for: .touchUpInside)
 
@@ -129,6 +129,10 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
 
         photoSelectionView.delegate = self
         applySnapshot(items: [], animating: false)
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
     }
 
     override func configureLayout() {
@@ -404,6 +408,21 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
             }
             .store(in: &cancellables)
 
+        viewModel.output.selectedPhotoCountPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] photoCount in
+                guard let self else { return }
+                if photoCount >= self.viewModel.output.maxPhotoCount {
+                    let message = "사진은 최대 \(self.viewModel.output.maxPhotoCount)장까지 선택할 수 있습니다."
+                    let alertController = UIAlertController(title: "알림", message: message, preferredStyle: .alert)
+                    alertController.addAction(UIAlertAction(title: "확인", style: .default))
+                    self.present(alertController, animated: true)
+                } else {
+                    self.showCameraBottomSheet()
+                }
+            }
+            .store(in: &cancellables)
+
         viewModel.output.isReportValid
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isReportValid in
@@ -514,6 +533,10 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
             }
         }
     }
+
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
+    }
 }
 
 extension ReportRegistrationViewController: ReportTextViewDelegate {
@@ -595,19 +618,21 @@ extension ReportRegistrationViewController: UIImagePickerControllerDelegate, UIN
 extension ReportRegistrationViewController: PHPickerViewControllerDelegate {
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         picker.dismiss(animated: true, completion: nil)
-        guard
-            let itemProvider = results.first?.itemProvider,
-            itemProvider.canLoadObject(ofClass: UIImage.self)
-        else { return }
+        guard !results.isEmpty else { return }
 
-        itemProvider.loadObject(ofClass: UIImage.self) { image, _ in
-            guard
-                let selectedImage = image as? UIImage,
-                let imageData = selectedImage.jpegData(compressionQuality: 0.5)
-            else { return }
+        for result in results {
+            guard result.itemProvider.canLoadObject(ofClass: UIImage.self)
+            else { continue }
 
-            DispatchQueue.main.async {
-                self.viewModel.action(input: .selectPhoto(photoData: imageData))
+            result.itemProvider.loadObject(ofClass: UIImage.self) { image, _ in
+                guard
+                    let selectedImage = image as? UIImage,
+                    let imageData = selectedImage.jpegData(compressionQuality: 0.5)
+                else { return }
+
+                DispatchQueue.main.async {
+                    self.viewModel.action(input: .selectPhoto(photoData: imageData))
+                }
             }
         }
     }
