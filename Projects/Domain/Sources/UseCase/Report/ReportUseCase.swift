@@ -53,11 +53,7 @@ public final class ReportUseCase: ReportUseCaseProtocol {
             presignedDict.count == photos.count
         else { return nil }
 
-        let presignedURLs = fileNames.compactMap { fileName in
-            presignedDict[fileName]
-        }
-
-        for (url, photo) in zip(presignedURLs, photos) {
+        for (url, photo) in zip(presignedDict.values, photos) {
             do {
                 try await fileRepository.uploadFile(url: url, data: photo)
             } catch {
@@ -65,7 +61,7 @@ public final class ReportUseCase: ReportUseCaseProtocol {
             }
         }
 
-        let publicImageURLs = presignedURLs.map { url in
+        let publicImageURLs = presignedDict.values.map { url in
             url.split(separator: "?", maxSplits: 1)
                 .map(String.init)
                 .first ?? url
