@@ -63,6 +63,11 @@ final class WithdrawViewController: BaseViewController<WithdrawViewModel> {
         }
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        removeKeyboardNotification()
+    }
+
     private func updateConstraint() {
         let height = view.bounds.height
         if height <= 667 {
@@ -151,6 +156,8 @@ final class WithdrawViewController: BaseViewController<WithdrawViewModel> {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGesture.cancelsTouchesInView = false
         view.addGestureRecognizer(tapGesture)
+
+        configureKeyboardNotification()
     }
 
     override func configureLayout() {
@@ -301,14 +308,73 @@ final class WithdrawViewController: BaseViewController<WithdrawViewModel> {
         }
     }
 
+    private func configureKeyboardNotification() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillAppear),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillDisappear),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil)
+    }
+
+    private func removeKeyboardNotification() {
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil)
+
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil)
+    }
+
     @objc private func dismissKeyboard() {
         view.endEditing(true)
+    }
+    
+    @objc private func keyboardWillAppear(_ sender: Notification) {
+        guard
+            let keyboardFrame = sender.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
+            let duration = sender.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double
+        else { return }
+
+        let keyboardHeight = keyboardFrame.height
+        let buttonFrame = withdrawButton.convert(withdrawButton.bounds, to: view)
+        let buttonBottom = buttonFrame.maxY
+        let visibleHeight = view.frame.height - keyboardHeight
+
+        if buttonBottom > visibleHeight {
+            let offset = buttonBottom - visibleHeight + 50
+
+            UIView.animate(withDuration: duration) {
+                self.view.frame.origin.y = -offset
+            }
+        }
+    }
+
+    @objc private func keyboardWillDisappear(_ sender: Notification) {
+        guard let duration = sender.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double
+        else { return }
+
+        UIView.animate(withDuration: duration) {
+            self.view.frame.origin.y = 0
+        }
     }
 }
 
 extension WithdrawViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
         viewModel.action(input: .choiceWithdrawReason(reason: nil))
+
+        if !textView.text.isEmpty {
+            viewModel.action(input: .inputWithdrawReason(reason: textView.text))
+        }
     }
 
     func textViewDidChange(_ textView: UITextView) {
