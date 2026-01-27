@@ -49,7 +49,7 @@ extension RoutineEntity {
             subRoutineCompleted: subRoutineCompleteYn,
             routineType: RoutineCategoryType(rawValue: recommendedRoutineType ?? ""),
             isDeleted: routineDeletedYn,
-            startDate: Date.convertToDate(from: routineStartDate, dateType: .yearMonthDate) ?? Date(),
+            startDate: Date.convertToDate(from: routineStartDate, dateType: .yearMonthDate),
             endDate: Date.convertToDate(from: routineEndDate, dateType: .yearMonthDate) ?? Date())
     }
 }
