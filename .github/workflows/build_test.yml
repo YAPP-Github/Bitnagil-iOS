@@ -38,5 +38,5 @@ jobs:
             -workspace Bitnagil.xcworkspace \
             -scheme App \
             -sdk iphonesimulator \
-            -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.4' \
-            clean build | xcpretty
+            -destination 'generic/platform=iOS Simulator' \
+            clean build
