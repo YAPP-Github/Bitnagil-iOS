@@ -43,6 +43,7 @@ final class PrimaryButton: UIButton {
         self.buttonState = buttonState
         super.init(frame: .zero)
         configureAttribute(buttonTitle: buttonTitle)
+        self.isEnabled = buttonState != .disabled
     }
     
     required init?(coder: NSCoder) {
