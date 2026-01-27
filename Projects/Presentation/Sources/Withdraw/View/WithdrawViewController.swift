@@ -40,7 +40,7 @@ final class WithdrawViewController: BaseViewController<WithdrawViewModel> {
     private let withdrawReasonView = UIView()
     private let withdrawReasonLabel = UILabel()
     private let withdrawReasonStackView = UIStackView()
-    private var withdrawButtons: [WithdrawReason: BitnagilChoiceButton] = [:]
+    private var withdrawReasonButtons: [WithdrawReason: BitnagilChoiceButton] = [:]
     private let withdrawReasonTextBackgroundView = UIView()
     private let withdrawReasonTextViewPlaceholder = UILabel()
     private let withdrawReasonTextView = UITextView()
@@ -121,7 +121,7 @@ final class WithdrawViewController: BaseViewController<WithdrawViewModel> {
                 make.height.equalTo(Layout.withdrawChoiceButtonHeight)
             }
             withdrawReasonStackView.addArrangedSubview(withdrawChoiceButton)
-            withdrawButtons[withdrawReason] = withdrawChoiceButton
+            withdrawReasonButtons[withdrawReason] = withdrawChoiceButton
         }
 
         withdrawReasonTextBackgroundView.backgroundColor = BitnagilColor.gray99
@@ -147,6 +147,10 @@ final class WithdrawViewController: BaseViewController<WithdrawViewModel> {
                 self?.viewModel.action(input: .withdrawService)
             },
             for: .touchUpInside)
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        view.addGestureRecognizer(tapGesture)
     }
 
     override func configureLayout() {
@@ -284,7 +288,7 @@ final class WithdrawViewController: BaseViewController<WithdrawViewModel> {
     }
 
     private func updateWithdrawReason(selectedWithdrawReason: WithdrawReason?) {
-        withdrawButtons.forEach { withdrawReason in
+        withdrawReasonButtons.forEach { withdrawReason in
             let isSelected = withdrawReason.key == selectedWithdrawReason
             withdrawReason.value.updateButtonState(isChecked: isSelected)
         }
@@ -295,6 +299,10 @@ final class WithdrawViewController: BaseViewController<WithdrawViewModel> {
             withdrawReasonTextViewPlaceholder.isHidden = false
             withdrawReasonMaxLengthLabel.isHidden = true
         }
+    }
+
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
     }
 }
 
