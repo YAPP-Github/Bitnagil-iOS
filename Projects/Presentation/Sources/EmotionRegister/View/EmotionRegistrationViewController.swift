@@ -18,7 +18,7 @@ final class EmotionRegistrationViewController: BaseViewController<EmotionRegiste
         static let smallMarbleImageSize: CGFloat = 40
         static let emotionLabelWidth: CGFloat = 92
         static let emotionLabelHeight: CGFloat = 36
-        static let emotionCollectionViewHeight: CGFloat = 191
+        static let emotionCollectionViewHeight: CGFloat = 291
         static let emotionMarbleImageViewSize: CGFloat = 140
         static let emotionMarbleImageViewTopSpacing: CGFloat = 13
         static let speechImageTopSpacing: CGFloat = 26
@@ -33,11 +33,12 @@ final class EmotionRegistrationViewController: BaseViewController<EmotionRegiste
         static let foromThumbLeadingSpacing: CGFloat = 71
         static let handMarbleImageViewBottomSpacing: CGFloat = 7
         static let handMarbleImageViewTopSpacing: CGFloat = 50
-        static let infoLabelTopSpacing: CGFloat = 30
+        static let infoLabelTopSpacing: CGFloat = -70
         static let doubleChevronIconSize: CGFloat = 24
         static let doubleChevronIconHorizontalSpacing: CGFloat = 26
         static let doubleChevronIconTopSpacing: CGFloat = 10
         static let infoViewSize: CGFloat = 0
+        static let infoSwipeOverlayViewHeight = 100
     }
 
     private let smallMarbleScrollView = UIScrollView()
@@ -55,14 +56,20 @@ final class EmotionRegistrationViewController: BaseViewController<EmotionRegiste
     private let leftDoubleChevronImageView = UIImageView()
     private let rightDoubleChevronImageView = UIImageView()
     private let downDoubleChevronImageView = UIImageView()
+    private let infoSwipeOverlayView = UIView()
+    private let hapticGenerator = UISelectionFeedbackGenerator()
+    private let itemSetCount = 7
     private var isMarbleHeld = false
     private var marbleImageViewMidY: CGFloat?
     private var marbleImageViewPanGesture: UIPanGestureRecognizer?
+    private var infoSwipeOverlayViewPanGesturePanGesture: UIPanGestureRecognizer?
     private var emotion: Emotion?
     private var dataSource: UICollectionViewDiffableDataSource<Int, Emotion>?
     private var cancellables: Set<AnyCancellable>
+    private var lastMarbleCellIndex: Int = 0
+    
     var itemCount: Int {
-        return (dataSource?.snapshot().numberOfItems ?? 0) / 3
+        return (dataSource?.snapshot().numberOfItems ?? 0) / itemSetCount
     }
 
 
@@ -121,6 +128,10 @@ final class EmotionRegistrationViewController: BaseViewController<EmotionRegiste
         speechLabel.font = BitnagilFont.init(style:.cafe24Title2, weight: .light).font
         speechLabel.textColor = .clear
 
+        infoSwipeOverlayView.backgroundColor = .clear
+        infoSwipeOverlayView.isUserInteractionEnabled = false
+        infoSwipeOverlayView.backgroundColor = .clear
+
         infoLabel.numberOfLines = 0
         infoLabel.font = BitnagilFont.init(style: .body2, weight: .medium).font
         infoLabel.textColor = BitnagilColor.gray50
@@ -160,6 +171,7 @@ final class EmotionRegistrationViewController: BaseViewController<EmotionRegiste
         view.addSubview(handMarbleView)
         view.addSubview(thumbImageView)
         view.addSubview(infoView)
+        view.addSubview(infoSwipeOverlayView)
         smallMarbleScrollView.addSubview(smallMarbleStackView)
         infoView.addSubview(infoLabel)
         infoView.addSubview(leftDoubleChevronImageView)
@@ -258,6 +270,12 @@ final class EmotionRegistrationViewController: BaseViewController<EmotionRegiste
             make.bottom.equalTo(thumbImageView.snp.bottom).offset(-Layout.handMarbleImageViewBottomSpacing)
             make.size.equalTo(Layout.emotionMarbleImageViewSize)
         }
+
+        infoSwipeOverlayView.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview()
+            make.bottom.equalTo(emotionCollectionView.snp.bottom)
+            make.height.equalTo(Layout.infoSwipeOverlayViewHeight)
+        }
     }
 
     override func bind() {
@@ -267,11 +285,22 @@ final class EmotionRegistrationViewController: BaseViewController<EmotionRegiste
                 guard let self = self else { return }
 
                 let originalEmotionCount = emotions.count
-                let tripledEmotions = emotions.map({ $0.copy() }) + emotions + emotions.map({ $0.copy() })
+                let centerIndex = itemSetCount / 2 + 1
+                let multipliedEmotions = (0..<7).flatMap { i in
+                    i == centerIndex ? emotions : emotions.map { $0.copy() }
+                }
+
+                guard
+                    let layout = emotionCollectionView.collectionViewLayout as? EmotionCollectionViewLayout,
+                    let currentIndex = layout.fetchcurrentIndex()
+                else { return }
+
+                lastMarbleCellIndex = currentIndex
+                print(lastMarbleCellIndex)
 
                 var snapshot = NSDiffableDataSourceSnapshot<Int, Emotion>()
                 snapshot.appendSections([0])
-                snapshot.appendItems(tripledEmotions)
+                snapshot.appendItems(multipliedEmotions)
                 self.dataSource?.apply(snapshot, animatingDifferences: false)
 
                 self.scrollToIndex(index: originalEmotionCount)
@@ -350,8 +379,7 @@ final class EmotionRegistrationViewController: BaseViewController<EmotionRegiste
     }
 
     private func configureMarbleImageView() {
-        marbleImageViewPanGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(gesture:)))
-        marbleImageViewPanGesture?.cancelsTouchesInView = false
+        marbleImageViewPanGesture = UIPanGestureRecognizer(target: self, action: #selector(handleEmotionCollectionViewPanning(gesture:)))
 
         handMarbleView.layer.cornerRadius = Layout.emotionMarbleImageViewSize / 2
         handMarbleView.layer.masksToBounds = true
@@ -377,7 +405,7 @@ final class EmotionRegistrationViewController: BaseViewController<EmotionRegiste
         }
     }
 
-    @objc private func handlePan(gesture: UIPanGestureRecognizer) {
+    @objc private func handleEmotionCollectionViewPanning(gesture: UIPanGestureRecognizer) {
         guard let marbleImageViewMidY else { return }
 
         switch gesture.state {
@@ -454,8 +482,22 @@ extension EmotionRegistrationViewController: UICollectionViewDelegate {
 }
 
 extension EmotionRegistrationViewController: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard
+            let layout = emotionCollectionView.collectionViewLayout as? EmotionCollectionViewLayout,
+            let currentIndex = layout.fetchcurrentIndex(),
+            lastMarbleCellIndex != currentIndex
+        else { return }
+
+        lastMarbleCellIndex = currentIndex
+        hapticGenerator.selectionChanged()
+        hapticGenerator.prepare()
+
+    }
+
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         emotionMarbleImageView.isHidden = true
+        hapticGenerator.prepare()
     }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
@@ -470,7 +512,7 @@ extension EmotionRegistrationViewController: UIScrollViewDelegate {
         else { return }
 
         let index = indexPath.row % itemCount
-        if indexPath.row < itemCount / 3 || indexPath.row >= itemCount * 2 / 3 {
+        if indexPath.row < itemCount / itemSetCount || indexPath.row >= itemCount * (itemSetCount / 2 + 1) / itemSetCount {
             scrollToIndex(index: index)
         }
         viewModel.action(input: .selectEmotion(index: index))
