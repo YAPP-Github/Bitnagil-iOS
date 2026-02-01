@@ -8,8 +8,12 @@
 import UIKit
 
 final class EmotionCollectionViewLayout: UICollectionViewFlowLayout {
-    private let itemWidthRatio: CGFloat = 0.5
-    private let lineSpacing: CGFloat = 16
+    private enum Layout {
+        static let itemWidthRatio: CGFloat = 0.5
+        static let lineSpacing: CGFloat = 16
+        static let bottomSpacing: CGFloat = 100
+    }
+
     private var baseDistance: CGFloat { itemSize.width + minimumLineSpacing }
 
     override class var layoutAttributesClass: AnyClass { EmotionCollectionViewLayoutAttributes.self }
@@ -19,14 +23,18 @@ final class EmotionCollectionViewLayout: UICollectionViewFlowLayout {
         guard let collectionView else { return }
 
         scrollDirection = .horizontal
-        minimumLineSpacing = lineSpacing
+        minimumLineSpacing = Layout.lineSpacing
 
-        let itemWidth = floor(collectionView.bounds.width * itemWidthRatio)
-        let itemHeight = collectionView.bounds.height
+        let itemWidth = floor(collectionView.bounds.width * Layout.itemWidthRatio)
+        let itemHeight = collectionView.bounds.height - Layout.bottomSpacing
         itemSize = CGSize(width: itemWidth, height: itemHeight)
 
         let insetX = (collectionView.bounds.width - itemWidth) / 2
-        sectionInset = UIEdgeInsets(top: 0, left: insetX, bottom: 0, right: insetX)
+        sectionInset = UIEdgeInsets(
+            top: 0,
+            left: insetX,
+            bottom: Layout.bottomSpacing,
+            right: insetX)
 
         collectionView.decelerationRate = .fast
     }
@@ -74,5 +82,15 @@ final class EmotionCollectionViewLayout: UICollectionViewFlowLayout {
 
     override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
         return true
+    }
+
+    func fetchcurrentIndex() -> Int? {
+        guard let collectionView else { return nil }
+        
+        let centerX = collectionView.contentOffset.x + (collectionView.bounds.width / 2)
+        let insetX = (collectionView.bounds.width - itemSize.width) / 2
+        
+        let relativeX = centerX - insetX
+        return Int(round(relativeX / baseDistance))
     }
 }
