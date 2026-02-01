@@ -62,7 +62,6 @@ final class EmotionRegistrationViewController: BaseViewController<EmotionRegiste
     private var isMarbleHeld = false
     private var marbleImageViewMidY: CGFloat?
     private var marbleImageViewPanGesture: UIPanGestureRecognizer?
-    private var infoSwipeOverlayViewPanGesturePanGesture: UIPanGestureRecognizer?
     private var emotion: Emotion?
     private var dataSource: UICollectionViewDiffableDataSource<Int, Emotion>?
     private var cancellables: Set<AnyCancellable>
@@ -130,7 +129,6 @@ final class EmotionRegistrationViewController: BaseViewController<EmotionRegiste
 
         infoSwipeOverlayView.backgroundColor = .clear
         infoSwipeOverlayView.isUserInteractionEnabled = false
-        infoSwipeOverlayView.backgroundColor = .clear
 
         infoLabel.numberOfLines = 0
         infoLabel.font = BitnagilFont.init(style: .body2, weight: .medium).font
@@ -286,7 +284,7 @@ final class EmotionRegistrationViewController: BaseViewController<EmotionRegiste
 
                 let originalEmotionCount = emotions.count
                 let centerIndex = itemSetCount / 2 + 1
-                let multipliedEmotions = (0..<7).flatMap { i in
+                let multipliedEmotions = (0..<itemSetCount).flatMap { i in
                     i == centerIndex ? emotions : emotions.map { $0.copy() }
                 }
 
@@ -296,7 +294,6 @@ final class EmotionRegistrationViewController: BaseViewController<EmotionRegiste
                 else { return }
 
                 lastMarbleCellIndex = currentIndex
-                print(lastMarbleCellIndex)
 
                 var snapshot = NSDiffableDataSourceSnapshot<Int, Emotion>()
                 snapshot.appendSections([0])
