@@ -73,6 +73,8 @@ final class RoutineListViewModel: ViewModel {
                 let endDateString = endDate.convertToString(dateType: .yearMonthDate)
 
                 let routinesDictionary = try await routineRepository.fetchRoutines(from: startDateString, to: endDateString)
+
+                self.routines.removeAll()
                 for dailyRoutine in routinesDictionary {
                     let date = dailyRoutine.key
                     let routine = dailyRoutine.value.routines.map({ $0.toRoutine() })

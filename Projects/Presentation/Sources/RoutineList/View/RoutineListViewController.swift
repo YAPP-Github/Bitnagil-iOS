@@ -242,7 +242,7 @@ extension RoutineListViewController: RoutineCardViewDelegate {
         view.addSubview(newDimmedView)
         dimmedView = newDimmedView
 
-        if routine.repeatDay.isEmpty {
+        if routine.repeatDay.isEmpty || routine.isDeleted {
             let routineDeleteAlertViewController = RoutineDeleteAlertViewController(viewModel: viewModel, isDeleteAllRoutines: false)
             if let sheet = routineDeleteAlertViewController.sheetPresentationController {
                 sheet.prefersGrabberVisible = false
