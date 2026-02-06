@@ -17,7 +17,7 @@ final class ToastView: UIView {
 
     private let checkIcon = UIImageView()
     private let messageLabel = UILabel()
-    private let message: String
+    private var message: String
 
     init(message: String) {
         self.message = message
@@ -62,7 +62,12 @@ final class ToastView: UIView {
         }
     }
 
-    func showToastMessageView() {
+    func showToastMessageView(message: String? = nil) {
+        if let message {
+            self.message = message
+            self.messageLabel.text = message
+        }
+
         alpha = 0
         isHidden = false
 
