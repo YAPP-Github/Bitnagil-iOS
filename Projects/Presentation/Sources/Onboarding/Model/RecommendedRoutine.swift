@@ -15,6 +15,7 @@ public struct RecommendedRoutine: BitnagilChoiceProtocol, RoutineProtocol, Hasha
     let routineCategory: RoutineCategoryType
     let routineType: RoutineCategoryType?
     let routineLevel: RoutineLevelType
+    let isDeleted: Bool
 
     init(
         id: Int,
@@ -32,6 +33,7 @@ public struct RecommendedRoutine: BitnagilChoiceProtocol, RoutineProtocol, Hasha
         self.routineCategory = routineCategory
         self.routineType = routineType
         self.routineLevel = routineLevel
+        self.isDeleted = false
     }
 }
 

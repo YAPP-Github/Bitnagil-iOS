@@ -20,6 +20,8 @@ final class RoutineListViewController: BaseViewController<RoutineListViewModel> 
         static let routineScrollViewTopSpacing: CGFloat = 16
         static let routineStackViewSpacing: CGFloat = 12
         static let routineStackViewBottomSpacing: CGFloat = 60
+        static let toastMessageViewHeight: CGFloat = 52
+        static let toastMessageViewBottomSpacing: CGFloat = 20
     }
 
     private let weekView: WeekView
@@ -27,6 +29,8 @@ final class RoutineListViewController: BaseViewController<RoutineListViewModel> 
     private let routineScrollView = UIScrollView()
     private let routineStackView = UIStackView()
     private var routineCardViews: [String: RoutineCardView] = [:]
+    private let deleteToastMessage: String = "삭제가 완료되었습니다."
+    private var toastMessageView = ToastView(message: "")
     private var dimmedView: UIView?
     private var cancellables: Set<AnyCancellable>
 
@@ -79,6 +83,7 @@ final class RoutineListViewController: BaseViewController<RoutineListViewModel> 
         view.addSubview(emptyView)
         view.addSubview(routineScrollView)
         routineScrollView.addSubview(routineStackView)
+        view.addSubview(toastMessageView)
 
         weekView.snp.makeConstraints { make in
             make.top.equalTo(safeArea).offset(Layout.weekViewTopSpacing)
@@ -104,6 +109,13 @@ final class RoutineListViewController: BaseViewController<RoutineListViewModel> 
             make.bottom.equalToSuperview().inset(Layout.routineStackViewBottomSpacing)
             make.width.equalTo(routineScrollView.snp.width)
         }
+        
+        toastMessageView.snp.makeConstraints { make in
+            make.leading.equalTo(safeArea).offset(Layout.horizontalMargin)
+            make.trailing.equalTo(safeArea).inset(Layout.horizontalMargin)
+            make.height.equalTo(Layout.toastMessageViewHeight)
+            make.bottom.equalTo(safeArea).inset(Layout.toastMessageViewBottomSpacing)
+        }
     }
 
     override func bind() {
@@ -127,6 +139,14 @@ final class RoutineListViewController: BaseViewController<RoutineListViewModel> 
             .receive(on: DispatchQueue.main)
             .sink { [weak self] routines in
                 self?.updateRoutineStackView(routines: routines)
+            }
+            .store(in: &cancellables)
+
+        NotificationCenter.default.publisher(for: .showDeletedRoutineToast)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self else { return }
+                self.toastMessageView.showToastMessageView(message: deleteToastMessage)
             }
             .store(in: &cancellables)
     }
@@ -222,7 +242,7 @@ extension RoutineListViewController: RoutineCardViewDelegate {
         view.addSubview(newDimmedView)
         dimmedView = newDimmedView
 
-        if routine.repeatDay.isEmpty {
+        if routine.repeatDay.isEmpty || routine.isDeleted {
             let routineDeleteAlertViewController = RoutineDeleteAlertViewController(viewModel: viewModel, isDeleteAllRoutines: false)
             if let sheet = routineDeleteAlertViewController.sheetPresentationController {
                 sheet.prefersGrabberVisible = false

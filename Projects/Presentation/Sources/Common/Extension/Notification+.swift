@@ -9,4 +9,5 @@ import Foundation
 
 extension Notification.Name {
     static let showRecommendedRoutineToast = Notification.Name("showRecommendedRoutineToast")
+    static let showDeletedRoutineToast = Notification.Name("showDeletedRoutineToast")
 }
