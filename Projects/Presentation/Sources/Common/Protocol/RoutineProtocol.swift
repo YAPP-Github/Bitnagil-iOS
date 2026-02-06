@@ -11,4 +11,5 @@ protocol RoutineProtocol {
     var title: String { get }
     var routineType: RoutineCategoryType? { get }
     var subRoutines: [String] { get }
+    var isDeleted: Bool { get }
 }

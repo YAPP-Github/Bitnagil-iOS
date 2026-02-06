@@ -235,13 +235,15 @@ final class RoutineCardView: UIView {
         }
 
         if let _ = routine as? Routine {
-            addSubview(editButton)
             addSubview(deleteButton)
 
-            editButton.snp.makeConstraints { make in
-                make.top.equalToSuperview().offset(Layout.plusButtonTopSpacing)
-                make.trailing.equalTo(deleteButton).offset(-Layout.editButtonTrailingSpacing)
-                make.size.equalTo(Layout.plusButtonSize)
+            if !routine.isDeleted {
+                addSubview(editButton)
+                editButton.snp.makeConstraints { make in
+                    make.top.equalToSuperview().offset(Layout.plusButtonTopSpacing)
+                    make.trailing.equalTo(deleteButton).offset(-Layout.editButtonTrailingSpacing)
+                    make.size.equalTo(Layout.plusButtonSize)
+                }
             }
 
             deleteButton.snp.makeConstraints { make in
