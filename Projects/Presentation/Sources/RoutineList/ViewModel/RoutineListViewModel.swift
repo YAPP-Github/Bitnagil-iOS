@@ -118,9 +118,19 @@ final class RoutineListViewModel: ViewModel {
                 }
                 deleteRoutineResultSubject.send(true)
                 fetchRoutines()
+                showDeletedRoutineToastMessageView()
             } catch {
                 deleteRoutineResultSubject.send(false)
             }
+        }
+    }
+
+    private func showDeletedRoutineToastMessageView() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            NotificationCenter.default.post(
+                name: .showDeletedRoutineToast,
+                object: nil,
+                userInfo: nil)
         }
     }
 }
