@@ -34,9 +34,14 @@ final class ReportTextView: UIView {
     private let textView = UITextView()
     private let chevronImage = UIImageView()
     private let button = UIButton()
+    private var maxLength: Int?
     weak var delegate: ReportTextViewDelegate?
+    override var isFirstResponder: Bool {
+        return textView.isFirstResponder
+    }
 
-    init(type: ReportTextViewType, placeholder: String?) {
+    init(type: ReportTextViewType, placeholder: String?, maxLength: Int? = nil) {
+        self.maxLength = maxLength
         super.init(frame: .zero)
         configureAttribute(type: type, placeholder: placeholder)
         configureLayout(type: type)
@@ -158,11 +163,25 @@ extension ReportTextView: UITextViewDelegate {
 
     func textViewDidChange(_ textView: UITextView) {
         updatePlaceholderVisibility()
+
+        if let maxLength = self.maxLength, (textView.text?.count ?? 0) > maxLength {
+            textView.text = String(textView.text?.prefix(maxLength) ?? "")
+        }
+
         delegate?.reportTextViewDidChanged(self, text: textView.text)
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {
         updatePlaceholderVisibility()
         delegate?.reportTextViewDidChanged(self, text: textView.text)
+    }
+
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        guard let maxLength = self.maxLength else { return true }
+
+        let currentString = (textView.text ?? "") as NSString
+        let newString = currentString.replacingCharacters(in: range, with: text)
+
+        return newString.count <= maxLength
     }
 }

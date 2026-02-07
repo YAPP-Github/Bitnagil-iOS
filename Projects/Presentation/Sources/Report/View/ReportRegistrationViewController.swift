@@ -63,7 +63,10 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
     private let photoCollectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
     private let categoryTextView = ReportTextView(type: .combo, placeholder: "카테고리 선택")
     private let reportTitleTextView = ReportTextView(type: .editable, placeholder: "제보 제목을 작성해주세요.")
-    private let reportContentTextView = ReportTextView(type: .editable, placeholder: "어떤 위험인지 간단히 설명해주세요.")
+    private let reportContentTextView = ReportTextView(
+        type: .editable,
+        placeholder: "어떤 위험인지 간단히 설명해주세요.",
+        maxLength: 150)
     private let locationTextView = ReportTextView(type: .nonEditable, placeholder: "현재 위치 검색")
     private let contentTextCountLabel = UILabel()
     private let locationButton = LocationButton()
@@ -133,6 +136,9 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGesture.cancelsTouchesInView = false
         view.addGestureRecognizer(tapGesture)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 
     override func configureLayout() {
@@ -514,7 +520,16 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
     private func presentPhotoPicker() {
         var config = PHPickerConfiguration(photoLibrary: .shared())
         config.filter = .images
-        config.selectionLimit = 3
+        config.selectionLimit = viewModel.output.maxPhotoCount - viewModel.selectedPhotoCount
+
+        guard config.selectionLimit > 0 else {
+            let message = "더 이상 사진을 선택할 수 없습니다."
+            let alertController = UIAlertController(title: "알림", message: message, preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: "확인", style: .default))
+            self.present(alertController, animated: true)
+            return
+        }
+
         let picker = PHPickerViewController(configuration: config)
         picker.delegate = self
         present(picker, animated: true)
@@ -536,6 +551,24 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
 
     @objc private func dismissKeyboard() {
         view.endEditing(true)
+    }
+
+    @objc private func keyboardWillShow(notification: NSNotification) {
+        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
+        let keyboardHeight = keyboardFrame.cgRectValue.height
+
+        scrollView.contentInset.bottom = keyboardHeight
+        scrollView.verticalScrollIndicatorInsets.bottom = keyboardHeight
+
+        if reportContentTextView.isFirstResponder {
+            let targetRect = reportContentTextView.convert(reportContentTextView.bounds, to: scrollView)
+            scrollView.scrollRectToVisible(targetRect, animated: true)
+        }
+    }
+
+    @objc private func keyboardWillHide() {
+        scrollView.contentInset = .zero
+        scrollView.verticalScrollIndicatorInsets = .zero
     }
 }
 
