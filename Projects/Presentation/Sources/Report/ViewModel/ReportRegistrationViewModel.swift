@@ -48,6 +48,9 @@ final class ReportRegistrationViewModel: ViewModel {
     private let maxPhotoCount = 3
     private var location: LocationEntity? = nil
     private(set) var selectedReportType: ReportType?
+    var selectedPhotoCount: Int {
+        return selectedPhotoSubject.value.count
+    }
 
     init(reportUseCase: ReportUseCaseProtocol) {
         self.reportUseCase = reportUseCase
