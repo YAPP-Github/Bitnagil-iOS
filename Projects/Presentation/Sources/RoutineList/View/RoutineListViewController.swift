@@ -30,6 +30,7 @@ final class RoutineListViewController: BaseViewController<RoutineListViewModel> 
     private let routineStackView = UIStackView()
     private var routineCardViews: [String: RoutineCardView] = [:]
     private let deleteToastMessage: String = "삭제가 완료되었습니다."
+    private let updateToastMessage: String = "루틴 수정이 완료되었습니다."
     private var toastMessageView = ToastView(message: "")
     private var dimmedView: UIView?
     private var cancellables: Set<AnyCancellable>
@@ -147,6 +148,16 @@ final class RoutineListViewController: BaseViewController<RoutineListViewModel> 
             .sink { [weak self] _ in
                 guard let self else { return }
                 self.toastMessageView.showToastMessageView(message: deleteToastMessage)
+            }
+            .store(in: &cancellables)
+
+        NotificationCenter.default.publisher(for: .showUpdatedRoutineToast)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                guard let self else { return }
+                self.viewModel.action(input: .fetchRoutineList)
+                self.viewModel.action(input: .fetchDailyRoutine)
+                self.toastMessageView.showToastMessageView(message: updateToastMessage)
             }
             .store(in: &cancellables)
     }
