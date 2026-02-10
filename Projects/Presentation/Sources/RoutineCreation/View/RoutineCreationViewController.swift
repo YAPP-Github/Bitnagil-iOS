@@ -155,6 +155,7 @@ final class RoutineCreationViewController: BaseViewController<RoutineCreationVie
                         viewModel.action(input: .showRecommendedRoutineToastMessageView)
                     }
                 } else {
+                    viewModel.action(input: .showUpdateRoutineToastMessageView)
                     self.navigationController?.popViewController(animated: true)
                 }
             },

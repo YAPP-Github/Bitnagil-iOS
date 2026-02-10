@@ -34,6 +34,7 @@ final class RoutineCreationViewModel: ViewModel {
         case configureExecution(type: ExecutionTime)
         case registerRoutine
         case showRecommendedRoutineToastMessageView
+        case showUpdateRoutineToastMessageView
     }
 
     struct Output {
@@ -111,6 +112,8 @@ final class RoutineCreationViewModel: ViewModel {
             periodEndSubject.send(date)
         case .showRecommendedRoutineToastMessageView:
             showRecommendedRoutineToastMessageView()
+        case .showUpdateRoutineToastMessageView:
+            showUpdatedRoutineToastMessageView()
         }
         
         updateIsRoutineValid()
@@ -287,6 +290,15 @@ final class RoutineCreationViewModel: ViewModel {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             NotificationCenter.default.post(
                 name: .showRecommendedRoutineToast,
+                object: nil,
+                userInfo: nil)
+        }
+    }
+
+    private func showUpdatedRoutineToastMessageView() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            NotificationCenter.default.post(
+                name: .showUpdatedRoutineToast,
                 object: nil,
                 userInfo: nil)
         }
