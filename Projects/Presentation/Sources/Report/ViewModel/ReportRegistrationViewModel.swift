@@ -32,6 +32,8 @@ final class ReportRegistrationViewModel: ViewModel {
         let exceptionPublisher: AnyPublisher<String, Never>
         let reportRegistrationCompletePublisher: AnyPublisher<Int?, Never>
         let maxPhotoCount: Int
+        let maxContentLength: Int
+        let maxTitleLength: Int
     }
 
     private(set) var output: Output
@@ -46,6 +48,8 @@ final class ReportRegistrationViewModel: ViewModel {
     private let reportRegistrationCompleteSubject = PassthroughSubject<Int?, Never>()
     private let exceptionSubject = PassthroughSubject<String, Never>()
     private let maxPhotoCount = 3
+    private let maxContentLength = 150
+    private let maxTitleLength = 50
     private var location: LocationEntity? = nil
     private(set) var selectedReportType: ReportType?
     var selectedPhotoCount: Int {
@@ -65,7 +69,9 @@ final class ReportRegistrationViewModel: ViewModel {
             isReportValid: reportVerificationSubject.eraseToAnyPublisher(),
             exceptionPublisher: exceptionSubject.eraseToAnyPublisher(),
             reportRegistrationCompletePublisher: reportRegistrationCompleteSubject.eraseToAnyPublisher(),
-            maxPhotoCount: maxPhotoCount)
+            maxPhotoCount: maxPhotoCount,
+            maxContentLength: maxContentLength,
+            maxTitleLength: maxTitleLength)
     }
 
     func action(input: Input) {

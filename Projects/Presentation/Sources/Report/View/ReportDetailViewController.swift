@@ -152,6 +152,7 @@ class ReportDetailViewController: BaseViewController<ReportDetailViewModel> {
         titleLabel.text = reportDetailContentType.title
         titleLabel.font = BitnagilFont(style: .body2, weight: .semiBold).font
         titleLabel.textColor = BitnagilColor.gray10
+        titleLabel.numberOfLines = 2
 
         backgroudView.layer.masksToBounds = true
         backgroudView.layer.cornerRadius = 12

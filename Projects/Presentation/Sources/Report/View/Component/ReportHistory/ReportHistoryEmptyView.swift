@@ -54,7 +54,7 @@ final class ReportHistoryEmptyView: UIView {
 
         labelStackView.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.height.equalTo(Layout.stackViewHeight)
+            make.height.equalTo(Layout.stackViewHeight).priority(.medium)
             make.width.equalTo(Layout.stackViewWidth)
         }
 

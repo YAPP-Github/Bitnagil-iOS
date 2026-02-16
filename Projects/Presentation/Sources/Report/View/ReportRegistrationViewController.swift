@@ -44,8 +44,8 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
         static let registerButtonHeight: CGFloat = 54
         static let categoryBottomSheetHeight: CGFloat = 362
         static let cameraBottomSheetHeight: CGFloat = 174
-        static let contentCountLabelTopSpacing: CGFloat = 6
-        static let contentCountLabelHeight: CGFloat = 18
+        static let countLabelTopSpacing: CGFloat = 6
+        static let countLabelHeight: CGFloat = 18
     }
 
     private typealias Section = ReportRegistrationViewController.CollectionViewSection
@@ -62,12 +62,16 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
     private let cameraButton = ReportCameraButton(frame: .zero)
     private let photoCollectionView = UICollectionView(frame: .zero, collectionViewLayout: .init())
     private let categoryTextView = ReportTextView(type: .combo, placeholder: "카테고리 선택")
-    private let reportTitleTextView = ReportTextView(type: .editable, placeholder: "제보 제목을 작성해주세요.")
+    private let reportTitleTextView = ReportTextView(
+        type: .editable,
+        placeholder: "제보 제목을 작성해주세요."
+        ,maxLength: 50)
     private let reportContentTextView = ReportTextView(
         type: .editable,
         placeholder: "어떤 위험인지 간단히 설명해주세요.",
         maxLength: 150)
     private let locationTextView = ReportTextView(type: .nonEditable, placeholder: "현재 위치 검색")
+    private let titleCountLabel = UILabel()
     private let contentTextCountLabel = UILabel()
     private let locationButton = LocationButton()
     private let registerButton = PrimaryButton(buttonState: .disabled, buttonTitle: "제출하기")
@@ -127,6 +131,9 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
             },
             for: .touchUpInside)
 
+        titleCountLabel.font = BitnagilFont.init(style: .caption1, weight: .medium).font
+        titleCountLabel.textColor = BitnagilColor.gray80
+
         contentTextCountLabel.font = BitnagilFont.init(style: .caption1, weight: .medium).font
         contentTextCountLabel.textColor = BitnagilColor.gray80
 
@@ -148,6 +155,7 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
         scrollContentView.addSubview(collectionViewTitleLabel)
         scrollContentView.addSubview(categoryTitleLabel)
         scrollContentView.addSubview(nameTitleLabel)
+        scrollContentView.addSubview(titleCountLabel)
         scrollContentView.addSubview(contentTitleLabel)
         scrollContentView.addSubview(locationTitleLabel)
         scrollContentView.addSubview(cameraButton)
@@ -238,9 +246,20 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
                 .equalTo(Layout.textViewHeight)
         }
 
-        categoryTitleLabel.snp.makeConstraints { make in
+        titleCountLabel.snp.makeConstraints { make in
             make.top
                 .equalTo(reportTitleTextView.snp.bottom)
+                .offset(Layout.countLabelTopSpacing)
+
+            make.height
+                .equalTo(Layout.countLabelHeight)
+
+            make.trailing.equalTo(reportTitleTextView)
+        }
+
+        categoryTitleLabel.snp.makeConstraints { make in
+            make.top
+                .equalTo(titleCountLabel.snp.bottom)
                 .offset(Layout.titleLabelTopSpacing)
 
             make.leading
@@ -294,13 +313,13 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
         contentTextCountLabel.snp.makeConstraints { make in
             make.top
                 .equalTo(reportContentTextView.snp.bottom)
-                .offset(Layout.contentCountLabelTopSpacing)
+                .offset(Layout.countLabelTopSpacing)
 
             make.trailing
                 .equalToSuperview()
                 .offset(-Layout.horizontalInset)
 
-            make.height.equalTo(Layout.contentCountLabelHeight)
+            make.height.equalTo(Layout.countLabelHeight)
         }
 
         locationTitleLabel.snp.makeConstraints { make in
@@ -374,17 +393,22 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
         viewModel.output.titlePublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] title in
-                self?.reportTitleTextView.configure(text: title ?? "")
+                guard let self else { return }
+
+                self.reportTitleTextView.configure(text: title ?? "")
+                let title = title ?? ""
+                self.titleCountLabel.text = "\(title.count) / \(viewModel.output.maxTitleLength)"
             }
             .store(in: &cancellables)
 
         viewModel.output.contentPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] content in
-                self?.reportContentTextView.configure(text: content ?? "")
+                guard let self else { return }
+                self.reportContentTextView.configure(text: content ?? "")
 
                 let content = content ?? ""
-                self?.contentTextCountLabel.text = "\(content.count) / 150"
+                self.contentTextCountLabel.text = "\(content.count) / \(viewModel.output.maxContentLength)"
             }
             .store(in: &cancellables)
 

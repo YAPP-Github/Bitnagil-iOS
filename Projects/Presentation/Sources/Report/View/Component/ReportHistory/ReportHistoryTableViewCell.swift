@@ -55,6 +55,7 @@ final class ReportHistoryTableViewCell: UITableViewCell {
         photoImageView.layer.cornerRadius = 9.25
         photoImageView.layer.masksToBounds = true
 
+        titleLabel.numberOfLines = 2
         titleLabel.textColor = BitnagilColor.gray10
         titleLabel.font = BitnagilFont.init(style: .body2, weight: .semiBold).font
         titleLabel.textAlignment = .left
@@ -93,9 +94,14 @@ final class ReportHistoryTableViewCell: UITableViewCell {
         }
 
         photoImageView.snp.makeConstraints { make in
-            make.verticalEdges
+            make.top
                 .equalToSuperview()
                 .inset(Layout.verticalSpacing)
+
+            make.bottom
+                .equalToSuperview()
+                .inset(Layout.verticalSpacing)
+                .priority(.low)
 
             make.trailing
                 .equalToSuperview()
@@ -130,6 +136,7 @@ final class ReportHistoryTableViewCell: UITableViewCell {
             make.bottom
                 .equalToSuperview()
                 .offset(-Layout.verticalSpacing)
+                .priority(.medium)
 
             make.width
                 .equalTo(Layout.categoryLabelWidth)
