@@ -43,7 +43,7 @@ final class RoutineCreationViewController: BaseViewController<RoutineCreationVie
         title: "세부루틴",
         placeHolder: "ex) 일어나자마자 이불 개기",
         titleImage: BitnagilIcon.routineListIcon,
-        withInfoImage: true,
+        withInfoImage: false,
         withAsteriskImage: false)
     private let repeatView = RoutineCreationCardView<RoutineRepeatContentView>(
         title: "반복 요일",
