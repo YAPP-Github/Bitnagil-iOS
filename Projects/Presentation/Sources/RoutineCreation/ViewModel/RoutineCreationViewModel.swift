@@ -56,6 +56,7 @@ final class RoutineCreationViewModel: ViewModel {
     private let checkRoutinePublisher = CurrentValueSubject<Bool, Never>(false)
     private let routineUseCase: RoutineUseCaseProtocol
     private let recommenededRoutineUseCase: RecommendedRoutineUseCaseProtocol
+    private let maxSubRoutineCount: Int = 3
     private var deletedSubroutines = Set<SubRoutineSummaryEntity>()
     private var routineId: String?
     private var routineType: RoutineCategoryType?
@@ -143,7 +144,11 @@ final class RoutineCreationViewModel: ViewModel {
                 executionType = .init(startAt: time ?? Date())
 
                 // TODO: - routine 엔티티 변경 이후 시작일자, 종료 일자 설정 필요 + 추천 타입 있으면 추천 타입도 설정 필요
+                let periodStart = Date.convertToDate(from: routine.routineStartDate, dateType: .yearMonthDate)
+                let periodEnd = Date.convertToDate(from: routine.routineEndDate, dateType: .yearMonthDate)
 
+                periodStartSubject.send(periodStart)
+                periodEndSubject.send(periodEnd)
                 nameSubject.send(routine.routineName)
                 subRoutinesSubject.send(subRoutines)
                 repeatTypeSubject.send(repeatType)
@@ -182,8 +187,10 @@ final class RoutineCreationViewModel: ViewModel {
         var subRoutines = subRoutinesSubject.value
         guard
             index >= 0,
-            index < subRoutines.count
+            index < maxSubRoutineCount
         else { return }
+
+        while subRoutines.count <= index { subRoutines.append("") }
 
         subRoutines[index] = name
         subRoutinesSubject.send(subRoutines)
@@ -268,6 +275,8 @@ final class RoutineCreationViewModel: ViewModel {
                     repeatDay = []
                 }
 
+                let subroutines = subRoutinesSubject.value.filter { !$0.isEmpty }
+
                 let routine = RoutineCreationEntity(
                     id: routineId,
                     name: name,
@@ -275,7 +284,7 @@ final class RoutineCreationViewModel: ViewModel {
                     startDate: startDateString,
                     endDate: endDateString,
                     executionTime: executionTimeString,
-                    subroutines: subRoutinesSubject.value,
+                    subroutines: subroutines,
                     recommendedRoutineType: routineType,
                     applyDateType: updateType)
 
