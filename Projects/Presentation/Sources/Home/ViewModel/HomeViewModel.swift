@@ -33,6 +33,7 @@ final class HomeViewModel: ViewModel {
         let updateRoutineCompletionResultPublisher: AnyPublisher<Bool, Never>
         let allCompletedRoutineDatePublisher: AnyPublisher<[Date], Never>
         let updateVersionPublisher: AnyPublisher<URL?, Never>
+        let networkErrorPublisher: AnyPublisher<(() -> Void)?, Never>
     }
 
     let output: Output
@@ -48,6 +49,7 @@ final class HomeViewModel: ViewModel {
     private let updateRoutineCompletionResultSubject = PassthroughSubject<Bool, Never>()
     private let allCompletedRoutineDateSubject = CurrentValueSubject<[Date], Never>([])
     private let updateVersionSubject = PassthroughSubject<URL?, Never>()
+    private let networkRetryHandler: NetworkRetryHandler
 
     private let calendar = Calendar.current
     private let today = Date()
@@ -65,6 +67,8 @@ final class HomeViewModel: ViewModel {
         emotionUseCase: EmotionUseCaseProtocol,
         appConfigRepository: AppConfigRepositoryProtocol
     ) {
+        networkRetryHandler = NetworkRetryHandler()
+
         self.routineUseCase = routineUseCase
         self.userDataUseCase = userDataUseCase
         self.emotionUseCase = emotionUseCase
@@ -78,7 +82,8 @@ final class HomeViewModel: ViewModel {
             routinesPublisher: routinesSubject.eraseToAnyPublisher(),
             updateRoutineCompletionResultPublisher: updateRoutineCompletionResultSubject.eraseToAnyPublisher(),
             allCompletedRoutineDatePublisher: allCompletedRoutineDateSubject.eraseToAnyPublisher(),
-            updateVersionPublisher: updateVersionSubject.eraseToAnyPublisher())
+            updateVersionPublisher: updateVersionSubject.eraseToAnyPublisher(),
+            networkErrorPublisher: networkRetryHandler.networkErrorActionSubject.eraseToAnyPublisher())
     }
 
     func action(input: Input) {
@@ -123,8 +128,12 @@ final class HomeViewModel: ViewModel {
             do {
                 let nickname = try await userDataUseCase.loadNickname()
                 nicknameSubject.send(nickname)
+
+                networkRetryHandler.clearRetryState()
             } catch {
-                
+                networkRetryHandler.handleNetworkError(error) { [weak self] in
+                    self?.loadNickname()
+                }
             }
         }
     }
@@ -136,8 +145,12 @@ final class HomeViewModel: ViewModel {
                 let emotionEntity = try await emotionUseCase.loadEmotion(date: today)
                 let emotion = emotionEntity?.toEmotion()
                 emotionSubject.send(emotion)
-            } catch {
 
+                networkRetryHandler.clearRetryState()
+            } catch {
+                networkRetryHandler.handleNetworkError(error) { [weak self] in
+                    self?.fetchEmotion()
+                }
             }
         }
     }
@@ -205,9 +218,15 @@ final class HomeViewModel: ViewModel {
                 }
                 fetchAllCompletedRoutine()
                 fetchRoutineResultSubject.send(true)
+
+                networkRetryHandler.clearRetryState()
             } catch {
                 fetchRoutineResultSubject.send(false)
-                // TODO: 에러 처리
+                // TODO: - 네트워크 에러 제외 오류 처리
+
+                networkRetryHandler.handleNetworkError(error) { [weak self] in
+                    self?.fetchRoutines(startDate: startDate, endDate: endDate)
+                }
             }
         }
     }
@@ -268,8 +287,13 @@ final class HomeViewModel: ViewModel {
                 let routineEntity = updatedRoutine.toRoutineEntity()
                 try await routineUseCase.updateRoutineCompletions(routines: [routineEntity])
                 updateRoutineCompletionResultSubject.send(true)
+
+                networkRetryHandler.clearRetryState()
             } catch {
                 // TODO: 에러 처리
+                networkRetryHandler.handleNetworkError(error) { [weak self] in
+                    self?.updateRoutineCompletion(updatedRoutine: updatedRoutine)
+                }
             }
         }
     }
@@ -290,8 +314,11 @@ final class HomeViewModel: ViewModel {
                     updateVersionSubject.send(nil)
                 }
 
+                networkRetryHandler.clearRetryState()
             } catch {
-
+                networkRetryHandler.handleNetworkError(error) { [weak self] in
+                    self?.checkVersion()
+                }
             }
         }
     }

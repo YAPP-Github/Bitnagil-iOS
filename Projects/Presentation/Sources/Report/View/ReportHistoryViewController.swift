@@ -198,6 +198,8 @@ final class ReportHistoryViewController: BaseViewController<ReportHistoryViewMod
 
             })
             .store(in: &cancellables)
+
+        bindNetworkError(from: viewModel.output.networkErrorPublisher)
     }
 
     private func configureProgressCollectionView() {

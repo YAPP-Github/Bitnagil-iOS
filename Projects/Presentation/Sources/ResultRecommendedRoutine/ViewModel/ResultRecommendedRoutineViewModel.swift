@@ -31,6 +31,7 @@ final class ResultRecommendedRoutineViewModel: ViewModel {
         let selectedRecommendedRoutinePublisher: AnyPublisher<Set<RecommendedRoutine>, Never>
         let confirmButtonPublisher: AnyPublisher<Bool, Never>
         let registerRoutineResultPublisher: AnyPublisher<Bool, Never>
+        let networkErrorPublisher: AnyPublisher<(() -> Void)?, Never>
     }
 
     private(set) var output: Output
@@ -39,18 +40,21 @@ final class ResultRecommendedRoutineViewModel: ViewModel {
     private let selectedRecommendedRoutineSubject = CurrentValueSubject<Set<RecommendedRoutine>, Never>([])
     private let confirmButtonSubject = PassthroughSubject<Bool, Never>()
     private let registerRoutineResultSubject = PassthroughSubject<Bool, Never>()
+    private let networkRetryHandler: NetworkRetryHandler
 
     private var viewModelType: ResultRecommendedRoutineViewModelType?
     private let resultRecommendedRoutineUseCase: ResultRecommendedRoutineUseCaseProtocol
     init(resultRecommendedRoutineUseCase: ResultRecommendedRoutineUseCaseProtocol) {
+        networkRetryHandler = NetworkRetryHandler()
+
         self.resultRecommendedRoutineUseCase = resultRecommendedRoutineUseCase
         output = Output(
             resultRecommendedRoutinesPublisher: resultRecommendedRoutinesSubject.eraseToAnyPublisher(),
             selectedRoutineIdPublisher: selectedRoutineIdSubject.eraseToAnyPublisher(),
             selectedRecommendedRoutinePublisher: selectedRecommendedRoutineSubject.eraseToAnyPublisher(),
             confirmButtonPublisher: confirmButtonSubject.eraseToAnyPublisher(),
-            registerRoutineResultPublisher: registerRoutineResultSubject.eraseToAnyPublisher()
-        )
+            registerRoutineResultPublisher: registerRoutineResultSubject.eraseToAnyPublisher(),
+            networkErrorPublisher: networkRetryHandler.networkErrorActionSubject.eraseToAnyPublisher())
     }
 
     func action(input: Input) {
@@ -95,9 +99,15 @@ final class ResultRecommendedRoutineViewModel: ViewModel {
                 case nil:
                     fatalError("ResultRecommendedRoutineViewModel Type이 설정되지 않았습니다.")
                 }
+                
+                networkRetryHandler.clearRetryState()
             } catch {
                 // TODO: 에러 처리
                 BitnagilLogger.log(logType: .error, message: "\(error.localizedDescription)")
+
+                networkRetryHandler.handleNetworkError(error) { [weak self] in
+                    self?.fetchResultRecommendedRoutines()
+                }
             }
         }
     }
@@ -151,9 +161,15 @@ final class ResultRecommendedRoutineViewModel: ViewModel {
             do {
                 try await resultRecommendedRoutineUseCase.registerRecommendedRoutines(selectedRoutines: selectedRoutinesId)
                 registerRoutineResultSubject.send(true)
+
+                networkRetryHandler.clearRetryState()
             } catch {
                 BitnagilLogger.log(logType: .error, message: "\(error.localizedDescription)")
                 registerRoutineResultSubject.send(false)
+
+                networkRetryHandler.handleNetworkError(error) { [weak self] in
+                    self?.fetchResultRecommendedRoutines()
+                }
             }
         }
     }

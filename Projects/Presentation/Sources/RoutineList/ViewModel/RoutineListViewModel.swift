@@ -23,6 +23,7 @@ final class RoutineListViewModel: ViewModel {
         let selectedDatePublisher: AnyPublisher<Date, Never>
         let routinesPublisher: AnyPublisher<[Routine], Never>
         let deleteRoutineResultPublisher: AnyPublisher<Bool, Never>
+        let networkErrorPublisher: AnyPublisher<(() -> Void)?, Never>
     }
 
     private(set) var output: Output
@@ -31,17 +32,21 @@ final class RoutineListViewModel: ViewModel {
     private let routinesSubject = CurrentValueSubject<[Routine], Never>([])
     private let selectedRoutine = CurrentValueSubject<Routine?, Never>(nil)
     private let deleteRoutineResultSubject = PassthroughSubject<Bool, Never>()
+    private let networkRetryHandler: NetworkRetryHandler
     private var routines: [String: [Routine]] = [:]
 
     private let calendar = Calendar.current
     private let routineRepository: RoutineRepositoryProtocol
     init(routineRepository: RoutineRepositoryProtocol) {
+        networkRetryHandler = NetworkRetryHandler()
+
         self.routineRepository = routineRepository
         self.output = Output(
             fetchRoutinesResultPublisher: fetchRoutinesResultSubject.eraseToAnyPublisher(),
             selectedDatePublisher: selectedDateSubject.eraseToAnyPublisher(),
             routinesPublisher: routinesSubject.eraseToAnyPublisher(),
-            deleteRoutineResultPublisher: deleteRoutineResultSubject.eraseToAnyPublisher())
+            deleteRoutineResultPublisher: deleteRoutineResultSubject.eraseToAnyPublisher(),
+            networkErrorPublisher: networkRetryHandler.networkErrorActionSubject.eraseToAnyPublisher())
     }
 
     func action(input: Input) {
@@ -81,8 +86,14 @@ final class RoutineListViewModel: ViewModel {
                     self.routines[date] = routine
                 }
                 fetchRoutinesResultSubject.send(true)
+
+                networkRetryHandler.clearRetryState()
             } catch {
                 fetchRoutinesResultSubject.send(false)
+
+                networkRetryHandler.handleNetworkError(error) { [weak self] in
+                    self?.fetchRoutines()
+                }
             }
         }
     }
@@ -121,8 +132,14 @@ final class RoutineListViewModel: ViewModel {
                 deleteRoutineResultSubject.send(true)
                 fetchRoutines()
                 showDeletedRoutineToastMessageView()
+
+                networkRetryHandler.clearRetryState()
             } catch {
                 deleteRoutineResultSubject.send(false)
+
+                networkRetryHandler.handleNetworkError(error) { [weak self] in
+                    self?.fetchRoutines()
+                }
             }
         }
     }

@@ -16,17 +16,21 @@ final class ReportDetailViewModel: ViewModel {
 
     struct Output {
         let reportDetailPublisher: AnyPublisher<ReportDetail?, Never>
+        let networkErrorPublisher: AnyPublisher<(() -> Void)?, Never>
     }
 
     private(set) var output: Output
     private let reportDetailSubject = CurrentValueSubject<ReportDetail?, Never>(nil)
     private let reportRepository: ReportRepositoryProtocol
+    private let networkRetryHandler: NetworkRetryHandler
 
     init(reportRepository: ReportRepositoryProtocol) {
+        networkRetryHandler = NetworkRetryHandler()
+        
         self.reportRepository = reportRepository
         self.output = Output(
-            reportDetailPublisher: reportDetailSubject.eraseToAnyPublisher()
-        )
+            reportDetailPublisher: reportDetailSubject.eraseToAnyPublisher(),
+            networkErrorPublisher: networkRetryHandler.networkErrorActionSubject.eraseToAnyPublisher())
     }
 
     func action(input: Input) {
@@ -53,8 +57,14 @@ final class ReportDetailViewModel: ViewModel {
                         photoUrls: reportEntity.photoURLs)
                     reportDetailSubject.send(reportDetail)
                 }
+
+                networkRetryHandler.clearRetryState()
             } catch {
                 reportDetailSubject.send(nil)
+
+                networkRetryHandler.handleNetworkError(error) { [weak self] in
+                    self?.fetchReportDetail(reportId: reportId)
+                }
             }
         }
     }

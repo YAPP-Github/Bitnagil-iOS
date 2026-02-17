@@ -145,6 +145,8 @@ final class RoutineListViewController: BaseViewController<RoutineListViewModel> 
             }
             .store(in: &cancellables)
 
+        bindNetworkError(from: viewModel.output.networkErrorPublisher)
+
         NotificationCenter.default.publisher(for: .showDeletedRoutineToast)
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in

@@ -264,6 +264,8 @@ final class ResultRecommendedRoutineViewController: BaseViewController<ResultRec
                 self?.goToRoutineCreationView(routineId: routineId)
             }
             .store(in: &cancellables)
+
+        bindNetworkError(from: viewModel.output.networkErrorPublisher)
     }
 
     // 추천 루틴 뷰들을 업데이트합니다.

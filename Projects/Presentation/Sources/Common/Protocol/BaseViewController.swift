@@ -57,9 +57,9 @@ public class BaseViewController<T: ViewModel>: UIViewController {
 
     /// 네트워크 재시도 기능이 필요할 경우 BaseViewController의 subclass 내의 bind() 함수 내에서 호출합니다.
     /// 네트워크 재시도 화면의 '다시 시도하기' 버튼의 재시도 action을 설정합니다.
-    /// - Parameter retryViewModel: NetworkRetryCapable를 채택한 ViewModel
-    func bindNetworkError(to retryViewModel: NetworkRetryCapable) {
-        retryViewModel.networkErrorActionSubject
+    /// - Parameter publisher: ViewModel의 Output에서 제공하는 네트워크 에러 Publisher
+    func bindNetworkError(from publisher: AnyPublisher<(() -> Void)?, Never>) {
+        publisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] retryAction in
                 if let action = retryAction {
