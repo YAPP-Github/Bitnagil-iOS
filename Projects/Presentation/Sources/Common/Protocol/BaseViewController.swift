@@ -19,6 +19,12 @@ public class BaseViewController<T: ViewModel>: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
 
+    deinit {
+        DispatchQueue.main.async { [weak tabBarController = self.tabBarController] in
+            tabBarController?.tabBar.isHidden = false
+        }
+    }
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -41,7 +47,7 @@ public class BaseViewController<T: ViewModel>: UIViewController {
     func configureLayout() {
         view.addSubview(networkErrorView)
 
-        view.snp.makeConstraints { make in
+        networkErrorView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
     }
@@ -71,8 +77,10 @@ public class BaseViewController<T: ViewModel>: UIViewController {
         if show {
             view.bringSubviewToFront(networkErrorView)
             networkErrorView.isHidden = false
+            tabBarController?.tabBar.isHidden = true
         } else {
             networkErrorView.isHidden = true
+            tabBarController?.tabBar.isHidden = false
         }
     }
 }

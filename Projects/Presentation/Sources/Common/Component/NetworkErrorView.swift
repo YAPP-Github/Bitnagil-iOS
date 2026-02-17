@@ -30,6 +30,9 @@ final class NetworkErrorView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+
+        configureAttribute()
+        configureLayout()
     }
 
     required init?(coder: NSCoder) {
@@ -41,8 +44,8 @@ final class NetworkErrorView: UIView {
         contentView.backgroundColor = .white
 
         errorImageView.image = BitnagilIcon
-            .exclamationFilledIcon?
-            .withTintColor(BitnagilColor.gray60 ?? .gray, renderingMode: .alwaysTemplate)
+            .networkErrorIcon?
+            .withRenderingMode(.alwaysOriginal)
 
         boldTitleLabel.text = "네트워크가 불안정해요"
         boldTitleLabel.font = BitnagilFont.init(style: .title2, weight: .bold).font
