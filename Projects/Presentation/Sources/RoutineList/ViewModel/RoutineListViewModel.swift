@@ -138,7 +138,7 @@ final class RoutineListViewModel: ViewModel {
                 deleteRoutineResultSubject.send(false)
 
                 networkRetryHandler.handleNetworkError(error) { [weak self] in
-                    self?.fetchRoutines()
+                    self?.deleteRoutine(isDeleteAllRoutines: isDeleteAllRoutines)
                 }
             }
         }

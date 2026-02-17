@@ -168,7 +168,7 @@ final class ResultRecommendedRoutineViewModel: ViewModel {
                 registerRoutineResultSubject.send(false)
 
                 networkRetryHandler.handleNetworkError(error) { [weak self] in
-                    self?.fetchResultRecommendedRoutines()
+                    self?.registerRecommendedRoutine()
                 }
             }
         }

@@ -13,7 +13,7 @@ final class NetworkErrorView: UIView {
         static let contentViewWidth: CGFloat = 204
         static let contentViewHeight: CGFloat = 215
         static let errorImageSize: CGFloat = 40
-        static let boldtitleLabelTopSpacing: CGFloat = 21
+        static let boldTitleLabelTopSpacing: CGFloat = 21
         static let boldTitleLabelHeight: CGFloat = 30
         static let mediumTitleLabelTopSpacing: CGFloat = 2
         static let mediumTitleLabelHeight: CGFloat = 24
@@ -95,7 +95,7 @@ final class NetworkErrorView: UIView {
         boldTitleLabel.snp.makeConstraints { make in
             make.top
                 .equalTo(errorImageView.snp.bottom)
-                .offset(Layout.boldtitleLabelTopSpacing)
+                .offset(Layout.boldTitleLabelTopSpacing)
 
             make.height.equalTo(Layout.boldTitleLabelHeight)
 
