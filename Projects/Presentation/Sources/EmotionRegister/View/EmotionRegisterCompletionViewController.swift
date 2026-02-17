@@ -16,6 +16,7 @@ final class EmotionRegisterCompletionViewController: UIViewController {
         static let speechImageBottomSpacing: CGFloat = 24
         static let speechLabelHorizontalSpacing: CGFloat = 20
         static let speechLabelTopSpacing: CGFloat = 22
+        static let speechLabelBottomSpacing: CGFloat = 32
         static let groundImageHeight: CGFloat = 171
         static let pomoImageWidth: CGFloat = 200
         static let pomoImageHeight: CGFloat = 282
@@ -79,7 +80,10 @@ final class EmotionRegisterCompletionViewController: UIViewController {
 
         speechImageView.image = BitnagilGraphic.marbleSpeechGraphic?.withRenderingMode(.alwaysTemplate)
         speechImageView.tintColor = BitnagilColor.gray10
-        speechLabel.font = BitnagilFont.init(style: .cafe24Title2, weight: .light).font
+        speechLabel.font = BitnagilFont.init(
+            family: .cafe24Ssurround,
+            style: .cafe24Title2,
+            weight: .light).font
         speechLabel.numberOfLines = 2
         speechLabel.textColor = .white
         speechLabel.textAlignment = .center
@@ -139,6 +143,7 @@ final class EmotionRegisterCompletionViewController: UIViewController {
 
         speechLabel.snp.makeConstraints { make in
             make.top.equalTo(speechImageView.snp.top).offset(Layout.speechLabelTopSpacing)
+            make.bottom.equalTo(speechImageView.snp.bottom).offset(-Layout.speechLabelBottomSpacing)
             make.horizontalEdges.equalTo(speechImageView).inset(Layout.speechImageHorizontalSpacing)
         }
     }

@@ -25,6 +25,7 @@ final class EmotionRegistrationViewController: BaseViewController<EmotionRegiste
         static let speechImageHorizontalSpacing: CGFloat = 54
         static let speechImageHeight: CGFloat = 102
         static let speechLabelTopSpacing: CGFloat = 22
+        static let speechLabelBottomSpacing: CGFloat = 32
         static let fomoHandImageWidth: CGFloat = 263
         static let fomoHandImageHeight: CGFloat = 207
         static let fomoThumbImageWidth: CGFloat = 80
@@ -124,7 +125,10 @@ final class EmotionRegistrationViewController: BaseViewController<EmotionRegiste
         speechImageView.tintColor = .clear
         speechLabel.numberOfLines = 2
         speechLabel.textAlignment = .center
-        speechLabel.font = BitnagilFont.init(style:.cafe24Title2, weight: .light).font
+        speechLabel.font = BitnagilFont.init(
+            family: .cafe24Ssurround,
+            style:.cafe24Title2,
+            weight: .light).font
         speechLabel.textColor = .clear
 
         infoSwipeOverlayView.backgroundColor = .clear
@@ -197,6 +201,7 @@ final class EmotionRegistrationViewController: BaseViewController<EmotionRegiste
 
         speechLabel.snp.makeConstraints { make in
             make.top.equalTo(speechImageView.snp.top).offset(Layout.speechLabelTopSpacing)
+            make.bottom.equalTo(speechImageView.snp.bottom).offset(-Layout.speechLabelBottomSpacing)
             make.centerX.equalTo(speechImageView)
         }
 

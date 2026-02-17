@@ -39,6 +39,7 @@ final class RoutineCreationCardView<ContentView: UIView & RoutineCreationExpanda
     private let divideLine = UIView()
     private let contentView = ContentView()
     private var labelStackViewBottomConstraint: Constraint?
+    private var divideLineTopConstraint: Constraint?
     public var onAction: ((ContentView.Action) -> Void)? {
         didSet { contentView.action = onAction }
     }
@@ -164,9 +165,12 @@ final class RoutineCreationCardView<ContentView: UIView & RoutineCreationExpanda
         }
 
         divideLine.snp.makeConstraints { make in
-            make.top.equalTo(labelStackView.snp.bottom).offset(Layout.divideLineTopSpacing)
             make.horizontalEdges.equalToSuperview().inset(Layout.edgeSpacing)
             make.height.equalTo(Layout.divideLineHeight)
+
+            divideLineTopConstraint = make.top
+                .equalTo(labelStackView.snp.bottom)
+                .offset(CGFloat.zero).constraint
         }
 
         contentView.snp.makeConstraints { make in
@@ -250,11 +254,15 @@ final class RoutineCreationCardView<ContentView: UIView & RoutineCreationExpanda
             contentView.isHidden = false
             divideLine.isHidden = false
             chevronImageView.image = BitnagilIcon.chevronIcon(direction: .up)
+
+            divideLineTopConstraint?.update(offset: Layout.edgeSpacing)
         } else {
             labelStackViewBottomConstraint?.isActive = true
             contentView.isHidden = true
             divideLine.isHidden = true
             chevronImageView.image = BitnagilIcon.chevronIcon(direction: .down)
+
+            divideLineTopConstraint?.update(offset: CGFloat.zero)
         }
 
         contentView.setExpanded(expanded: nextExpandedState)
