@@ -13,11 +13,21 @@ final class OnboardingRepository: OnboardingRepositoryProtocol {
 
     func loadOnboardingResult() async throws -> OnboardingEntity {
         let endpoint = OnboardingEndpoint.loadOnboardingResult
-        guard let response = try await networkService.request(endpoint: endpoint, type: OnboardingResponseDTO.self)
-        else { throw UserError.onboardingLoadFailed }
 
-        let onboardingEntity = response.toOnboardingEntity()
-        return onboardingEntity
+        do {
+            guard let response = try await networkService.request(endpoint: endpoint, type: OnboardingResponseDTO.self)
+            else { throw UserError.onboardingLoadFailed }
+
+            let onboardingEntity = response.toOnboardingEntity()
+            return onboardingEntity
+        } catch let error as NetworkError {
+            switch error {
+            case .needRetry, .invalidURL, .emptyData:
+                throw DomainError.requireRetry
+            default:
+                throw DomainError.business(error.description)
+            }
+        }
     }
 
     func registerOnboarding(onboardingEntity: OnboardingEntity) async throws -> [RecommendedRoutineEntity] {
@@ -27,15 +37,39 @@ final class OnboardingRepository: OnboardingRepositoryProtocol {
             realOutingFrequency: onboardingEntity.frequency,
             targetOutingFrequency: onboardingEntity.outdoor)
         let endpoint = OnboardingEndpoint.registerOnboarding(onboarding: onboardingDTO)
-        guard let response = try await networkService.request(endpoint: endpoint, type: RecommendedRoutineListResponseDTO.self)
-        else { return [] }
-        
-        let recommendedRoutineEntity = response.recommendedRoutines.compactMap({ $0.toRecommendedRoutineEntity() })
-        return recommendedRoutineEntity
+
+        do {
+            guard let response = try await networkService.request(endpoint: endpoint, type: RecommendedRoutineListResponseDTO.self)
+            else { return [] }
+
+            let recommendedRoutineEntity = response.recommendedRoutines.compactMap({ $0.toRecommendedRoutineEntity() })
+            return recommendedRoutineEntity
+        } catch let error as NetworkError {
+            switch error {
+            case .needRetry, .invalidURL, .emptyData:
+                throw DomainError.requireRetry
+            default:
+                throw DomainError.business(error.description)
+            }
+        } catch {
+            throw DomainError.unknown
+        }
     }
 
     func registerRecommendedRoutines(selectedRoutines: [Int]) async throws {
         let endpoint = OnboardingEndpoint.registerRecommendedRoutine(selectedRoutines: selectedRoutines)
-        _ = try await networkService.request(endpoint: endpoint, type: EmptyResponseDTO.self)
+
+        do {
+            _ = try await networkService.request(endpoint: endpoint, type: EmptyResponseDTO.self)
+        } catch let error as NetworkError {
+            switch error {
+            case .needRetry, .invalidURL, .emptyData:
+                throw DomainError.requireRetry
+            default:
+                throw DomainError.business(error.description)
+            }
+        } catch {
+            throw DomainError.unknown
+        }
     }
 }
