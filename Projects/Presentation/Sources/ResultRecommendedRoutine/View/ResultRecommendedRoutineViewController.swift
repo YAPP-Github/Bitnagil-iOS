@@ -125,6 +125,7 @@ final class ResultRecommendedRoutineViewController: BaseViewController<ResultRec
     }
 
     override func configureAttribute() {
+        super.configureAttribute()
         view.backgroundColor = .systemBackground
         navigationController?.setNavigationBarHidden(true, animated: false)
         switch entryPoint {
@@ -163,6 +164,7 @@ final class ResultRecommendedRoutineViewController: BaseViewController<ResultRec
     }
 
     override func configureLayout() {
+        super.configureLayout()
         let safeArea = view.safeAreaLayoutGuide
 
         view.addSubview(mainLabel)

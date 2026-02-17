@@ -40,6 +40,8 @@ final class TermsAgreementViewController: BaseViewController<LoginViewModel> {
     }
 
     override func configureAttribute() {
+        super.configureAttribute()
+
         let text = "빛나길 이용을 위해\n필수 약관에 동의해 주세요."
         agreementLabel.attributedText = BitnagilFont(style: .title2, weight: .bold).attributedString(text: text)
         agreementLabel.textAlignment = .left
@@ -56,6 +58,8 @@ final class TermsAgreementViewController: BaseViewController<LoginViewModel> {
     }
 
     override func configureLayout() {
+        super.configureLayout()
+
         let safeArea = view.safeAreaLayoutGuide
         view.backgroundColor = .systemBackground
         navigationController?.setNavigationBarHidden(true, animated: false)

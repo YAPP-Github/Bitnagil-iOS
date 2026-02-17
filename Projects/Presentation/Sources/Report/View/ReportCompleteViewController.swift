@@ -88,6 +88,8 @@ final class ReportCompleteViewController: BaseViewController<ReportDetailViewMod
     }
 
     override func configureAttribute() {
+        super.configureAttribute()
+
         view.backgroundColor = .white
         scrollView.showsVerticalScrollIndicator = false
 
@@ -142,6 +144,8 @@ final class ReportCompleteViewController: BaseViewController<ReportDetailViewMod
     }
 
     override func configureLayout() {
+        super.configureLayout()
+        
         let safeArea = view.safeAreaLayoutGuide
 
         view.addSubview(scrollView)

@@ -72,6 +72,8 @@ final class RecommendedRoutineViewController: BaseViewController<RecommendedRout
     }
 
     override func configureAttribute() {
+        super.configureAttribute()
+
         categoryView.delegate = self
 
         routineLabel.text = "추천 루틴리스트"
@@ -110,6 +112,8 @@ final class RecommendedRoutineViewController: BaseViewController<RecommendedRout
     }
 
     override func configureLayout() {
+        super.configureLayout()
+        
         let safeArea = view.safeAreaLayoutGuide
         view.backgroundColor = BitnagilColor.gray99
         navigationController?.setNavigationBarHidden(true, animated: false)

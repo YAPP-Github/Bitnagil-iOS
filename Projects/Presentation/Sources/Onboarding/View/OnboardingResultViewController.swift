@@ -101,6 +101,8 @@ final class OnboardingResultViewController: BaseViewController<OnboardingViewMod
     }
 
     override func configureAttribute() {
+        super.configureAttribute()
+
         var text = "이제 포모가 당신에게\n꼭 맞는 루틴을 찾아줄거예요."
         if entryPoint == .myPagePrevious {
             text = "이전에 설정한 목표에요!\n변경하시겠어요?"
@@ -142,6 +144,8 @@ final class OnboardingResultViewController: BaseViewController<OnboardingViewMod
     }
 
     override func configureLayout() {
+        super.configureLayout()
+        
         let safeArea = view.safeAreaLayoutGuide
         view.backgroundColor = .systemBackground
         navigationController?.setNavigationBarHidden(true, animated: false)

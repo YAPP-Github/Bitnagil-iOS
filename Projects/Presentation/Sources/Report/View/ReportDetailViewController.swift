@@ -74,6 +74,8 @@ class ReportDetailViewController: BaseViewController<ReportDetailViewModel> {
     }
 
     override func configureAttribute() {
+        super.configureAttribute()
+
         view.backgroundColor = .white
         configureCustomNavigationBar(navigationBarStyle: .withBackButton(title: "제보하기"))
 
@@ -95,6 +97,8 @@ class ReportDetailViewController: BaseViewController<ReportDetailViewModel> {
     }
 
     override func configureLayout() {
+        super.configureLayout()
+
         let safeArea = view.safeAreaLayoutGuide
 
         view.addSubview(scrollView)

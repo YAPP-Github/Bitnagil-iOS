@@ -78,6 +78,8 @@ final class WithdrawViewController: BaseViewController<WithdrawViewModel> {
     }
 
     override func configureAttribute() {
+        super.configureAttribute()
+
         view.backgroundColor = .systemBackground
         navigationController?.setNavigationBarHidden(true, animated: false)
         configureCustomNavigationBar(navigationBarStyle: .withBackButton(title: "탈퇴하기"))
@@ -161,6 +163,7 @@ final class WithdrawViewController: BaseViewController<WithdrawViewModel> {
     }
 
     override func configureLayout() {
+        super.configureLayout()
         let safeArea = view.safeAreaLayoutGuide
 
         view.addSubview(mainLabel)

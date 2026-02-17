@@ -114,6 +114,8 @@ final class HomeViewController: BaseViewController<HomeViewModel> {
     }
 
     override func configureAttribute() {
+        super.configureAttribute()
+
         logoImageView.image = BitnagilGraphic.grayLogoGraphic
         helpButton.setImage(BitnagilIcon.helpIcon, for: .normal)
         alarmButton.setImage(BitnagilIcon.alarmIcon, for: .normal)
@@ -221,6 +223,8 @@ final class HomeViewController: BaseViewController<HomeViewModel> {
     }
 
     override func configureLayout() {
+        super.configureLayout()
+        
         let safeArea = view.safeAreaLayoutGuide
         view.backgroundColor = BitnagilColor.gray10
         navigationController?.setNavigationBarHidden(true, animated: false)

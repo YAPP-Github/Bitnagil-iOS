@@ -70,6 +70,8 @@ public final class IntroViewController: BaseViewController<IntroViewModel> {
     }
 
     override func configureAttribute() {
+        super.configureAttribute()
+
         introLabel.text = "포모는 님을 알고싶어요!"
         introLabel.font = BitnagilFont(style: .title1, weight: .bold).font
         introLabel.textColor = BitnagilColor.gray10
@@ -88,6 +90,8 @@ public final class IntroViewController: BaseViewController<IntroViewModel> {
     }
 
     override func configureLayout() {
+        super.configureLayout()
+
         let safeArea = view.safeAreaLayoutGuide
         view.backgroundColor = BitnagilColor.gray99
         navigationController?.setNavigationBarHidden(true, animated: false)

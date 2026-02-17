@@ -86,6 +86,8 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
     }
 
     override func configureAttribute() {
+        super.configureAttribute()
+
         configureCollectionViewDataSource()
         configurePhotoCollectionLayout()
 
@@ -149,6 +151,8 @@ final class ReportRegistrationViewController: BaseViewController<ReportRegistrat
     }
 
     override func configureLayout() {
+        super.configureLayout()
+        
         let safeArea = view.safeAreaLayoutGuide
         view.addSubview(scrollView)
         scrollView.addSubview(scrollContentView)

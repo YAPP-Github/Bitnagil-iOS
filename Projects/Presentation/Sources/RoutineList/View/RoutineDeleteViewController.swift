@@ -44,6 +44,7 @@ final class RoutineDeleteViewController: BaseViewController<RoutineListViewModel
     }
 
     override func configureAttribute() {
+        super.configureAttribute()
         mainLabel.text = "이 루틴은 반복 설정되어 있어요"
         mainLabel.font = BitnagilFont(style: .title3, weight: .semiBold).font
         mainLabel.textColor = BitnagilColor.gray10
@@ -84,6 +85,7 @@ final class RoutineDeleteViewController: BaseViewController<RoutineListViewModel
     }
 
     override func configureLayout() {
+        super.configureLayout()
         view.backgroundColor = .systemBackground
 
         view.addSubview(mainLabel)

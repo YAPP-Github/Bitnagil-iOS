@@ -72,6 +72,8 @@ public final class LoginViewController: BaseViewController<LoginViewModel> {
     }
 
     override func configureAttribute() {
+        super.configureAttribute()
+
         let loginText = "안녕! 저는 포모예요\n함께 빛나길을 시작해볼까요?"
         loginLabel.attributedText = BitnagilFont(style: .title1, weight: .bold).attributedString(text: loginText)
         loginLabel.font = BitnagilFont(style: .title1, weight: .bold).font
@@ -90,6 +92,8 @@ public final class LoginViewController: BaseViewController<LoginViewModel> {
     }
 
     override func configureLayout() {
+        super.configureLayout()
+        
         let safeArea = view.safeAreaLayoutGuide
         view.backgroundColor = .systemBackground
         navigationController?.setNavigationBarHidden(true, animated: false)

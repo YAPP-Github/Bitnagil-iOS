@@ -112,6 +112,7 @@ final class RoutineCreationViewController: BaseViewController<RoutineCreationVie
     }
 
     override func configureAttribute() {
+        super.configureAttribute()
         let attributes: [NSAttributedString.Key: Any] = [
             .font: BitnagilFont(style: .title3, weight: .semiBold).font,
             .foregroundColor: BitnagilColor.gray90 ?? .systemGray]
@@ -164,6 +165,7 @@ final class RoutineCreationViewController: BaseViewController<RoutineCreationVie
     }
 
     override func configureLayout() {
+        super.configureLayout()
         let safeArea = view.safeAreaLayoutGuide
         navigationController?.setNavigationBarHidden(true, animated: false)
 

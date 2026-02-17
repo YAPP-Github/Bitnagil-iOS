@@ -60,6 +60,8 @@ final class ReportHistoryViewController: BaseViewController<ReportHistoryViewMod
     }
 
     override func configureAttribute() {
+        super.configureAttribute()
+
         view.backgroundColor = BitnagilColor.gray99
 
         categoryLabel.textColor = BitnagilColor.gray40
@@ -81,6 +83,7 @@ final class ReportHistoryViewController: BaseViewController<ReportHistoryViewMod
     }
 
     override func configureLayout() {
+        super.configureLayout()
         let safeArea = view.safeAreaLayoutGuide
 
         view.addSubview(progressCollectionView)

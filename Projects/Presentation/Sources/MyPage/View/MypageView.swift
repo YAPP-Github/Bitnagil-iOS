@@ -45,6 +45,8 @@ final class MypageView: BaseViewController<MypageViewModel> {
     }
 
     override func configureAttribute() {
+        super.configureAttribute()
+
         view.backgroundColor = .white
 
         profileImageView.image = BitnagilGraphic.profileGraphic
@@ -78,6 +80,8 @@ final class MypageView: BaseViewController<MypageViewModel> {
     }
 
     override func configureLayout() {
+        super.configureLayout()
+        
         let safeArea = view.safeAreaLayoutGuide
         view.addSubview(profileImageView)
         view.addSubview(nicknameLabel)
