@@ -114,6 +114,8 @@ final class HomeViewController: BaseViewController<HomeViewModel> {
     }
 
     override func configureAttribute() {
+        super.configureAttribute()
+
         logoImageView.image = BitnagilGraphic.grayLogoGraphic
         helpButton.setImage(BitnagilIcon.helpIcon, for: .normal)
         alarmButton.setImage(BitnagilIcon.alarmIcon, for: .normal)
@@ -221,6 +223,8 @@ final class HomeViewController: BaseViewController<HomeViewModel> {
     }
 
     override func configureLayout() {
+        super.configureLayout()
+        
         let safeArea = view.safeAreaLayoutGuide
         view.backgroundColor = BitnagilColor.gray10
         navigationController?.setNavigationBarHidden(true, animated: false)
@@ -406,7 +410,7 @@ final class HomeViewController: BaseViewController<HomeViewModel> {
                 self?.nickname = nickname
             }
             .store(in: &cancellables)
-
+        
         viewModel.output.selectedDatePublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] selectedDate in
@@ -414,7 +418,7 @@ final class HomeViewController: BaseViewController<HomeViewModel> {
                 self?.weekView.updateWeekDateViews(date: selectedDate)
             }
             .store(in: &cancellables)
-
+        
         viewModel.output.fetchRoutineResultPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] fetchRoutineResult in
@@ -424,7 +428,7 @@ final class HomeViewController: BaseViewController<HomeViewModel> {
                 self?.hideIndicatorView()
             }
             .store(in: &cancellables)
-
+        
         viewModel.output.routinesPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] routines in
@@ -432,14 +436,14 @@ final class HomeViewController: BaseViewController<HomeViewModel> {
                 self?.hideIndicatorView()
             }
             .store(in: &cancellables)
-
+        
         viewModel.output.emotionPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] emotion in
                 self?.updateEmotionOrbView(emotion: emotion)
             }
             .store(in: &cancellables)
-
+        
         viewModel.output.updateRoutineCompletionResultPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] isUpdateRoutineCompletion in
@@ -449,56 +453,58 @@ final class HomeViewController: BaseViewController<HomeViewModel> {
                 self?.hideIndicatorView()
             }
             .store(in: &cancellables)
-
+        
         viewModel.output.routineListDatePublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] selectedDate in
                 guard let self else { return }
-
+                
                 guard let viewModel = DIContainer.shared.resolve(type: RoutineListViewModel.self)
                 else { return }
-
+                
                 let routineListViewController = RoutineListViewController(viewModel: viewModel, selectedDate: selectedDate)
                 routineListViewController.hidesBottomBarWhenPushed = true
                 self.navigationController?.pushViewController(routineListViewController, animated: true)
             }
             .store(in: &cancellables)
-
+        
         viewModel.output.allCompletedRoutineDatePublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] allCompletedDates in
                 self?.weekView.updateAllCompletedState(allCompletedDates: allCompletedDates)
             }
             .store(in: &cancellables)
-
+        
         viewModel.output.updateVersionPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] updateURL in
                 guard let updateURL else { return }
-
+                
                 let alert = UIAlertController(
                     title: "업데이트가 필요합니다",
                     message: "원활한 이용을 위해, 빛나길을 업데이트 해주세요!",
                     preferredStyle: .alert)
-
+                
                 let cancel = UIAlertAction(
                     title: "취소",
                     style: .default,
                     handler: { _ in exit(0) })
-
+                
                 let update = UIAlertAction(
                     title: "업데이트",
                     style: .default,
                     handler: { _ in
                         UIApplication.shared.open(updateURL, options: [:], completionHandler: { _ in exit(0) })
                     })
-
+                
                 alert.addAction(cancel)
                 alert.addAction(update)
                 alert.preferredAction = update
                 self?.present(alert, animated: true)
             }
             .store(in: &cancellables)
+        
+        bindNetworkError(from: viewModel.output.networkErrorPublisher)
     }
 
     // 해당 날짜의 Routine View를 설정합니다. (없다면 EmptyView)

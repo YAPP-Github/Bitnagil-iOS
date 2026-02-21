@@ -33,30 +33,66 @@ final class ReportRepository: ReportRepositoryProtocol {
         )
 
         let endpoint = ReportEndpoint.register(report: reportDTO)
-        guard let id = try await networkService.request(endpoint: endpoint, type: Int.self) else { return nil }
 
-        return id
+        do {
+            guard let id = try await networkService.request(endpoint: endpoint, type: Int.self) else { return nil }
+
+            return id
+        } catch let error as NetworkError {
+            switch error {
+            case .needRetry, .invalidURL, .emptyData:
+                throw DomainError.requireRetry
+            default:
+                throw DomainError.business(error.description)
+            }
+        } catch {
+            throw DomainError.unknown
+        }
     }
 
     func fetchReports() async throws -> [ReportEntity] {
         let endpoint = ReportEndpoint.fetchReports
-        guard let response = try await networkService.request(endpoint: endpoint, type: ReportDictonaryDTO.self)
-        else { return [] }
 
-        var reportEntities: [ReportEntity] = []
-        for (date, reports) in response.reportInfos {
-            let reportHistories = reports.compactMap({ try? $0.toReportEntity(date: date) })
-            reportEntities += reportHistories
+        do {
+            guard let response = try await networkService.request(endpoint: endpoint, type: ReportDictonaryDTO.self)
+            else { return [] }
+
+            var reportEntities: [ReportEntity] = []
+            for (date, reports) in response.reportInfos {
+                let reportHistories = reports.compactMap({ try? $0.toReportEntity(date: date) })
+                reportEntities += reportHistories
+            }
+
+            return reportEntities
+        } catch let error as NetworkError {
+            switch error {
+            case .needRetry, .invalidURL, .emptyData:
+                throw DomainError.requireRetry
+            default:
+                throw DomainError.business(error.description)
+            }
+        } catch {
+            throw DomainError.unknown
         }
-
-        return reportEntities
     }
 
     func fetchReportDetail(reportId: Int) async throws -> ReportEntity? {
         let endpoint = ReportEndpoint.fetchReportDetail(reportId: reportId)
-        guard let response = try await networkService.request(endpoint: endpoint, type: ReportDTO.self)
-        else { return nil }
 
-        return try response.toReportEntity()
+        do {
+            guard let response = try await networkService.request(endpoint: endpoint, type: ReportDTO.self)
+            else { return nil }
+
+            return try response.toReportEntity()
+        } catch let error as NetworkError {
+            switch error {
+            case .needRetry, .invalidURL, .emptyData:
+                throw DomainError.requireRetry
+            default:
+                throw DomainError.business(error.description)
+            }
+        } catch {
+            throw DomainError.unknown
+        }
     }
 }

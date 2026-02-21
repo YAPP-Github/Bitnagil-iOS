@@ -115,6 +115,7 @@ final class SettingView: BaseViewController<SettingViewModel> {
     }
 
     override func configureAttribute() {
+        super.configureAttribute()
         view.backgroundColor = .white
 
         guard
@@ -135,6 +136,7 @@ final class SettingView: BaseViewController<SettingViewModel> {
     }
 
     override func configureLayout() {
+        super.configureLayout()
         let safeArea = view.safeAreaLayoutGuide
 
         view.addSubview(tableView)

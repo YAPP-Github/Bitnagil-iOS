@@ -105,6 +105,8 @@ final class EmotionRegistrationViewController: BaseViewController<EmotionRegiste
     }
 
     override func configureAttribute() {
+        super.configureAttribute()
+
         view.backgroundColor = .white
 
         configureMarbleImageView()
@@ -161,6 +163,8 @@ final class EmotionRegistrationViewController: BaseViewController<EmotionRegiste
     }
 
     override func configureLayout() {
+        super.configureLayout()
+
         let safeArea = view.safeAreaLayoutGuide
 
         view.addSubview(smallMarbleScrollView)

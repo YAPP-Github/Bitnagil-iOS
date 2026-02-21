@@ -54,6 +54,7 @@ final class RoutineDeleteAlertViewController: BaseViewController<RoutineListView
     }
 
     override func configureAttribute() {
+        super.configureAttribute()
         mainLabel.text = "루틴을 삭제하시겠어요?"
         mainLabel.font = BitnagilFont(style: .title3, weight: .semiBold).font
         mainLabel.textColor = BitnagilColor.gray10
@@ -105,6 +106,7 @@ final class RoutineDeleteAlertViewController: BaseViewController<RoutineListView
     }
 
     override func configureLayout() {
+        super.configureLayout()
         view.backgroundColor = .systemBackground
 
         view.addSubview(mainLabel)

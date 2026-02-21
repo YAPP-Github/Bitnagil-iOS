@@ -24,28 +24,63 @@ final class RoutineRepository: RoutineRepositoryProtocol {
 
         let endpoint = RoutineEndpoint.createRoutine(routine: routineCreationDTO)
 
-        _ = try await networkService.request(endpoint: endpoint, type: EmptyResponseDTO.self)
+        do {
+            _ = try await networkService.request(endpoint: endpoint, type: EmptyResponseDTO.self)
+        } catch let error as NetworkError {
+            switch error {
+            case .needRetry, .invalidURL, .emptyData:
+                throw DomainError.requireRetry
+            default:
+                throw DomainError.business(error.description)
+            }
+        } catch {
+            throw DomainError.unknown
+        }
     }
-    
+
     func fetchRoutine(routineId: String) async throws -> RoutineEntity? {
         let endpoint = RoutineEndpoint.fetchRoutine(routineId: routineId)
-        guard let response = try await networkService.request(endpoint: endpoint, type: RoutineDTO.self) else { return nil }
-        
-        return response.toRoutineEntity()
+
+        do {
+            guard let response = try await networkService.request(endpoint: endpoint, type: RoutineDTO.self) else { return nil }
+
+            return response.toRoutineEntity()
+        } catch let error as NetworkError {
+            switch error {
+            case .needRetry, .invalidURL, .emptyData:
+                throw DomainError.requireRetry
+            default:
+                throw DomainError.business(error.description)
+            }
+        } catch {
+            throw DomainError.unknown
+        }
     }
 
     func fetchRoutines(from startDate: String, to endDate: String) async throws -> [String: (routines: [RoutineEntity], allCompleted: Bool)] {
         let endpoint = RoutineEndpoint.fetchRoutines(startDate: startDate, endDate: endDate)
-        guard let response = try await networkService.request(endpoint: endpoint, type: RoutineDictionaryDTO.self)
-        else { return [:] }
 
-        var result: [String: ([RoutineEntity], Bool)] = [:]
-        for (date, routineDTO) in response.routines {
-            let allCompleted = routineDTO.allCompleted
-            let routines = routineDTO.routineList.compactMap({ $0.toRoutineEntity() })
-            result[date] = (routines, allCompleted)
+        do {
+            guard let response = try await networkService.request(endpoint: endpoint, type: RoutineDictionaryDTO.self)
+            else { return [:] }
+
+            var result: [String: ([RoutineEntity], Bool)] = [:]
+            for (date, routineDTO) in response.routines {
+                let allCompleted = routineDTO.allCompleted
+                let routines = routineDTO.routineList.compactMap({ $0.toRoutineEntity() })
+                result[date] = (routines, allCompleted)
+            }
+            return result
+        } catch let error as NetworkError {
+            switch error {
+            case .needRetry, .invalidURL, .emptyData:
+                throw DomainError.requireRetry
+            default:
+                throw DomainError.business(error.description)
+            }
+        } catch {
+            throw DomainError.unknown
         }
-        return result
     }
     
     func updateRoutine(routine: RoutineCreationEntity) async throws {
@@ -61,17 +96,52 @@ final class RoutineRepository: RoutineRepositoryProtocol {
             recommendedRoutineType: routine.recommendedRoutineType?.rawValue)
         let endpoint = RoutineEndpoint.updateRoutine(routine: routineUpdateDTO)
 
-        _ = try await networkService.request(endpoint: endpoint, type: EmptyResponseDTO.self)
+        do {
+            _ = try await networkService.request(endpoint: endpoint, type: EmptyResponseDTO.self)
+        } catch let error as NetworkError {
+            switch error {
+            case .needRetry, .invalidURL, .emptyData:
+                throw DomainError.requireRetry
+            default:
+                throw DomainError.business(error.description)
+            }
+        } catch {
+            throw DomainError.unknown
+        }
     }
 
     func deleteAllRoutine(routineId: String) async throws {
         let endpoint = RoutineEndpoint.deleteAllRoutine(routineId: routineId)
-        _ = try await networkService.request(endpoint: endpoint, type: EmptyResponseDTO.self)
+
+        do {
+            _ = try await networkService.request(endpoint: endpoint, type: EmptyResponseDTO.self)
+        } catch let error as NetworkError {
+            switch error {
+            case .needRetry, .invalidURL, .emptyData:
+                throw DomainError.requireRetry
+            default:
+                throw DomainError.business(error.description)
+            }
+        } catch {
+            throw DomainError.unknown
+        }
     }
 
     func deleteDailyRoutine(routineId: String) async throws {
         let endpoint = RoutineEndpoint.deleteDailyRoutine(routineId: routineId)
-        _ = try await networkService.request(endpoint: endpoint, type: EmptyResponseDTO.self)
+
+        do {
+            _ = try await networkService.request(endpoint: endpoint, type: EmptyResponseDTO.self)
+        } catch let error as NetworkError {
+            switch error {
+            case .needRetry, .invalidURL, .emptyData:
+                throw DomainError.requireRetry
+            default:
+                throw DomainError.business(error.description)
+            }
+        } catch {
+            throw DomainError.unknown
+        }
     }
 
     func updateRoutineCompletions(routines: [RoutineEntity]) async throws {
@@ -82,6 +152,18 @@ final class RoutineRepository: RoutineRepositoryProtocol {
         let completionListDTO = RoutineCompletionListDTO(routineCompletionInfos: completionDTO)
 
         let endpoint = RoutineEndpoint.updateRoutineCompletion(routines: completionListDTO)
-        _ = try await networkService.request(endpoint: endpoint, type: EmptyResponseDTO.self)
+
+        do {
+            _ = try await networkService.request(endpoint: endpoint, type: EmptyResponseDTO.self)
+        } catch let error as NetworkError {
+            switch error {
+            case .needRetry, .invalidURL, .emptyData:
+                throw DomainError.requireRetry
+            default:
+                throw DomainError.business(error.description)
+            }
+        } catch {
+            throw DomainError.unknown
+        }
     }
 }

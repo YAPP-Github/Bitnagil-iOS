@@ -60,7 +60,19 @@ final class NetworkService {
             }
         }
 
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let data: Data
+        let response: URLResponse
+        do {
+            (data, response) = try await URLSession.shared.data(for: request)
+        } catch let error as URLError {
+            if [.notConnectedToInternet, .timedOut, .networkConnectionLost].contains(error.code) {
+                throw NetworkError.needRetry
+            } else {
+                throw NetworkError.unknown(description: error.localizedDescription)
+            }
+        } catch {
+            throw NetworkError.unknown(description: error.localizedDescription)
+        }
 
         if withPlugins {
             for plugin in plugins {

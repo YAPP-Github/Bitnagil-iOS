@@ -44,11 +44,22 @@ final class LocationRepository: NSObject, LocationRepositoryProtocol {
 
         let endpoint = LocationEndpoint.fetchAddress(longitude: longitude, latitude: latitude)
 
-        guard let response = try await networkService.request(endpoint: endpoint, type: KakaoLocationResponseDTO.self)
-        else { return nil }
+        do {
+            guard let response = try await networkService.request(endpoint: endpoint, type: KakaoLocationResponseDTO.self)
+            else { return nil }
 
-        let location = response.toLocationEntity(fallbackLongitude: coordinate.longitude, fallbackLatitude: coordinate.latitude)
-        return location
+            let location = response.toLocationEntity(fallbackLongitude: coordinate.longitude, fallbackLatitude: coordinate.latitude)
+            return location
+        } catch let error as NetworkError {
+            switch error {
+            case .needRetry, .invalidURL, .emptyData:
+                throw DomainError.requireRetry
+            default:
+                throw DomainError.business(error.description)
+            }
+        } catch {
+            throw DomainError.unknown
+        }
     }
 
     private func requestAuthorizationIfNeeded() async -> CLAuthorizationStatus {

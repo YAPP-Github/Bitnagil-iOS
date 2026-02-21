@@ -22,6 +22,7 @@ final class ReportHistoryViewModel: ViewModel {
         let selectedCategoryPublisher: AnyPublisher<ReportType?, Never>
         let reportsPublisher: AnyPublisher<[ReportHistoryItem], Never>
         let selectedReportPublisher: AnyPublisher<Int?, Never>
+        let networkErrorPublisher: AnyPublisher<(() -> Void)?, Never>
     }
 
     private(set) var output: Output
@@ -34,8 +35,11 @@ final class ReportHistoryViewModel: ViewModel {
     private var selectedProgress: ReportProgress?
     private var reports: [ReportHistoryItem] = []
     private let reportRepository: ReportRepositoryProtocol
+    private let networkRetryHandler: NetworkRetryHandler
 
     init(reportRepository: ReportRepositoryProtocol) {
+        networkRetryHandler = NetworkRetryHandler()
+
         self.reportRepository = reportRepository
         progressSubject
             .send(
@@ -51,7 +55,8 @@ final class ReportHistoryViewModel: ViewModel {
             categoryPublisher: categorySubject.eraseToAnyPublisher(),
             selectedCategoryPublisher: selectedCategorySubject.eraseToAnyPublisher(),
             reportsPublisher: reportSubject.eraseToAnyPublisher(),
-            selectedReportPublisher: selectedReportSubject.eraseToAnyPublisher())
+            selectedReportPublisher: selectedReportSubject.eraseToAnyPublisher(),
+            networkErrorPublisher: networkRetryHandler.networkErrorActionSubject.eraseToAnyPublisher())
     }
 
     func action(input: Input) {
@@ -160,8 +165,13 @@ final class ReportHistoryViewModel: ViewModel {
                 }
 
                 progressSubject.send(progressItems)
+
+                networkRetryHandler.clearRetryState()
             } catch {
                 // TODO: 에러 처리
+                networkRetryHandler.handleNetworkError(error) { [weak self] in
+                    self?.fetchReports()
+                }
             }
         }
     }

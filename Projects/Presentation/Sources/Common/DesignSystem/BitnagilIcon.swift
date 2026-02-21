@@ -110,6 +110,9 @@ enum BitnagilIcon {
     static func doubleChevronIcon(direction: Direction) -> UIImage? {
         return BitnagilIcon.doubleChevronIcon?.rotate(degrees: direction.rotation)?.withRenderingMode(.alwaysTemplate)
     }
+
+    // MARK: - Network Error
+    static let networkErrorIcon = UIImage(named: "network_error_icon", in: bundle, with: nil)
 }
 
 enum Direction {

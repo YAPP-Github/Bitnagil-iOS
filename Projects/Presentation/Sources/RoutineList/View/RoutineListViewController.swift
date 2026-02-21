@@ -57,6 +57,7 @@ final class RoutineListViewController: BaseViewController<RoutineListViewModel> 
     }
 
     override func configureAttribute() {
+        super.configureAttribute()
         weekView.delegate = self
 
         emptyView.isHidden = true
@@ -76,6 +77,7 @@ final class RoutineListViewController: BaseViewController<RoutineListViewModel> 
     }
 
     override func configureLayout() {
+        super.configureLayout()
         let safeArea = view.safeAreaLayoutGuide
         view.backgroundColor = BitnagilColor.gray99
         configureCustomNavigationBar(navigationBarStyle: .withBackButton(title: "루틴 리스트"), backgroundColor: BitnagilColor.gray99)
@@ -142,6 +144,8 @@ final class RoutineListViewController: BaseViewController<RoutineListViewModel> 
                 self?.updateRoutineStackView(routines: routines)
             }
             .store(in: &cancellables)
+
+        bindNetworkError(from: viewModel.output.networkErrorPublisher)
 
         NotificationCenter.default.publisher(for: .showDeletedRoutineToast)
             .receive(on: DispatchQueue.main)

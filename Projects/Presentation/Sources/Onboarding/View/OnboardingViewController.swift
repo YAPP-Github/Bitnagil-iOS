@@ -74,6 +74,8 @@ final class OnboardingViewController: BaseViewController<OnboardingViewModel> {
     }
 
     override func configureAttribute() {
+        super.configureAttribute()
+
         mainLabel.attributedText = BitnagilFont(style: .title2, weight: .bold).attributedString(text: onboarding.mainTitle)
         mainLabel.textColor = BitnagilColor.gray10
         mainLabel.numberOfLines = 2
@@ -120,6 +122,8 @@ final class OnboardingViewController: BaseViewController<OnboardingViewModel> {
     }
 
     override func configureLayout() {
+        super.configureLayout()
+
         let safeArea = view.safeAreaLayoutGuide
         view.backgroundColor = .systemBackground
         navigationController?.setNavigationBarHidden(true, animated: false)

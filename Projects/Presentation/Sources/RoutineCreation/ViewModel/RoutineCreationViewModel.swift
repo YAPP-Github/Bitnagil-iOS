@@ -44,6 +44,7 @@ final class RoutineCreationViewModel: ViewModel {
         let periodPublisher: AnyPublisher<(Date?, Date?), Never>
         let executionTimePublisher: AnyPublisher<Date?, Never>
         let isRoutineValid: AnyPublisher<Bool, Never>
+        let networkErrorPublisher: AnyPublisher<(() -> Void)?, Never>
     }
 
     private(set) var output: Output
@@ -55,6 +56,7 @@ final class RoutineCreationViewModel: ViewModel {
     private let executionTimeSubject = CurrentValueSubject<ExecutionTime, Never>(.init(startAt: nil))
     private let checkRoutinePublisher = CurrentValueSubject<Bool, Never>(false)
     private let routineUseCase: RoutineUseCaseProtocol
+    private let networkRetryHandler: NetworkRetryHandler
     private let recommenededRoutineUseCase: RecommendedRoutineUseCaseProtocol
     private let maxSubRoutineCount: Int = 3
     private var deletedSubroutines = Set<SubRoutineSummaryEntity>()
@@ -65,7 +67,9 @@ final class RoutineCreationViewModel: ViewModel {
     init(routineUseCase: RoutineUseCaseProtocol, recommenededRoutineUseCase: RecommendedRoutineUseCaseProtocol) {
         self.routineUseCase = routineUseCase
         self.recommenededRoutineUseCase = recommenededRoutineUseCase
-        
+
+        networkRetryHandler = NetworkRetryHandler()
+
         output = Output(
             namePublisher: nameSubject.eraseToAnyPublisher(),
             subRoutinesPublisher: subRoutinesSubject.eraseToAnyPublisher(),
@@ -77,8 +81,9 @@ final class RoutineCreationViewModel: ViewModel {
             executionTimePublisher: executionTimeSubject
                 .map { $0.startAt }
                 .eraseToAnyPublisher(),
-            isRoutineValid: checkRoutinePublisher.eraseToAnyPublisher())
-        
+            isRoutineValid: checkRoutinePublisher.eraseToAnyPublisher(),
+            networkErrorPublisher: networkRetryHandler.networkErrorActionSubject.eraseToAnyPublisher())
+
         updateIsRoutineValid()
     }
 
@@ -157,7 +162,11 @@ final class RoutineCreationViewModel: ViewModel {
 
                 updateIsRoutineValid()
             } catch {
-                // TODO: - 요기도 마찬가지 (ViewModel 공통 todo)
+                // TODO: - 네트워크 에러 제외 오류 처리
+
+                networkRetryHandler.handleNetworkError(error) { [weak self] in
+                    self?.fetchRoutine(id: id)
+                }
             }
         }
     }
@@ -175,6 +184,9 @@ final class RoutineCreationViewModel: ViewModel {
 
                 updateIsRoutineValid()
             } catch {
+                networkRetryHandler.handleNetworkError(error) { [weak self] in
+                    self?.fetchRecommendedRoutine(id: id)
+                }
             }
         }
     }
@@ -289,8 +301,12 @@ final class RoutineCreationViewModel: ViewModel {
                     applyDateType: updateType)
 
                 try await routineUseCase.saveRoutine(routine: routine)
-            } catch {
 
+                networkRetryHandler.clearRetryState()
+            } catch {
+                networkRetryHandler.handleNetworkError(error) { [weak self] in
+                    self?.registerRoutine()
+                }
             }
         }
     }

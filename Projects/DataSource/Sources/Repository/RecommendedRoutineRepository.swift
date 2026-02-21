@@ -13,23 +13,46 @@ final class RecommendedRoutineRepository: RecommendedRoutineRepositoryProtocol {
     func fetchRecommendedRoutine(id: Int) async throws -> RecommendedRoutineEntity? {
         let endpoint = RecommendedRoutineEndpoint.fetchRecommendedRoutine(id: id)
 
-        guard let recommendedRoutineDTO = try await networkService.request(endpoint: endpoint, type: RecommendedRoutineDTO.self)
-        else { return nil }
+        do {
+            guard let recommendedRoutineDTO = try await networkService.request(endpoint: endpoint, type: RecommendedRoutineDTO.self)
+            else { return nil }
 
-        return recommendedRoutineDTO.toRecommendedRoutineEntity()
+            return recommendedRoutineDTO.toRecommendedRoutineEntity()
+        } catch let error as NetworkError {
+            switch error {
+            case .needRetry, .invalidURL, .emptyData:
+                throw DomainError.requireRetry
+            default:
+                throw DomainError.business(error.description)
+            }
+        } catch {
+            throw DomainError.unknown
+        }
     }
 
     func fetchRecommendedRoutines() async throws -> [RecommendedRoutineEntity] {
         let endpoint = RecommendedRoutineEndpoint.fetchRecommendedRoutines
-        guard let response = try await networkService.request(endpoint: endpoint, type: RecommendedRoutineDictionaryResponseDTO.self)
-        else { return [] }
 
-        var entities: [RecommendedRoutineEntity] = []
-        for (category, recommendedRoutines) in response.recommendedRoutines {
-            let recommendedRoutineEntity = recommendedRoutines.compactMap({ $0.toRecommendedRoutineEntity(category: category) })
-            entities.append(contentsOf: recommendedRoutineEntity)
+        do {
+            guard let response = try await networkService.request(endpoint: endpoint, type: RecommendedRoutineDictionaryResponseDTO.self)
+            else { return [] }
+
+            var entities: [RecommendedRoutineEntity] = []
+            for (category, recommendedRoutines) in response.recommendedRoutines {
+                let recommendedRoutineEntity = recommendedRoutines.compactMap({ $0.toRecommendedRoutineEntity(category: category) })
+                entities.append(contentsOf: recommendedRoutineEntity)
+            }
+
+            return entities
+        } catch let error as NetworkError {
+            switch error {
+            case .needRetry, .invalidURL, .emptyData:
+                throw DomainError.requireRetry
+            default:
+                throw DomainError.business(error.description)
+            }
+        } catch {
+            throw DomainError.unknown
         }
-
-        return entities
     }
 }

@@ -125,6 +125,7 @@ final class ResultRecommendedRoutineViewController: BaseViewController<ResultRec
     }
 
     override func configureAttribute() {
+        super.configureAttribute()
         view.backgroundColor = .systemBackground
         navigationController?.setNavigationBarHidden(true, animated: false)
         switch entryPoint {
@@ -163,6 +164,7 @@ final class ResultRecommendedRoutineViewController: BaseViewController<ResultRec
     }
 
     override func configureLayout() {
+        super.configureLayout()
         let safeArea = view.safeAreaLayoutGuide
 
         view.addSubview(mainLabel)
@@ -262,6 +264,8 @@ final class ResultRecommendedRoutineViewController: BaseViewController<ResultRec
                 self?.goToRoutineCreationView(routineId: routineId)
             }
             .store(in: &cancellables)
+
+        bindNetworkError(from: viewModel.output.networkErrorPublisher)
     }
 
     // 추천 루틴 뷰들을 업데이트합니다.
