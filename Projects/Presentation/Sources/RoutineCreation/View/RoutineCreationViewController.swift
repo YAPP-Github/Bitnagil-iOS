@@ -146,19 +146,6 @@ final class RoutineCreationViewController: BaseViewController<RoutineCreationVie
             UIAction { [weak self] _ in
                 guard let self else { return }
                 self.viewModel.action(input: .registerRoutine)
-                if self.isFromMypage {
-                    if
-                        let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                        let window = windowScene.windows.first(where: { $0.isKeyWindow }),
-                        let tabBarView = window.rootViewController as? TabBarView {
-                        self.navigationController?.popToRootViewController(animated: false)
-                        tabBarView.selectedIndex = 1
-                        viewModel.action(input: .showRecommendedRoutineToastMessageView)
-                    }
-                } else {
-                    viewModel.action(input: .showUpdateRoutineToastMessageView)
-                    self.navigationController?.popViewController(animated: true)
-                }
             },
             for: .touchUpInside)
         bindCreationCardViews()
@@ -311,6 +298,28 @@ final class RoutineCreationViewController: BaseViewController<RoutineCreationVie
                     self?.registerButton.isEnabled = false
                     self?.registerButton.backgroundColor = BitnagilColor.gray95
                     self?.registerButton.setTitleColor(.white, for: .normal)
+                }
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.routineCreationResultPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] creationResult in
+                guard let self else { return }
+                if creationResult {
+                    if self.isFromMypage {
+                        if
+                            let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                            let window = windowScene.windows.first(where: { $0.isKeyWindow }),
+                            let tabBarView = window.rootViewController as? TabBarView {
+                            self.navigationController?.popToRootViewController(animated: false)
+                            tabBarView.selectedIndex = 1
+                            viewModel.action(input: .showRecommendedRoutineToastMessageView)
+                        }
+                    } else {
+                        viewModel.action(input: .showUpdateRoutineToastMessageView)
+                        self.navigationController?.popViewController(animated: true)
+                    }
                 }
             }
             .store(in: &cancellables)

@@ -44,6 +44,7 @@ final class RoutineCreationViewModel: ViewModel {
         let periodPublisher: AnyPublisher<(Date?, Date?), Never>
         let executionTimePublisher: AnyPublisher<Date?, Never>
         let isRoutineValid: AnyPublisher<Bool, Never>
+        let routineCreationResultPublisher: AnyPublisher<Bool, Never>
         let networkErrorPublisher: AnyPublisher<(() -> Void)?, Never>
     }
 
@@ -55,6 +56,7 @@ final class RoutineCreationViewModel: ViewModel {
     private let periodEndSubject   = CurrentValueSubject<Date?, Never>(nil)
     private let executionTimeSubject = CurrentValueSubject<ExecutionTime, Never>(.init(startAt: nil))
     private let checkRoutinePublisher = CurrentValueSubject<Bool, Never>(false)
+    private let routineCreationResultSubject = PassthroughSubject<Bool, Never>()
     private let routineUseCase: RoutineUseCaseProtocol
     private let networkRetryHandler: NetworkRetryHandler
     private let recommenededRoutineUseCase: RecommendedRoutineUseCaseProtocol
@@ -82,6 +84,7 @@ final class RoutineCreationViewModel: ViewModel {
                 .map { $0.startAt }
                 .eraseToAnyPublisher(),
             isRoutineValid: checkRoutinePublisher.eraseToAnyPublisher(),
+            routineCreationResultPublisher: routineCreationResultSubject.eraseToAnyPublisher(),
             networkErrorPublisher: networkRetryHandler.networkErrorActionSubject.eraseToAnyPublisher())
 
         updateIsRoutineValid()
@@ -302,8 +305,10 @@ final class RoutineCreationViewModel: ViewModel {
 
                 try await routineUseCase.saveRoutine(routine: routine)
 
+                routineCreationResultSubject.send(true)
                 networkRetryHandler.clearRetryState()
             } catch {
+                routineCreationResultSubject.send(false)
                 networkRetryHandler.handleNetworkError(error) { [weak self] in
                     self?.registerRoutine()
                 }
