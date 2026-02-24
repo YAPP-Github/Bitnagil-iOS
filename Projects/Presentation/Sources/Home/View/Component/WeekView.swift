@@ -91,7 +91,7 @@ final class WeekView: UIView {
 
             let isAllCompleted = allCompletedDates.contains(date)
             if isAllCompleted {
-                dateView.updateAllCompleted()
+                dateView.updateAllCompleted(isCompleted: true)
             }
             dateView.didTapDateButton = { [weak self] date in
                 self?.selectDate(date: date)
@@ -109,7 +109,9 @@ final class WeekView: UIView {
         self.allCompletedDates = allCompletedDates
         for dateView in dateViews {
             if allCompletedDates.contains(dateView.key) {
-                dateView.value.updateAllCompleted()
+                dateView.value.updateAllCompleted(isCompleted: true)
+            } else {
+                dateView.value.updateAllCompleted(isCompleted: false)
             }
         }
     }
