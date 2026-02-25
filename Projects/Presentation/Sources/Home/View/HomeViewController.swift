@@ -74,6 +74,7 @@ final class HomeViewController: BaseViewController<HomeViewModel> {
 
     // routineView
     private let emptyView = HomeEmptyView()
+    private let refreshControl = UIRefreshControl()
     private let routineHeaderView = UIView()
     private let routineListLabel = UILabel()
     private let routineListButton = UIButton()
@@ -180,6 +181,12 @@ final class HomeViewController: BaseViewController<HomeViewModel> {
             routineCreationView.hidesBottomBarWhenPushed = true
             self.navigationController?.pushViewController(routineCreationView, animated: true)
         }
+
+        routineScrollView.refreshControl = refreshControl
+        refreshControl.addTarget(
+            self,
+            action: #selector(pullToRoutineRefresh),
+            for: .valueChanged)
 
         routineListLabel.text = "루틴 리스트"
         routineListLabel.font = BitnagilFont(style: .body2, weight: .semiBold).font
@@ -433,6 +440,7 @@ final class HomeViewController: BaseViewController<HomeViewModel> {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] routines in
                 self?.updateRoutineView(routines: routines)
+                self?.routineScrollView.refreshControl?.endRefreshing()
                 self?.hideIndicatorView()
             }
             .store(in: &cancellables)
@@ -634,6 +642,10 @@ final class HomeViewController: BaseViewController<HomeViewModel> {
 
         emotionRegistrationViewController.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(emotionRegistrationViewController, animated: true)
+    }
+
+    @objc private func pullToRoutineRefresh() {
+        viewModel.action(input: .refreshDailyRoutine)
     }
 }
 

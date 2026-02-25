@@ -124,7 +124,7 @@ final class DateView: UIView {
         self.isSelected = isSelected
     }
 
-    func updateAllCompleted() {
-        allCompletedIcon.isHidden.toggle()
+    func updateAllCompleted(isCompleted: Bool) {
+        allCompletedIcon.isHidden = !isCompleted
     }
 }
