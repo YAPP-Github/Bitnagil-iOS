@@ -18,6 +18,7 @@ enum BitnagilGraphic {
     static let loginGraphic = UIImage(named: "login_graphic", in: bundle, with: nil)
     static let onboardingRectangle = UIImage(named: "rounded_rectangle", in: bundle, with: nil)
     static let onboardingBigRectangle = UIImage(named: "rounded_big_rectangle", in: bundle, with: nil)
+    static let onboardingMaxRectangle = UIImage(named: "rounded_max_rectangle", in: bundle, with: nil)
     static let onboardingFomoGraphic = UIImage(named: "onboarding_fomo_graphic", in: bundle, with: nil)
     static let onboardingGrayLine = UIImage(named: "gray_line", in: bundle, with: nil)
     static let progressStep1 = UIImage(named: "progress_step1", in: bundle, with: nil)
