@@ -13,8 +13,7 @@ public class BaseViewController<T: ViewModel>: UIViewController {
     let viewModel: T
     private var baseCancellables = Set<AnyCancellable>()
     private lazy var networkErrorView = NetworkErrorView()
-    private var isShowingNetworkError = false
-
+    var isShowingTabBar: Bool { true }
 
     init(viewModel: T) {
         self.viewModel = viewModel
@@ -22,7 +21,7 @@ public class BaseViewController<T: ViewModel>: UIViewController {
     }
 
     deinit {
-        guard isShowingNetworkError else { return }
+        guard isShowingTabBar else { return }
 
         DispatchQueue.main.async { [weak tabBarController = self.tabBarController] in
             tabBarController?.tabBar.isHidden = false
@@ -78,15 +77,15 @@ public class BaseViewController<T: ViewModel>: UIViewController {
 
     /// 네트워크 에러 뷰 를 보이거나 숨깁니다.
     private func handleNetworkErrorView(show: Bool) {
-        isShowingNetworkError = show
-
         if show {
             view.bringSubviewToFront(networkErrorView)
             networkErrorView.isHidden = false
             tabBarController?.tabBar.isHidden = true
         } else {
             networkErrorView.isHidden = true
-            tabBarController?.tabBar.isHidden = false
+            if isShowingTabBar {
+                tabBarController?.tabBar.isHidden = false
+            }
         }
     }
 }

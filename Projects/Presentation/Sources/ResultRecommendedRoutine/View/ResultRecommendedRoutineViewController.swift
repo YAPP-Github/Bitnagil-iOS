@@ -80,6 +80,7 @@ final class ResultRecommendedRoutineViewController: BaseViewController<ResultRec
         static let skipButtonBottomSpacing: CGFloat = 20
     }
 
+    override var isShowingTabBar: Bool { false }
     private let mainLabel = UILabel()
     private var subLabel = UILabel()
     private let recommendedRoutineStackView = UIStackView()
