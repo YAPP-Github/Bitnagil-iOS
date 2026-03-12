@@ -30,7 +30,8 @@ final class OnboardingResultViewController: BaseViewController<OnboardingViewMod
         static let rectangleImageViewTopSpacing: CGFloat = 1.5
         static let rectangleImageViewWidth: CGFloat = 310
         static let rectangleImageViewHeight: CGFloat = 220
-        static let rectangleImageViewMaxHeight: CGFloat = 260
+        static let rectangleImageViewMidHeight: CGFloat = 260
+        static let rectangleImageViewMaxHeight: CGFloat = 290
         static let nameLabelTopSpacing: CGFloat = 30
         static let nameLabelLeadingSpacing: CGFloat = 30
         static let nameLabelHeight: CGFloat = 25.76
@@ -96,8 +97,8 @@ final class OnboardingResultViewController: BaseViewController<OnboardingViewMod
     private func updateMainLabelTopSpacing() {
         let height = view.bounds.height
         let spacing: CGFloat = height <= 667 ? Layout.mainLabelMinTopSpacing : Layout.mainLabelMaxTopSpacing
-
         mainLabelTopConstraint?.update(offset: spacing)
+        resultGraphicViewTopConstraint?.update(offset: Layout.resultGraphicViewTopMinSpacing)
     }
 
     override func configureAttribute() {
@@ -238,38 +239,67 @@ final class OnboardingResultViewController: BaseViewController<OnboardingViewMod
         }
 
         let timeResultView = OnboardingResultSummaryView(onboardingType: .time, highlightText: timeResult)
-        let outdoorResultView = OnboardingResultSummaryView(onboardingType: .outdoor, highlightText: outdoorResult)
-
-        let feelingResultStackView = UIStackView()
-        feelingResultStackView.axis = .vertical
-        feelingResultStackView.spacing = 6
-
         let feelingResultView = OnboardingResultSummaryView(onboardingType: .feeling, highlightText: feelingResult)
-        feelingResultStackView.addArrangedSubview(feelingResultView)
-
-        let ifNeedExpandFeelingResult = feelingResult.filter({ $0 == "," }).count >= 2
-        if ifNeedExpandFeelingResult {
-            let extendtedFeelingResultView = OnboardingResultSummaryView(onboardingType: nil, highlightText: "")
-            feelingResultStackView.addArrangedSubview(extendtedFeelingResultView)
-            extendtedFeelingResultView.snp.makeConstraints { make in
-                make.height.equalTo(Layout.resultLabelHeight)
-            }
-            rectangleImageView.image = BitnagilGraphic.onboardingBigRectangle
-            rectangleHeightConstraint?.update(offset: Layout.rectangleImageViewMaxHeight)
-            resultGraphicViewTopConstraint?.update(offset: Layout.resultGraphicViewTopMinSpacing)
-        }
-
-        feelingResultStackView.snp.makeConstraints { make in
-            make.height.equalTo(ifNeedExpandFeelingResult ? Layout.resultLabelMaxHeight : Layout.resultLabelHeight)
-        }
-
+        let outdoorResultView = OnboardingResultSummaryView(onboardingType: .outdoor, highlightText: outdoorResult)
         [timeResultView, feelingResultView, outdoorResultView].forEach {
             $0.snp.makeConstraints { make in
                 make.height.equalTo(Layout.resultLabelHeight)
             }
         }
 
-        [timeResultView, feelingResultStackView, outdoorResultView].forEach {
+        let feelingResultStackView = UIStackView()
+        feelingResultStackView.axis = .vertical
+        feelingResultStackView.spacing = 6
+
+        // expand feeling result view
+        feelingResultStackView.addArrangedSubview(feelingResultView)
+        let ifNeedExpandFeelingResult = feelingResult.filter({ $0 == "," }).count >= 2
+        if ifNeedExpandFeelingResult {
+            let expandedFeelingResultView = OnboardingResultSummaryView(onboardingType: nil, highlightText: "")
+            feelingResultStackView.addArrangedSubview(expandedFeelingResultView)
+            expandedFeelingResultView.snp.makeConstraints { make in
+                make.height.equalTo(Layout.resultLabelHeight)
+            }
+        }
+
+        feelingResultStackView.snp.makeConstraints { make in
+            make.height.equalTo(ifNeedExpandFeelingResult ? Layout.resultLabelMaxHeight : Layout.resultLabelHeight)
+        }
+
+        // expand outdoor result view
+        let outdoorResultStackView = UIStackView()
+        outdoorResultStackView.axis = .vertical
+        outdoorResultStackView.spacing = 6
+
+        outdoorResultStackView.addArrangedSubview(outdoorResultView)
+        let ifNeedExpandOutdoorResult = outdoorResult.contains("4")
+        if ifNeedExpandOutdoorResult {
+            let expandedOutdoorResultView = OnboardingResultSummaryView(onboardingType: nil, highlightText: " ")
+            outdoorResultStackView.addArrangedSubview(expandedOutdoorResultView)
+            expandedOutdoorResultView.snp.makeConstraints { make in
+                make.height.equalTo(Layout.resultLabelHeight)
+            }
+        }
+
+        outdoorResultStackView.snp.makeConstraints { make in
+            make.height.equalTo(ifNeedExpandOutdoorResult ? Layout.resultLabelMaxHeight : Layout.resultLabelHeight)
+        }
+
+        if ifNeedExpandFeelingResult && ifNeedExpandOutdoorResult {
+            rectangleImageView.image = BitnagilGraphic.onboardingMaxRectangle
+            rectangleHeightConstraint?.update(offset: Layout.rectangleImageViewMaxHeight)
+            resultGraphicViewTopConstraint?.update(offset: Layout.resultGraphicViewTopMinSpacing)
+        } else if ifNeedExpandFeelingResult != ifNeedExpandOutdoorResult {
+            rectangleImageView.image = BitnagilGraphic.onboardingBigRectangle
+            rectangleHeightConstraint?.update(offset: Layout.rectangleImageViewMidHeight)
+            resultGraphicViewTopConstraint?.update(offset: Layout.resultGraphicViewTopMinSpacing)
+        } else {
+            rectangleImageView.image = BitnagilGraphic.onboardingRectangle
+            rectangleHeightConstraint?.update(offset: Layout.rectangleImageViewHeight)
+            resultGraphicViewTopConstraint?.update(offset: Layout.resultGraphicViewTopSpacing)
+        }
+
+        [timeResultView, feelingResultStackView, outdoorResultStackView].forEach {
             resultStackView.addArrangedSubview($0)
         }
     }
@@ -296,6 +326,7 @@ final class OnboardingResultViewController: BaseViewController<OnboardingViewMod
         }
 
         guard let nextView else { return }
+        nextView.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(nextView, animated: true)
     }
 }

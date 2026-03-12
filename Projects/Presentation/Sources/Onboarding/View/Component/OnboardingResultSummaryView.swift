@@ -85,10 +85,18 @@ final class OnboardingResultSummaryView: UIView {
             }
 
         case .outdoor:
-            return "\(highlightText)을 목표로 해볼게요!"
+            if highlightText.contains("4") {
+                return "\(highlightText)을 목표로"
+            } else {
+                return "\(highlightText)을 목표로 해볼게요!"
+            }
 
         default:
-            return "원하는 중이에요"
+            if highlightText == "" {
+                return "원하는 중이에요"
+            } else {
+                return "해볼게요!"
+            }
         }
     }
 
