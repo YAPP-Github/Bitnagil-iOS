@@ -98,6 +98,7 @@ final class OnboardingResultViewController: BaseViewController<OnboardingViewMod
         let height = view.bounds.height
         let spacing: CGFloat = height <= 667 ? Layout.mainLabelMinTopSpacing : Layout.mainLabelMaxTopSpacing
         mainLabelTopConstraint?.update(offset: spacing)
+        resultGraphicViewTopConstraint?.update(offset: Layout.resultGraphicViewTopMinSpacing)
     }
 
     override func configureAttribute() {
@@ -287,19 +288,15 @@ final class OnboardingResultViewController: BaseViewController<OnboardingViewMod
         if ifNeedExpandFeelingResult && ifNeedExpandOutdoorResult {
             rectangleImageView.image = BitnagilGraphic.onboardingMaxRectangle
             rectangleHeightConstraint?.update(offset: Layout.rectangleImageViewMaxHeight)
-//            resultGraphicViewTopConstraint?.update(offset: Layout.resultGraphicViewTopMinSpacing)
-            print("떵인아 Max")
+            resultGraphicViewTopConstraint?.update(offset: Layout.resultGraphicViewTopMinSpacing)
         } else if ifNeedExpandFeelingResult != ifNeedExpandOutdoorResult {
             rectangleImageView.image = BitnagilGraphic.onboardingBigRectangle
             rectangleHeightConstraint?.update(offset: Layout.rectangleImageViewMidHeight)
-//            resultGraphicViewTopConstraint?.update(offset: Layout.resultGraphicViewTopMinSpacing)
-            print("떵인아 Big")
+            resultGraphicViewTopConstraint?.update(offset: Layout.resultGraphicViewTopMinSpacing)
         } else {
-            print("떵인아 regualr")
-        }
-
-        outdoorResultStackView.snp.makeConstraints { make in
-            make.height.equalTo(ifNeedExpandFeelingResult ? Layout.resultLabelMaxHeight : Layout.resultLabelHeight)
+            rectangleImageView.image = BitnagilGraphic.onboardingRectangle
+            rectangleHeightConstraint?.update(offset: Layout.rectangleImageViewHeight)
+            resultGraphicViewTopConstraint?.update(offset: Layout.resultGraphicViewTopSpacing)
         }
 
         [timeResultView, feelingResultStackView, outdoorResultStackView].forEach {
