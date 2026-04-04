@@ -24,7 +24,7 @@ final class RoutineCreationViewModel: ViewModel {
         case fetchRoutine(id: String)
         case fetchRecommendedRoutine(id: Int)
         case configureName(name: String)
-        case deleteAllSubRoutines
+        case toggleDeleteAllSubRoutines
         case configureSubRoutine(name: String, index: Int)
         case configureRepeatType(type: RepeatType)
         case configureRepeatWeeks(weeks: [Week])
@@ -61,6 +61,8 @@ final class RoutineCreationViewModel: ViewModel {
     private let networkRetryHandler: NetworkRetryHandler
     private let recommenededRoutineUseCase: RecommendedRoutineUseCaseProtocol
     private let maxSubRoutineCount: Int = 3
+    private var isSubRoutineDisabled: Bool = false
+    private var subroutineCache: [String] = []
     private var deletedSubroutines = Set<SubRoutineSummaryEntity>()
     private var routineId: String?
     private var routineType: RoutineCategoryType?
@@ -100,8 +102,8 @@ final class RoutineCreationViewModel: ViewModel {
             fetchRecommendedRoutine(id: id)
         case .configureName(let name):
             configureName(name: name)
-        case .deleteAllSubRoutines:
-            subRoutinesSubject.send(["", "", ""])
+        case .toggleDeleteAllSubRoutines:
+            toggleSubRoutines()
         case .configureSubRoutine(let name, let index):
             configureSubroutine(name: name, index: index)
         case .configureRepeatType(let type):
@@ -199,6 +201,11 @@ final class RoutineCreationViewModel: ViewModel {
     }
 
     private func configureSubroutine(name: String, index: Int) {
+        if isSubRoutineDisabled {
+            subroutineCache = []
+            isSubRoutineDisabled = false
+        }
+
         var subRoutines = subRoutinesSubject.value
         guard
             index >= 0,
@@ -255,6 +262,7 @@ final class RoutineCreationViewModel: ViewModel {
         guard
             let name = nameSubject.value,
             !name.isEmpty,
+            repeatTypeSubject.value != nil,
             executionTimeSubject.value.startAt != nil,
             periodStartSubject.value != nil,
             periodEndSubject.value != nil
@@ -331,6 +339,18 @@ final class RoutineCreationViewModel: ViewModel {
                 name: .showUpdatedRoutineToast,
                 object: nil,
                 userInfo: nil)
+        }
+    }
+
+    private func toggleSubRoutines() {
+        if isSubRoutineDisabled {
+            subRoutinesSubject.send(subroutineCache)
+            subroutineCache = []
+            isSubRoutineDisabled = false
+        } else {
+            subroutineCache = subRoutinesSubject.value
+            subRoutinesSubject.send(["", "", ""])
+            isSubRoutineDisabled = true
         }
     }
 }

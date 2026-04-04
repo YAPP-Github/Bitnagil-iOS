@@ -50,7 +50,7 @@ final class RoutineCreationViewController: BaseViewController<RoutineCreationVie
         placeHolder: "ex) 매주 월,화,수,목,금",
         titleImage: BitnagilIcon.routineRepeatIcon,
         withInfoImage: false,
-        withAsteriskImage: false)
+        withAsteriskImage: true)
     private let periodView = RoutineCreationCardView<RoutinePeriodContentView>(
         title: "목표 기간",
         placeHolder: "ex) 25.08.06 - 25.08.06",
@@ -330,8 +330,8 @@ final class RoutineCreationViewController: BaseViewController<RoutineCreationVie
             switch action {
             case .subroutineChanged(let index, let text):
                 self?.viewModel.action(input: .configureSubRoutine(name: text, index: index))
-            case .deleteAllSubroutines:
-                self?.viewModel.action(input: .deleteAllSubRoutines)
+            case .toggleDeleteAllSubroutines:
+                self?.viewModel.action(input: .toggleDeleteAllSubRoutines)
             }
         }
 

@@ -26,7 +26,7 @@ final class RoutineNameContentView: UIView, RoutineCreationExpandable {
 
     enum Action {
         case subroutineChanged(index: Int, text: String)
-        case deleteAllSubroutines
+        case toggleDeleteAllSubroutines
     }
 
     struct Dependency {
@@ -140,7 +140,7 @@ final class RoutineNameContentView: UIView, RoutineCreationExpandable {
         checkButtonImageView.layer.borderColor = BitnagilColor.gray95?.cgColor
         checkButton.addAction(
             UIAction { [weak self] _ in
-                self?.action?(.deleteAllSubroutines)
+                self?.action?(.toggleDeleteAllSubroutines)
             },
             for: .touchUpInside)
     }
