@@ -47,6 +47,18 @@ final class BitnagilCalendarView: UIViewController {
         configureCalendar()
         configureConfirmButton()
 
+        prevButton.addAction(
+            UIAction{ [weak self] _ in
+                self?.moveMonth(offset: -1)
+            },
+            for: .touchUpInside)
+
+        nextButton.addAction(
+            UIAction{ [weak self] _ in
+                self?.moveMonth(offset: 1)
+            },
+            for: .touchUpInside)
+
         let dateString = Date().convertToString(dateType: .yearMonth)
         dateLabel.text = dateString
         dateLabel.font = BitnagilFont.init(style: .title2, weight: .bold).font
@@ -143,10 +155,27 @@ final class BitnagilCalendarView: UIViewController {
             },
             for: .touchUpInside)
     }
+
+    private func moveMonth(offset: Int) {
+        let currentPage = calendarView.currentPage
+        guard let targetDate = Calendar.current.date(
+            byAdding: .month,
+            value: offset,
+            to: currentPage) else { return }
+        calendarView.setCurrentPage(targetDate, animated: true)
+    }
+
+    private func updateDateLabel(with date: Date) {
+        dateLabel.text = date.convertToString(dateType: .yearMonth)
+    }
 }
 
 extension BitnagilCalendarView: FSCalendarDelegate {
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
         delegate?.bitnagilCalendarView(self, didSelectDate: date)
+    }
+
+    func calendarCurrentPageDidChange(_ calendar: FSCalendar) {
+        updateDateLabel(with: calendar.currentPage)
     }
 }
