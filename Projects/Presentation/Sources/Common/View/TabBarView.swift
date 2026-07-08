@@ -45,11 +45,15 @@ final public class TabBarView: UITabBarController {
         guard let recommendedRoutineViewModel = DIContainer.shared.resolve(type: RecommendedRoutineViewModel.self)
         else { fatalError("recommendedRoutineViewModel 의존성이 등록되지 않았습니다.") }
 
+        guard let activityHistoryViewModel = DIContainer.shared.resolve(type: ActivityHistoryViewModel.self)
+        else { fatalError("activityHistoryViewModel 의존성이 등록되지 않았습니다.") }
+
         guard let mypageViewModel = DIContainer.shared.resolve(type: MypageViewModel.self)
         else { fatalError("mypageViewModel 의존성이 등록되지 않았습니다.") }
 
         let homeView = HomeViewController(viewModel: homeViewModel)
         let recommendView = RecommendedRoutineViewController(viewModel: recommendedRoutineViewModel)
+        let activityHistoryView = ActivityHistoryViewController(viewModel: activityHistoryViewModel)
         let mypageView = MypageView(viewModel: mypageViewModel)
 
         homeView.tabBarItem = UITabBarItem(
@@ -62,6 +66,11 @@ final public class TabBarView: UITabBarController {
             image: BitnagilIcon.recommendIcon,
             selectedImage: BitnagilIcon.recommendIcon)
 
+        activityHistoryView.tabBarItem = UITabBarItem(
+            title: "활동 일지",
+            image: BitnagilIcon.reportFillIcon,
+            selectedImage: BitnagilIcon.reportFillIcon)
+
         mypageView.tabBarItem = UITabBarItem(
             title: "마이페이지",
             image: BitnagilIcon.mypageIcon,
@@ -70,6 +79,7 @@ final public class TabBarView: UITabBarController {
         viewControllers = [
             UINavigationController(rootViewController: homeView),
             UINavigationController(rootViewController: recommendView),
+            UINavigationController(rootViewController: activityHistoryView),
             UINavigationController(rootViewController: mypageView)
         ]
     }

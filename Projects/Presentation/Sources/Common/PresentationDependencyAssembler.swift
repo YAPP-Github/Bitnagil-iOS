@@ -141,5 +141,9 @@ public struct PresentationDependencyAssembler: DependencyAssemblerProtocol {
 
             return ReportDetailViewModel(reportRepository: reportRepository)
         }
+
+        DIContainer.shared.register(type: ActivityHistoryViewModel.self) { _ in
+            return ActivityHistoryViewModel()
+        }
     }
 }
