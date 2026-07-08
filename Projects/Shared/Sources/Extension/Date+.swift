@@ -35,6 +35,7 @@ extension Date {
         case yearMonthDateWeek
         case yearMonthDateWeek2
         case yearMonth
+        case yearMonthShort
         case dayOfWeek
         case date
         case time
@@ -49,6 +50,7 @@ extension Date {
             case .yearMonthDateWeek: "yy.MM.dd E"
             case .yearMonthDateWeek2: "yyyy.MM.dd (E)"
             case .yearMonth: "yyyy년 M월"
+            case .yearMonthShort: "yy년 M월"
             case .dayOfWeek: "E"
             case .date: "d"
             case .time: "HH:mm:ss"
