@@ -182,6 +182,11 @@ extension EmotionCalendarView: FSCalendarDataSource, FSCalendarDelegate, FSCalen
         return cell
     }
 
+    func calendar(_ calendar: FSCalendar, shouldSelect date: Date, at monthPosition: FSCalendarMonthPosition) -> Bool {
+        let key = date.convertToString(dateType: .yearMonthDate)
+        return emotionRecords[key] != nil
+    }
+    
     func calendar(_ calendar: FSCalendar, didSelect date: Date, at monthPosition: FSCalendarMonthPosition) {
         let key = date.convertToString(dateType: .yearMonthDate)
         let emotion = emotionRecords[key]
