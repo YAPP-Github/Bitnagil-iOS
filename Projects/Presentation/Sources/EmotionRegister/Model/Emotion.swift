@@ -200,4 +200,60 @@ enum Marble:String, CaseIterable {
             """
         }
     }
+
+    var emotionDescription: String {
+        switch self {
+        case .NONE:
+            ""
+        case .CALM:
+            """
+            이날은 평온했나봐요! 평온함은 마음이 고요하고 
+            편안해 균형을 이루는 상태예요.
+            """
+        case .VITALITY:
+            """
+            이날은 활기찼나봐요! 활기참은 생기가 가득 차
+            활발하고 적극적인 상태예요.
+            """
+        case .LETHARGY:
+            """
+            이날은 무기력했나봐요! 무기력함은 의욕이 없어 
+            아무것도 하기 힘든 상태예요.
+            """
+        case .ANXIETY:
+            """
+            이날은 불안했나봐요! 불안함은 마음이 불안정하고 
+            쉽게 안심하기 어려운 상태예요.
+            """
+        case .SATISFACTION:
+            """
+            이날은 만족스러웠나봐요! 만족함은 기대가 충족되어
+            더 바랄 것이 없는 상태예요.
+            """
+        case .FATIGUE:
+            """
+            이날은 피곤했나봐요! 피곤함은 몸과 마음이 지쳐
+            휴식이 필요한 상태예요.
+            """
+        }
+    }
+
+    var emotionGraphic: UIImage? {
+        switch self {
+        case .NONE:
+            return nil
+        case .CALM:
+            return BitnagilGraphic.calmEmotionGraphic
+        case .VITALITY:
+            return BitnagilGraphic.vitalityEmotionGraphic
+        case .LETHARGY:
+            return BitnagilGraphic.lethargyEmotionGraphic
+        case .ANXIETY:
+            return BitnagilGraphic.anxietyEmotionGraphic
+        case .SATISFACTION:
+            return BitnagilGraphic.satisfactionEmotionGraphic
+        case .FATIGUE:
+            return BitnagilGraphic.fatigueEmotionGraphic
+        }
+    }
 }
