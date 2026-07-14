@@ -28,6 +28,7 @@ final class ActivityHistoryViewController: BaseViewController<ActivityHistoryVie
 
     private let scrollView = UIScrollView()
     private let contentView = UIView()
+    private var dimmedView: UIView?
 
     private let badgeSectionBackgroundImageView = UIImageView()
     private let badgeSectionView = ActivityBadgeSectionView()
@@ -192,11 +193,41 @@ final class ActivityHistoryViewController: BaseViewController<ActivityHistoryVie
     }
 
     private func presentEmotionDetail(date: Date, emotion: Marble) {
+        dimmedView?.removeFromSuperview()
+
+        let newDimmedView = UIView()
+        newDimmedView.backgroundColor = .black.withAlphaComponent(0.0)
+        newDimmedView.frame = view.bounds
+        view.addSubview(newDimmedView)
+        dimmedView = newDimmedView
+
+        UIView.animate(withDuration: 0.25) {
+            newDimmedView.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+        }
+
         let emotionDetailViewController = EmotionDetailViewController(date: date, emotion: emotion)
         if let sheet = emotionDetailViewController.sheetPresentationController {
-            sheet.detents = [.medium()]
-            sheet.prefersGrabberVisible = true
+            sheet.prefersGrabberVisible = false
+            if #available(iOS 16.0, *) {
+                sheet.detents = [.custom { _ in 382 }]
+            } else {
+                sheet.detents = [.medium()]
+            }
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
+            sheet.preferredCornerRadius = 20
         }
+
+        emotionDetailViewController.onDismiss = { [weak self] in
+            guard let self else { return }
+            guard let dimmedView = self.dimmedView else { return }
+            UIView.animate(withDuration: 0.1, animations: {
+                dimmedView.alpha = 0
+            }, completion: { _ in
+                dimmedView.removeFromSuperview()
+                self.dimmedView = nil
+            })
+        }
+
         present(emotionDetailViewController, animated: true)
     }
 }

@@ -31,6 +31,7 @@ extension Date {
 
     public enum DateType {
         case yearMonthDate
+        case yearMonthDateLong
         case yearMonthDateShort
         case yearMonthDateWeek
         case yearMonthDateWeek2
@@ -46,6 +47,7 @@ extension Date {
         var formatString: String {
             switch self {
             case .yearMonthDate: "yyyy-MM-dd"
+            case .yearMonthDateLong: "yyyy년 M월 d일"
             case .yearMonthDateShort: "yy.MM.dd"
             case .yearMonthDateWeek: "yy.MM.dd E"
             case .yearMonthDateWeek2: "yyyy.MM.dd (E)"

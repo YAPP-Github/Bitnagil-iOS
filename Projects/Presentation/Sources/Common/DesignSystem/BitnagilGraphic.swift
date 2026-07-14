@@ -73,4 +73,12 @@ enum BitnagilGraphic {
     static let routineMultipleBadgeGraphic = UIImage(named: "routine_multiple_badge", in: bundle, with: nil)
     static let reportSingleBadgeGraphic = UIImage(named: "report_single_badge", in: bundle, with: nil)
     static let reportMultipleBadgeGraphic = UIImage(named: "report_multiple_badge", in: bundle, with: nil)
+
+    // MARK: - Emotion Marble
+    static let anxietyEmotionGraphic = UIImage(named: "anxiety_emotion_graphic", in: bundle, with: nil)
+    static let calmEmotionGraphic = UIImage(named: "calm_emotion_graphic", in: bundle, with: nil)
+    static let fatigueEmotionGraphic = UIImage(named: "fatigue_emotion_graphic", in: bundle, with: nil)
+    static let lethargyEmotionGraphic = UIImage(named: "lethargy_emotion_graphic", in: bundle, with: nil)
+    static let satisfactionEmotionGraphic = UIImage(named: "satisfaction_emotion_graphic", in: bundle, with: nil)
+    static let vitalityEmotionGraphic = UIImage(named: "vitality_emotion_graphic", in: bundle, with: nil)
 }
