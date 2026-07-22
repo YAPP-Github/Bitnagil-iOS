@@ -65,20 +65,4 @@ enum BitnagilGraphic {
 
     // MARK: - Badge
     static let badgeBackgroundGraphic = UIImage(named: "badge_background_graphic", in: bundle, with: nil)
-    // TODO: - 뱃지 이미지는 추후 서버로부터 값을 받아온다면 삭제될 가능성 있음
-    static let noneBadgeGraphic = UIImage(named: "none_badge", in: bundle, with: nil)
-    static let emotionSingleBadgeGraphic = UIImage(named: "emotion_single_badge", in: bundle, with: nil)
-    static let emotionMultipleBadgeGraphic = UIImage(named: "emotion_multiple_badge", in: bundle, with: nil)
-    static let routineSingleBadgeGraphic = UIImage(named: "routine_single_badge", in: bundle, with: nil)
-    static let routineMultipleBadgeGraphic = UIImage(named: "routine_multiple_badge", in: bundle, with: nil)
-    static let reportSingleBadgeGraphic = UIImage(named: "report_single_badge", in: bundle, with: nil)
-    static let reportMultipleBadgeGraphic = UIImage(named: "report_multiple_badge", in: bundle, with: nil)
-
-    // MARK: - Emotion Marble
-    static let anxietyEmotionGraphic = UIImage(named: "anxiety_emotion_graphic", in: bundle, with: nil)
-    static let calmEmotionGraphic = UIImage(named: "calm_emotion_graphic", in: bundle, with: nil)
-    static let fatigueEmotionGraphic = UIImage(named: "fatigue_emotion_graphic", in: bundle, with: nil)
-    static let lethargyEmotionGraphic = UIImage(named: "lethargy_emotion_graphic", in: bundle, with: nil)
-    static let satisfactionEmotionGraphic = UIImage(named: "satisfaction_emotion_graphic", in: bundle, with: nil)
-    static let vitalityEmotionGraphic = UIImage(named: "vitality_emotion_graphic", in: bundle, with: nil)
 }
