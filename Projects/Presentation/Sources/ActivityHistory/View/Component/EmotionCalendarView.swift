@@ -30,9 +30,9 @@ final class EmotionCalendarView: UIView {
     private let nextMonthButton = UIButton()
     private let calendar = FSCalendar()
 
-    let dateSelected = PassthroughSubject<(date: Date, emotion: Marble?), Never>()
+    let dateSelected = PassthroughSubject<(date: Date, emotion: EmotionMarble?), Never>()
     let pageChanged = PassthroughSubject<Date, Never>()
-    private var emotionRecords: [String: Marble] = [:]
+    private var emotionRecords: [String: EmotionMarble] = [:]
     private let cellIdentifier = "EmotionCalendarCell"
 
     override init(frame: CGRect) {
@@ -121,7 +121,7 @@ final class EmotionCalendarView: UIView {
         }
     }
 
-    func update(records: [String: Marble]) {
+    func update(records: [String: EmotionMarble]) {
         self.emotionRecords = records
         calendar.reloadData()
     }
@@ -161,7 +161,7 @@ extension EmotionCalendarView: FSCalendarDataSource, FSCalendarDelegate, FSCalen
 
         let key = date.convertToString(dateType: .yearMonthDate)
         guard let emotion = emotionRecords[key] else { return BitnagilColor.gray30 }
-        return emotion.textColor
+        return emotion.marble.textColor
     }
 
     func calendar(_ calendar: FSCalendar, cellFor date: Date, at position: FSCalendarMonthPosition) -> FSCalendarCell {
@@ -175,7 +175,7 @@ extension EmotionCalendarView: FSCalendarDataSource, FSCalendarDelegate, FSCalen
         guard let emotion = emotionRecords[key] else { return cell }
 
         if isInCurrentMonth(date: date) {
-            cell.configure(backgroundColor: emotion.backgroundColor)
+            cell.configure(backgroundColor: emotion.marble.backgroundColor)
         } else {
             cell.configure(backgroundColor: BitnagilColor.gray98, isRecorded: false)
         }

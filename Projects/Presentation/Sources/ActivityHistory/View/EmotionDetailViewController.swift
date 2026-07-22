@@ -5,6 +5,7 @@
 //  Created by 최정인 on 7/7/26.
 //
 
+import Kingfisher
 import SnapKit
 import UIKit
 
@@ -18,10 +19,12 @@ final class EmotionDetailViewController: UIViewController {
         static let closeButtonSize: CGFloat = 44
         static let closeButtonImageSize: CGFloat = 24
         static let emotionImageViewTopSpacing: CGFloat = 30
+        static let emotionImageViewWidth: CGFloat = 327
+        static let emotionImageViewHeight: CGFloat = 198
     }
 
     private let date: Date
-    private let emotion: Marble
+    private let emotion: EmotionMarble
 
     private let headerStackView = UIStackView()
     private let dateLabel = UILabel()
@@ -31,7 +34,7 @@ final class EmotionDetailViewController: UIViewController {
     private let emotionImageView = UIImageView()
     var onDismiss: (() -> Void)?
 
-    init(date: Date, emotion: Marble) {
+    init(date: Date, emotion: EmotionMarble) {
         self.date = date
         self.emotion = emotion
         super.init(nibName: nil, bundle: nil)
@@ -63,7 +66,7 @@ final class EmotionDetailViewController: UIViewController {
         dateLabel.font = BitnagilFont(style: .title3, weight: .semiBold).font
         dateLabel.textColor = BitnagilColor.gray10
 
-        descriptionLabel.attributedText = BitnagilFont(style: .body2, weight: .medium).attributedString(text: emotion.emotionDescription)
+        descriptionLabel.attributedText = BitnagilFont(style: .body2, weight: .medium).attributedString(text: emotion.marble.emotionDescription)
         descriptionLabel.numberOfLines = 2
         descriptionLabel.font = BitnagilFont(style: .body2, weight: .medium).font
         descriptionLabel.textColor = BitnagilColor.gray40
@@ -72,8 +75,10 @@ final class EmotionDetailViewController: UIViewController {
         closeButtonImage.contentMode = .scaleAspectFit
         closeButton.addTarget(self, action: #selector(didTapCloseButton), for: .touchUpInside)
 
-        emotionImageView.image = emotion.emotionGraphic
         emotionImageView.contentMode = .scaleAspectFit
+        if let url = URL(string: emotion.imageUrl) {
+            emotionImageView.kf.setImage(with: url)
+        }
     }
 
     private func configureLayout() {
@@ -111,10 +116,8 @@ final class EmotionDetailViewController: UIViewController {
         emotionImageView.snp.makeConstraints { make in
             make.top.equalTo(descriptionLabel.snp.bottom).offset(Layout.emotionImageViewTopSpacing)
             make.horizontalEdges.equalToSuperview().inset(Layout.horizontalMargin)
-            if let image = emotion.emotionGraphic {
-                let aspectRatio = image.size.height / image.size.width
-                make.height.equalTo(emotionImageView.snp.width).multipliedBy(aspectRatio)
-            }
+            make.width.equalTo(Layout.emotionImageViewWidth)
+            make.height.equalTo(Layout.emotionImageViewHeight)
         }
     }
 
