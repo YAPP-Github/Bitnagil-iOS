@@ -70,6 +70,9 @@ final class ActivityBadgeExpertComponentView: UIView {
         if expertTitle == "예비 전문가" {
             iconView.image = BitnagilIcon.shineIcon?.withRenderingMode(.alwaysTemplate)
             iconView.tintColor = .white
+        } else {
+            iconView.image = BitnagilIcon.shineIcon
+            iconView.tintColor = nil
         }
     }
 }
