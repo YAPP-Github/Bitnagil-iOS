@@ -237,23 +237,4 @@ enum Marble:String, CaseIterable {
             """
         }
     }
-
-    var emotionGraphic: UIImage? {
-        switch self {
-        case .NONE:
-            return nil
-        case .CALM:
-            return BitnagilGraphic.calmEmotionGraphic
-        case .VITALITY:
-            return BitnagilGraphic.vitalityEmotionGraphic
-        case .LETHARGY:
-            return BitnagilGraphic.lethargyEmotionGraphic
-        case .ANXIETY:
-            return BitnagilGraphic.anxietyEmotionGraphic
-        case .SATISFACTION:
-            return BitnagilGraphic.satisfactionEmotionGraphic
-        case .FATIGUE:
-            return BitnagilGraphic.fatigueEmotionGraphic
-        }
-    }
 }

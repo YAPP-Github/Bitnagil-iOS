@@ -142,8 +142,11 @@ public struct PresentationDependencyAssembler: DependencyAssemblerProtocol {
             return ReportDetailViewModel(reportRepository: reportRepository)
         }
 
-        DIContainer.shared.register(type: ActivityHistoryViewModel.self) { _ in
-            return ActivityHistoryViewModel()
+        DIContainer.shared.register(type: ActivityHistoryViewModel.self) { container in
+            guard let activityHistoryRepository = container.resolve(type: ActivityHistoryRepositoryProtocol.self)
+            else { fatalError("activityHistoryRepository 의존성이 등록되지 않았습니다.") }
+            
+            return ActivityHistoryViewModel(activityHistoryRepository: activityHistoryRepository)
         }
     }
 }

@@ -47,12 +47,15 @@ final class ActivityHistoryViewController: BaseViewController<ActivityHistoryVie
     override init(viewModel: ActivityHistoryViewModel) {
         cancellables = []
         super.init(viewModel: viewModel)
-        viewModel.action(input: .fetchMonthlyBadge(date: .now))
-        viewModel.action(input: .fetchMonthlyEmotionHistory(date: .now))
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel.action(input: .invalidateCacheAndRefetch)
     }
 
     override func viewSafeAreaInsetsDidChange() {
@@ -179,20 +182,31 @@ final class ActivityHistoryViewController: BaseViewController<ActivityHistoryVie
         }
         .store(in: &cancellables)
 
-        viewModel.output.monthlyBadgePublisher.sink { [weak self] badges in
+        emotionCalendarView.pageChanged.sink { [weak self] date in
             guard let self else { return }
-            self.badgeSectionView.configureBadge(badges: badges)
+            self.viewModel.action(input: .fetchMonthlyBadge(date: date))
+            self.viewModel.action(input: .fetchEmotionHistory(date: date))
         }
         .store(in: &cancellables)
 
-        viewModel.output.monthlyEmotionHistoryPublisher.sink { [weak self] emotionRecords in
-            guard let self else { return }
-            self.emotionCalendarView.update(records: emotionRecords)
-        }
-        .store(in: &cancellables)
+        viewModel.output.monthlyBadgePublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] badge in
+                guard let self else { return }
+                self.badgeSectionView.configureBadge(badge: badge)
+            }
+            .store(in: &cancellables)
+
+        viewModel.output.monthlyEmotionHistoryPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] emotionRecords in
+                guard let self else { return }
+                self.emotionCalendarView.update(records: emotionRecords)
+            }
+            .store(in: &cancellables)
     }
 
-    private func presentEmotionDetail(date: Date, emotion: Marble) {
+    private func presentEmotionDetail(date: Date, emotion: EmotionMarble) {
         dimmedView?.removeFromSuperview()
 
         let newDimmedView = UIView()
