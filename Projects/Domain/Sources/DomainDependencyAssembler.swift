@@ -75,5 +75,16 @@ public struct DomainDependencyAssembler: DependencyAssemblerProtocol {
                 reportRepository: reportRepository,
                 fileRepository: fileRepository)
         }
+
+        DIContainer.shared.register(type: YouthPolicyUseCaseProtocol.self) { container in
+            guard
+                let youthPolicyRepository = container.resolve(type: YouthPolicyRepositoryProtocol.self),
+                let locationRepository = container.resolve(type: LocationRepositoryProtocol.self)
+            else { fatalError("youthPolicyUseCase에 필요한 의존성이 등록되지 않았습니다.") }
+
+            return YouthPolicyUseCase(
+                youthPolicyRepository: youthPolicyRepository,
+                locationRepository: locationRepository)
+        }
     }
 }

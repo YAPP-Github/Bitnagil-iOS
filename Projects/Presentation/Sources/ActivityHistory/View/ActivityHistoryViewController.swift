@@ -8,6 +8,7 @@
 import Combine
 import Domain
 import FSCalendar
+import Shared
 import SnapKit
 import UIKit
 
@@ -92,6 +93,11 @@ final class ActivityHistoryViewController: BaseViewController<ActivityHistoryVie
         youthOpportunityButton.setTitle("더보기", for: .normal)
         youthOpportunityButton.titleLabel?.font = BitnagilFont(style: .body2, weight: .semiBold).font
         youthOpportunityButton.setTitleColor(BitnagilColor.orange500, for: .normal)
+        youthOpportunityButton.addAction(
+            UIAction { [weak self] _ in
+                self?.pushYouthPolicyViewController()
+            },
+            for: .touchUpInside)
 
         emotionCalendarSectionView.backgroundColor = .white
         emotionHistoryLabel.text = "감정 구슬 기록"
@@ -204,6 +210,15 @@ final class ActivityHistoryViewController: BaseViewController<ActivityHistoryVie
                 self.emotionCalendarView.update(records: emotionRecords)
             }
             .store(in: &cancellables)
+    }
+
+    private func pushYouthPolicyViewController() {
+        guard let youthPolicyViewModel = DIContainer.shared.resolve(type: YouthPolicyViewModel.self)
+        else { fatalError("youthPolicyViewModel 의존성이 등록되지 않았습니다.") }
+
+        let youthPolicyViewController = YouthPolicyViewController(viewModel: youthPolicyViewModel)
+
+        navigationController?.pushViewController(youthPolicyViewController, animated: true)
     }
 
     private func presentEmotionDetail(date: Date, emotion: EmotionMarble) {

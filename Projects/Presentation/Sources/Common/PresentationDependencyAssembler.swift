@@ -148,5 +148,12 @@ public struct PresentationDependencyAssembler: DependencyAssemblerProtocol {
             
             return ActivityHistoryViewModel(activityHistoryRepository: activityHistoryRepository)
         }
+
+        DIContainer.shared.register(type: YouthPolicyViewModel.self) { container in
+            guard let youthPolicyUseCase = container.resolve(type: YouthPolicyUseCaseProtocol.self)
+            else { fatalError("youthPolicyUseCase 의존성이 등록되지 않았습니다.") }
+
+            return YouthPolicyViewModel(youthPolicyUseCase: youthPolicyUseCase)
+        }
     }
 }
