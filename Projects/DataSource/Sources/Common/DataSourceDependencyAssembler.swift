@@ -56,5 +56,9 @@ public struct DataSourceDependencyAssembler: DependencyAssemblerProtocol {
         DIContainer.shared.register(type: ActivityHistoryRepositoryProtocol.self) { _ in
             return ActivityHistoryRepository()
         }
+
+        DIContainer.shared.register(type: YouthPolicyRepositoryProtocol.self) { _ in
+            return YouthPolicyRepository()
+        }
     }
 }

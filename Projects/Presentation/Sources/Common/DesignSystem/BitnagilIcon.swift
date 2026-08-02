@@ -113,6 +113,10 @@ enum BitnagilIcon {
 
     // MARK: - Network Error
     static let networkErrorIcon = UIImage(named: "network_error_icon", in: bundle, with: nil)
+
+    // MARK: - Notice
+    static let heartEmptyIcon = UIImage(named: "heart_empty_icon", in: bundle, with: nil)
+    static let heartFilledIcon = UIImage(named: "heart_filled_icon", in: bundle, with: nil)
 }
 
 enum Direction {
