@@ -56,6 +56,7 @@ final class ActivityHistoryViewController: BaseViewController<ActivityHistoryVie
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
         viewModel.action(input: .invalidateCacheAndRefetch)
     }
 
@@ -76,6 +77,9 @@ final class ActivityHistoryViewController: BaseViewController<ActivityHistoryVie
 
         badgeSectionBackgroundImageView.image = BitnagilGraphic.badgeBackgroundGraphic
         badgeSectionBackgroundImageView.isUserInteractionEnabled = false
+
+        // TODO: 추후 청년공고 API 해결 후 삭제
+        youthOpportunityView.isHidden = true
 
         youthOpportunityView.backgroundColor = BitnagilColor.orange25
 
@@ -117,7 +121,7 @@ final class ActivityHistoryViewController: BaseViewController<ActivityHistoryVie
             emotionCalendarSectionView.addSubview($0)
         }
 
-        [badgeSectionBackgroundImageView, youthOpportunityView, emotionCalendarSectionView].forEach {
+        [badgeSectionBackgroundImageView, /*youthOpportunityView,*/ emotionCalendarSectionView].forEach {
             contentView.addSubview($0)
         }
 
@@ -131,11 +135,13 @@ final class ActivityHistoryViewController: BaseViewController<ActivityHistoryVie
             make.centerY.equalToSuperview().offset(Layout.navigationBarHeight / 2)
         }
 
+        /*
         youthOpportunityView.addSubview(youthOpportunityStackView)
         let spacerView = UIView()
         [youthOpportunityIcon, youthOpportunityLabel, spacerView, youthOpportunityButton].forEach {
             youthOpportunityStackView.addArrangedSubview($0)
         }
+         */
 
         scrollView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -146,6 +152,8 @@ final class ActivityHistoryViewController: BaseViewController<ActivityHistoryVie
             make.width.equalTo(scrollView.frameLayoutGuide)
         }
 
+        // TODO: - 추후 청년공고 API 해결 후 주석처리 제거
+        /*
         youthOpportunityView.snp.makeConstraints { make in
             make.top.equalTo(badgeSectionBackgroundImageView.snp.bottom)
             make.horizontalEdges.equalToSuperview()
@@ -160,9 +168,11 @@ final class ActivityHistoryViewController: BaseViewController<ActivityHistoryVie
         youthOpportunityIcon.snp.makeConstraints { make in
             make.size.equalTo(Layout.youthOpportunityIconSize)
         }
+         */
 
         emotionCalendarSectionView.snp.makeConstraints { make in
-            make.top.equalTo(youthOpportunityView.snp.bottom)
+            // make.top.equalTo(youthOpportunityView.snp.bottom)
+            make.top.equalTo(badgeSectionBackgroundImageView.snp.bottom)
             make.horizontalEdges.equalTo(safeArea)
             make.bottom.equalToSuperview()
         }
