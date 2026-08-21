@@ -68,8 +68,8 @@ final public class TabBarView: UITabBarController {
 
         activityHistoryView.tabBarItem = UITabBarItem(
             title: "활동 일지",
-            image: BitnagilIcon.reportFillIcon,
-            selectedImage: BitnagilIcon.reportFillIcon)
+            image: BitnagilIcon.reportFillIcon?.withRenderingMode(.alwaysOriginal),
+            selectedImage: BitnagilIcon.reportFillIcon?.withRenderingMode(.alwaysOriginal))
 
         mypageView.tabBarItem = UITabBarItem(
             title: "마이페이지",
