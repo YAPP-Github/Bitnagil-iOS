@@ -5,7 +5,9 @@
 //  Created by 최정인 on 6/15/25.
 //
 
+import AppTrackingTransparency
 import Domain
+import FacebookCore
 import KakaoSDKAuth
 import Presentation
 import Shared
@@ -38,7 +40,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneDidDisconnect(_ scene: UIScene) { }
 
-    func sceneDidBecomeActive(_ scene: UIScene) { }
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        // 유저가 설정 앱에서 추적 허용 여부를 바꿨을 수 있으므로, 활성화 시마다 최신 상태를 Meta SDK에 반영합니다.
+        Settings.shared.isAdvertiserTrackingEnabled = (ATTrackingManager.trackingAuthorizationStatus == .authorized)
+    }
+
+    // 광고 어트리뷰션 정확도를 위해 앱 추적 투명성(ATT) 권한을 요청하고, 결과를 Meta SDK에 반영합니다.
+    // 스플래시 애니메이션 완료 시점은 앱이 확실히 active 상태이므로 다이얼로그 표시가 보장됩니다.
+    private func requestTrackingAuthorization() {
+        guard ATTrackingManager.trackingAuthorizationStatus == .notDetermined else { return }
+
+        ATTrackingManager.requestTrackingAuthorization { status in
+            Settings.shared.isAdvertiserTrackingEnabled = (status == .authorized)
+        }
+    }
 
     func sceneWillResignActive(_ scene: UIScene) { }
 
@@ -50,6 +65,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 extension SceneDelegate: SplashViewDelegate {
     func splashView(_ sender: Presentation.SplashViewController, isCompletedAnimated: Bool) {
         guard isCompletedAnimated else { return }
+
+        requestTrackingAuthorization()
 
         guard let userDataRepository = DIContainer.shared.resolve(type: UserDataRepositoryProtocol.self)
         else { fatalError("userDataRepository 의존성이 등록되지 않았습니다.") }

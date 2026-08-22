@@ -7,9 +7,11 @@
 
 public final class LoginUseCase: LoginUseCaseProtocol {
     private let authRepository: AuthRepositoryProtocol
+    private let analyticsLogger: AnalyticsLoggerProtocol
 
-    public init(authRepository: AuthRepositoryProtocol) {
+    public init(authRepository: AuthRepositoryProtocol, analyticsLogger: AnalyticsLoggerProtocol) {
         self.authRepository = authRepository
+        self.analyticsLogger = analyticsLogger
     }
 
     public func kakaoLogin() async throws -> UserState {
@@ -24,5 +26,6 @@ public final class LoginUseCase: LoginUseCaseProtocol {
 
     public func sumbitAgreement(agreements: [TermsType: Bool]) async throws {
         try await authRepository.submitAgreement(agreements: agreements)
+        analyticsLogger.log(.signUpCompleted)
     }
 }

@@ -8,6 +8,7 @@ let package = Package(
     .package(url: "https://github.com/kakao/kakao-ios-sdk", from: "2.23.0"),
     .package(url: "https://github.com/onevcat/Kingfisher.git", from: "8.0.0"),
     .package(url: "https://github.com/airbnb/lottie-ios", from: "4.0.0"),
-    .package(url: "https://github.com/WenchaoD/FSCalendar.git", from: "2.8.4")
+    .package(url: "https://github.com/WenchaoD/FSCalendar.git", from: "2.8.4"),
+    .package(url: "https://github.com/facebook/facebook-ios-sdk", from: "18.1.0")
   ]
 )
