@@ -10,9 +10,11 @@ import Shared
 
 public final class RoutineUseCase: RoutineUseCaseProtocol {
     private let routineRepository: RoutineRepositoryProtocol
+    private let analyticsLogger: AnalyticsLoggerProtocol
 
-    public init(routineRepository: RoutineRepositoryProtocol) {
+    public init(routineRepository: RoutineRepositoryProtocol, analyticsLogger: AnalyticsLoggerProtocol) {
         self.routineRepository = routineRepository
+        self.analyticsLogger = analyticsLogger
     }
 
     public func fetchRoutine(routineId: String) async throws -> RoutineEntity? {
@@ -65,5 +67,10 @@ public final class RoutineUseCase: RoutineUseCaseProtocol {
 
     public func updateRoutineCompletions(routines: [RoutineEntity]) async throws {
         try await routineRepository.updateRoutineCompletions(routines: routines)
+
+        // 완료 처리된 루틴이 있을 때만 이벤트를 발행합니다. (완료 해제는 제외)
+        if routines.contains(where: { $0.routineCompleteYn }) {
+            analyticsLogger.log(.routineCompleted)
+        }
     }
 }

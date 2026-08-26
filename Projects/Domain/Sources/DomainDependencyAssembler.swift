@@ -20,8 +20,11 @@ public struct DomainDependencyAssembler: DependencyAssemblerProtocol {
         guard let authRepository = DIContainer.shared.resolve(type: AuthRepositoryProtocol.self)
         else { fatalError("authRepository 의존성이 등록되지 않았습니다.") }
 
+        guard let analyticsLogger = DIContainer.shared.resolve(type: AnalyticsLoggerProtocol.self)
+        else { fatalError("analyticsLogger 의존성이 등록되지 않았습니다.") }
+
         DIContainer.shared.register(type: LoginUseCaseProtocol.self) { _ in
-            return LoginUseCase(authRepository: authRepository)
+            return LoginUseCase(authRepository: authRepository, analyticsLogger: analyticsLogger)
         }
 
         DIContainer.shared.register(type: LogoutUseCaseProtocol.self) { _ in
@@ -46,7 +49,10 @@ public struct DomainDependencyAssembler: DependencyAssemblerProtocol {
             guard let onboardingRepository = container.resolve(type: OnboardingRepositoryProtocol.self)
             else { fatalError("onboardingRepository 의존성이 등록되지 않았습니다.") }
 
-            return ResultRecommendedRoutineUseCase(onboardingRepository: onboardingRepository, emotionRepository: emotionRepository)
+            return ResultRecommendedRoutineUseCase(
+                onboardingRepository: onboardingRepository,
+                emotionRepository: emotionRepository,
+                analyticsLogger: analyticsLogger)
         }
 
         DIContainer.shared.register(type: UserDataUseCaseProtocol.self) { container in
@@ -60,7 +66,7 @@ public struct DomainDependencyAssembler: DependencyAssemblerProtocol {
             guard let routineRepository = container.resolve(type: RoutineRepositoryProtocol.self)
             else { fatalError("routineRepository 의존성이 등록되지 않았습니다.") }
 
-            return RoutineUseCase(routineRepository: routineRepository)
+            return RoutineUseCase(routineRepository: routineRepository, analyticsLogger: analyticsLogger)
         }
 
         DIContainer.shared.register(type: ReportUseCaseProtocol.self) { container in

@@ -13,6 +13,11 @@ import Shared
 
 extension DIContainer {
     func dependencyInjection() {
+        // Meta SDK 의존성은 App 타겟에만 두고, Domain에는 프로토콜로 주입합니다.
+        DIContainer.shared.register(type: AnalyticsLoggerProtocol.self) { _ in
+            return MetaAnalyticsLogger()
+        }
+
         let dataSourceAssembler = DataSourceDependencyAssembler()
         let domainAssembler = DomainDependencyAssembler(preAssembler: dataSourceAssembler)
         let presentationAssembler = PresentationDependencyAssembler(preAssembler: domainAssembler)

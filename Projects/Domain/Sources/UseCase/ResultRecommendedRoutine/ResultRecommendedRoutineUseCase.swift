@@ -9,14 +9,21 @@
 public final class ResultRecommendedRoutineUseCase: ResultRecommendedRoutineUseCaseProtocol {
     private let onboardingRepository: OnboardingRepositoryProtocol
     private let emotionRepository: EmotionRepositoryProtocol
+    private let analyticsLogger: AnalyticsLoggerProtocol
 
-    public init(onboardingRepository: OnboardingRepositoryProtocol, emotionRepository: EmotionRepositoryProtocol) {
+    public init(
+        onboardingRepository: OnboardingRepositoryProtocol,
+        emotionRepository: EmotionRepositoryProtocol,
+        analyticsLogger: AnalyticsLoggerProtocol
+    ) {
         self.onboardingRepository = onboardingRepository
         self.emotionRepository = emotionRepository
+        self.analyticsLogger = analyticsLogger
     }
 
     public func fetchResultRecommendedRoutines(onboardingEntity: OnboardingEntity) async throws -> [RecommendedRoutineEntity] {
         let recommendedRoutines = try await onboardingRepository.registerOnboarding(onboardingEntity: onboardingEntity)
+        analyticsLogger.log(.onboardingCompleted)
         return recommendedRoutines
     }
 
